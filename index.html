@@ -22,75 +22,81 @@
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
+      line-height: 1.65;
     }
 
     .header {
       background: linear-gradient(135deg, #4f46e5, #7c3aed);
       color: white;
-      padding: 2.5rem 2rem 2rem;
+      padding: 1.75rem 2rem 1.5rem;
       text-align: center;
-      max-width: 860px;
+      max-width: 960px;
       width: 100%;
-      margin: 1.5rem auto 0;
+      margin: 1.25rem auto 0;
       border-radius: 1rem;
     }
-    .header h1 { font-size: 1.65rem; font-weight: 700; line-height: 1.3; }
-    .header p  { font-size: 0.95rem; opacity: 0.85; margin-top: 0.6rem; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .header h1 { font-size: 1.55rem; font-weight: 700; line-height: 1.3; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
 
     .container {
-      max-width: 860px;
+      max-width: 960px;
       margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      padding: 1.5rem 1.25rem 2.5rem;
     }
+
+    /* TWO-COLUMN GRID */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .col { display: flex; flex-direction: column; gap: 1.25rem; }
 
     section {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 1.75rem 2rem;
-      margin-bottom: 1.5rem;
+      padding: 1.4rem 1.6rem;
     }
 
     h2 {
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       font-weight: 700;
       color: var(--primary);
-      margin-bottom: 0.9rem;
-      padding-bottom: 0.4rem;
+      margin-bottom: 0.75rem;
+      padding-bottom: 0.35rem;
       border-bottom: 2px solid var(--border);
     }
 
-    p { margin-bottom: 0.85rem; }
+    p { margin-bottom: 0.75rem; font-size: 0.93rem; }
     p:last-child { margin-bottom: 0; }
 
-    /* INTRO */
-    .intro-text {
-      font-size: 1rem;
-      color: var(--text);
-      margin-bottom: 0;
-    }
-
     /* PROMPT BLOCK */
-    .prompt-wrap { position: relative; margin: 1rem 0; }
+    .prompt-wrap { position: relative; margin: 0.75rem 0; }
     .master-prompt {
       background: #1e1b4b;
       color: #e0e7ff;
       border-radius: 8px;
-      padding: 1.2rem 1.75rem;
-      font-size: 0.92rem;
-      line-height: 1.6;
+      padding: 0.9rem 1.4rem;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      padding-right: 5.5rem;
     }
     .copy-btn {
       position: absolute;
-      top: 0.65rem;
-      right: 0.75rem;
+      top: 0.6rem;
+      right: 0.65rem;
       background: #3730a3;
       color: #e0e7ff;
       border: none;
       border-radius: 6px;
-      padding: 0.35rem 0.8rem;
-      font-size: 0.78rem;
+      padding: 0.3rem 0.75rem;
+      font-size: 0.76rem;
       font-family: inherit;
       cursor: pointer;
       transition: background 0.15s;
@@ -98,29 +104,17 @@
     .copy-btn:hover  { background: #4f46e5; }
     .copy-btn.copied { background: #059669; color: white; }
 
-    blockquote {
-      border-left: 4px solid var(--primary-light);
-      background: #f0f0ff;
-      border-radius: 0 8px 8px 0;
-      padding: 1.2rem 1.5rem;
-      margin: 1rem 0;
-      font-size: 0.93rem;
-      color: #3730a3;
-    }
-    blockquote p { margin-bottom: 0.55rem; }
-    blockquote p:last-child { margin-bottom: 0; }
-
     .dl-btn {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      margin-top: 0.85rem;
+      gap: 0.35rem;
+      margin-top: 0.75rem;
       background: #ede9fe;
       color: #4c1d95;
       text-decoration: none;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      padding: 0.45rem 1rem;
+      padding: 0.4rem 0.9rem;
       border-radius: 6px;
       transition: background 0.15s;
     }
@@ -130,11 +124,8 @@
     .examples-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.1rem;
-      margin-top: 0.5rem;
-    }
-    @media (max-width: 560px) {
-      .examples-grid { grid-template-columns: 1fr; }
+      gap: 0.85rem;
+      margin-top: 0.6rem;
     }
 
     .example-card {
@@ -143,7 +134,7 @@
       background: #f8f7ff;
       border: 1px solid #ddd6fe;
       border-radius: 10px;
-      padding: 1.25rem 1.3rem;
+      padding: 1rem 1.1rem;
       text-decoration: none;
       color: var(--text);
       transition: box-shadow 0.15s, border-color 0.15s;
@@ -152,53 +143,47 @@
       box-shadow: 0 4px 16px rgba(79,70,229,0.12);
       border-color: var(--primary-light);
     }
-    .example-card .ex-icon { font-size: 1.8rem; margin-bottom: 0.5rem; }
-    .example-card .ex-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 0.3rem; }
-    .example-card .ex-desc { font-size: 0.87rem; color: var(--muted); line-height: 1.5; }
+    .example-card .ex-icon  { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    .example-card .ex-title { font-size: 0.93rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+    .example-card .ex-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
 
     /* PROTOCOL LINK */
     .protocol-link {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 0.85rem;
       background: #f8f7ff;
       border: 1px solid #ddd6fe;
       border-radius: 10px;
-      padding: 1.1rem 1.3rem;
+      padding: 0.9rem 1.1rem;
       text-decoration: none;
       color: var(--text);
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
       transition: box-shadow 0.15s, border-color 0.15s;
     }
     .protocol-link:hover {
       box-shadow: 0 4px 16px rgba(79,70,229,0.12);
       border-color: var(--primary-light);
     }
-    .protocol-link .pl-icon { font-size: 1.6rem; flex-shrink: 0; }
-    .protocol-link .pl-title { font-size: 0.98rem; font-weight: 700; color: var(--primary); }
-    .protocol-link .pl-desc { font-size: 0.85rem; color: var(--muted); margin-top: 0.15rem; }
+    .protocol-link .pl-icon  { font-size: 1.4rem; flex-shrink: 0; }
+    .protocol-link .pl-title { font-size: 0.93rem; font-weight: 700; color: var(--primary); }
+    .protocol-link .pl-desc  { font-size: 0.81rem; color: var(--muted); margin-top: 0.1rem; }
 
     .site-footer {
       background: #1e293b;
       color: #cbd5e1;
       text-align: center;
       font-size: 0.82rem;
-      padding: 1.1rem 1.5rem;
+      padding: 1rem 1.5rem;
       line-height: 1.8;
-      max-width: 860px;
+      max-width: 960px;
       width: 100%;
-      margin: 0 auto 1.5rem;
+      margin: 0 auto 1.25rem;
       border-radius: 1rem;
     }
     .site-footer a { color: #a5b4fc; text-decoration: none; }
     .site-footer a:hover { text-decoration: underline; }
     .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
-
-    @media (max-width: 600px) {
-      .header { padding: 1.75rem 1.25rem 1.5rem; }
-      .header h1 { font-size: 1.35rem; }
-      section { padding: 1.25rem 1.1rem; }
-    }
   </style>
 </head>
 <body>
@@ -209,61 +194,64 @@
 </div>
 
 <div class="container">
+  <div class="grid">
 
-  <section>
-    <h2>Qué es esto</h2>
-    <p class="intro-text">
-      Un recurso educativo adaptativo bayesiano es una aplicación que modifica su comportamiento en función de las respuestas del alumno.
-      En lugar de seguir una secuencia fija, el sistema mantiene una estimación probabilística sobre el estado de aprendizaje
-      y selecciona en cada momento la acción más informativa: la pregunta que más reduce la incertidumbre, la explicación más adecuada al nivel estimado, el ejercicio con mayor utilidad pedagógica.
-    </p>
-    <p>
-      El protocolo recogido en este sitio define cómo diseñar e implementar ese mecanismo de forma rigurosa.
-      Cualquier modelo de IA puede generar un recurso concreto a partir de él.
-      Los dos programas enlazados más abajo son ejemplos de aplicación.
-    </p>
-  </section>
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="col">
 
-  <section>
-    <h2>Crear tu propio recurso con IA</h2>
-    <p>Descarga el protocolo y adjúntalo a cualquier modelo de IA con el siguiente prompt:</p>
-    <div class="prompt-wrap">
-      <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copiar</button>
-      <div class="master-prompt" id="prompt-text">Lee el documento adjunto e implementa el sistema siguiendo las instrucciones que contiene.</div>
+      <section>
+        <h2>Qué es esto</h2>
+        <p>Un recurso educativo adaptativo bayesiano modifica su comportamiento en función de las respuestas del alumno. En lugar de seguir una secuencia fija, el sistema mantiene una estimación probabilística sobre el estado de aprendizaje y selecciona en cada momento la acción más informativa: la pregunta que más reduce la incertidumbre, la explicación más adecuada al nivel estimado, el ejercicio con mayor utilidad pedagógica.</p>
+        <p>El protocolo de este sitio define cómo diseñar e implementar ese mecanismo. Los dos programas enlazados son ejemplos de aplicación generados con IA a partir de la misma especificación.</p>
+      </section>
+
+      <section>
+        <h2>Ejemplos de aplicación</h2>
+        <div class="examples-grid">
+          <a class="example-card" href="https://jjdeharo.github.io/bayes-test/" target="_blank" rel="noopener">
+            <span class="ex-icon">📊</span>
+            <div class="ex-title">Test adaptativo</div>
+            <div class="ex-desc">Evaluación diagnóstica que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.</div>
+          </a>
+          <a class="example-card" href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">
+            <span class="ex-icon">🗺️</span>
+            <div class="ex-title">Itinerario adaptativo</div>
+            <div class="ex-desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.</div>
+          </a>
+        </div>
+      </section>
+
     </div>
-    <p>El modelo preguntará al docente por el tema, curso, tipo de recurso y finalidad antes de diseñar nada. Si quieres anticipar esa información, el protocolo incluye una plantilla para rellenar.</p>
-    <a class="dl-btn" href="documentacion_evaluacion_adaptativa_bayesiana.md" download>⬇ Descargar protocolo (.md)</a>
-  </section>
 
-  <section>
-    <h2>Protocolo completo</h2>
-    <p>Documentación técnica y pedagógica: fundamentos bayesianos, selección adaptativa de preguntas, criterios de finalización, instrucciones de implementación para IA y plantilla para el docente.</p>
-    <a class="protocol-link" href="documentacion.html">
-      <span class="pl-icon">📖</span>
-      <span>
-        <div class="pl-title">Protocolo de recursos adaptativos bayesianos</div>
-        <div class="pl-desc">Guía completa: inferencia bayesiana, entropía de Shannon, diseño pedagógico e instrucciones para IA</div>
-      </span>
-    </a>
-  </section>
+    <!-- COLUMNA DERECHA -->
+    <div class="col">
 
-  <section>
-    <h2>Ejemplos de aplicación</h2>
-    <p>Dos implementaciones concretas del protocolo, generadas con IA a partir de la misma especificación:</p>
-    <div class="examples-grid">
-      <a class="example-card" href="https://jjdeharo.github.io/bayes-test/" target="_blank" rel="noopener">
-        <span class="ex-icon">📊</span>
-        <div class="ex-title">Test adaptativo</div>
-        <div class="ex-desc">Evaluación diagnóstica que selecciona preguntas según la ganancia esperada de información. Estima el nivel del alumno y ofrece un diagnóstico pedagógico al finalizar.</div>
-      </a>
-      <a class="example-card" href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">
-        <span class="ex-icon">🗺️</span>
-        <div class="ex-title">Itinerario adaptativo</div>
-        <div class="ex-desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno a lo largo de la sesión.</div>
-      </a>
+      <section>
+        <h2>Crear tu propio recurso con IA</h2>
+        <p>Descarga el protocolo, adjúntalo a cualquier modelo de IA y usa este prompt:</p>
+        <div class="prompt-wrap">
+          <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copiar</button>
+          <div class="master-prompt" id="prompt-text">Lee el documento adjunto e implementa el sistema siguiendo las instrucciones que contiene.</div>
+        </div>
+        <p>El modelo pedirá el tema, curso, tipo de recurso y finalidad antes de diseñar nada. El protocolo incluye una plantilla para anticipar esa información.</p>
+        <a class="dl-btn" href="documentacion_evaluacion_adaptativa_bayesiana.md" download>⬇ Descargar protocolo (.md)</a>
+      </section>
+
+      <section>
+        <h2>Protocolo completo</h2>
+        <p>Documentación técnica y pedagógica: fundamentos bayesianos, selección adaptativa de preguntas, criterios de finalización e instrucciones de implementación para IA.</p>
+        <a class="protocol-link" href="documentacion.html">
+          <span class="pl-icon">📖</span>
+          <span>
+            <div class="pl-title">Protocolo de recursos adaptativos bayesianos</div>
+            <div class="pl-desc">Inferencia bayesiana, entropía de Shannon, diseño pedagógico e instrucciones para IA</div>
+          </span>
+        </a>
+      </section>
+
     </div>
-  </section>
 
+  </div>
 </div>
 
 <footer class="site-footer">
