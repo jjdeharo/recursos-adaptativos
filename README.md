@@ -77,7 +77,8 @@ recursos-adaptativos/
 ├── index.html                                        Página principal del sitio
 ├── documentacion.html                                Protocolo completo (versión web)
 ├── documentacion_evaluacion_adaptativa_bayesiana.md  Protocolo en Markdown (para adjuntar a IA)
-├── matematicas.md                                    Fundamentos matemáticos detallados
+├── matematicas.html                                  Fundamentos matemáticos (versión web)
+├── matematicas.md                                    Fundamentos matemáticos (Markdown)
 └── README.md                                         Este documento
 ```
 
