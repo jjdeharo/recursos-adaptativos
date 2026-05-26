@@ -78,6 +78,7 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > Detén el test cuando la entropía H caiga por debajo del umbral:
 > H_stop = −p_min · log2(p_min) − (1 − p_min) · log2((1 − p_min) / (n − 1))
 > donde p_min es el nivel de confianza deseado (0.80 es un valor habitual) y n es el número de hipótesis. Este umbral aproxima la situación en la que la hipótesis más probable supera p_min, suponiendo que la probabilidad restante se reparte de forma uniforme entre las demás hipótesis. En la práctica, conviene comprobar ambos criterios de forma complementaria: que la entropía esté por debajo de H_stop y que la hipótesis más probable supere p_min. Impón también un límite máximo de preguntas y detén el test si no quedan preguntas útiles disponibles. Respeta siempre un mínimo de preguntas antes de poder finalizar.
+> Si el recurso está organizado en etapas, fases o técnicas sucesivas, distingue entre dos decisiones: terminar una fase y considerarla superada. Que una fase termine no implica automáticamente que el alumno la haya dominado.
 >
 > **6. Recuperación automática.**
 > Si se usa actualización bayesiana y selección por máxima ganancia esperada de información, la recuperación queda en gran parte integrada en el mecanismo adaptativo: el sistema favorece automáticamente preguntas más informativas a medida que el posterior cambia. Aun así, el sistema debe evitar bloqueos prácticos mediante un límite máximo de preguntas, variedad suficiente de preguntas por nivel, y la posibilidad de revisar hipótesis si aparecen evidencias contrarias. La recuperación completa no está garantizada si las preguntas están mal calibradas, si hay pocas disponibles en algún nivel, o si el alumno responde al azar.
@@ -99,6 +100,16 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > La finalidad de la adaptación no tiene por qué ser solo estimar un nivel. También puede ser decidir qué explicación mostrar, qué pista ofrecer, qué ejercicio proponer, qué recurso recomendar, qué itinerario seguir o cuándo pasar de refuerzo a ampliación.
 >
 > Cuando el recurso no sea una evaluación, el sistema debe seguir usando la información obtenida durante la interacción para adaptar la experiencia. Puede mantener hipótesis sobre el estado del alumno, actualizar esas hipótesis con sus respuestas o acciones, medir la incertidumbre cuando sea útil y tomar decisiones pedagógicas en función de esa estimación.
+>
+> **11. Promoción en itinerarios por etapas.**
+> Si el recurso es un itinerario de aprendizaje con fases sucesivas, distingue entre:
+> — una estimación global del progreso del alumno, útil para el informe final;
+> — y una estimación local de cada etapa, usada para decidir si esa etapa está superada.
+> La promoción de etapa no debe depender solo del estado global acumulado. Debe basarse en evidencia generada dentro de la propia etapa. Para considerar una etapa superada, conviene comprobar al menos:
+> — que la hipótesis local más probable supere un umbral de confianza p_min;
+> — que la entropía local esté por debajo del umbral correspondiente;
+> — y que el rendimiento observado en la etapa alcance un mínimo explícito (por ejemplo, 60 % o 70 % de aciertos, según el diseño).
+> Si el alumno repite una etapa, reinicia la estimación local de esa etapa, salvo que exista una razón pedagógica explícita para reutilizar información previa. La estimación global puede conservarse para el diagnóstico final, pero no debe sustituir la comprobación de dominio local cuando el objetivo es avanzar por técnicas o contenidos secuenciados.
 >
 > El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece un diagnóstico; en una actividad de aprendizaje, indica el recorrido seguido y las ayudas usadas; en una práctica adaptativa, muestra progreso y recomendaciones; en un recurso de refuerzo o ampliación, explica qué contenidos se han trabajado y cuál sería el siguiente paso.
 
