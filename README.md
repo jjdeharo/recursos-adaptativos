@@ -27,6 +27,21 @@ El resultado es siempre una página web estática autocontenida (HTML + CSS + JS
 
 ---
 
+## Documentación matemática
+
+Los fundamentos matemáticos detallados del sistema están disponibles en [`matematicas.md`](matematicas.md) e incluyen:
+
+- Derivación completa de la regla de Bayes aplicada al estado del alumno
+- Modelo IRT 3PL con análisis del parámetro de discriminación y la curva característica del ítem
+- Entropía de Shannon: propiedades y ejemplos numéricos
+- Ganancia esperada de información: desarrollo paso a paso y conexión con la información mutua
+- Derivación del umbral de parada $H_{\text{stop}}$
+- Justificación de la convención de escala θ/b (factor 2)
+- Ejemplo numérico completo de una sesión adaptativa
+- Hipótesis no jerárquicas y límites del modelo
+
+---
+
 ## Protocolo completo
 
 La documentación técnica y pedagógica está disponible en [`documentacion.html`](https://jjdeharo.github.io/recursos-adaptativos/documentacion.html) e incluye:
@@ -62,6 +77,7 @@ recursos-adaptativos/
 ├── index.html                                        Página principal del sitio
 ├── documentacion.html                                Protocolo completo (versión web)
 ├── documentacion_evaluacion_adaptativa_bayesiana.md  Protocolo en Markdown (para adjuntar a IA)
+├── matematicas.md                                    Fundamentos matemáticos detallados
 └── README.md                                         Este documento
 ```
 

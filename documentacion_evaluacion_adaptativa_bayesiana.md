@@ -29,7 +29,7 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > Actúa como diseñador e implementador de sistemas educativos adaptativos bayesianos. Tu tarea es crear un recurso educativo adaptativo como página web estática (HTML + CSS + JavaScript en un único archivo autocontenido), siguiendo exactamente las especificaciones técnicas y pedagógicas de este documento.
 >
 > **0. Lo primero que debes hacer.**
-> Antes de implementar nada, pregunta al docente lo siguiente. No resumas el documento. No preguntes sobre lenguajes ni entornos: el resultado será siempre una página web estática en un único archivo HTML. Haz estas preguntas y espera las respuestas antes de escribir ningún código:
+> Antes de implementar nada, comprueba si la plantilla adjunta contiene la información necesaria. Si está completa, no repitas las preguntas y pasa directamente al diseño e implementación. Si falta información esencial, pregunta solo por lo que falte. No resumas el documento. No preguntes sobre lenguajes ni entornos: el resultado será siempre una página web estática en un único archivo HTML.
 >
 > — ¿Sobre qué tema o unidad didáctica quieres el recurso?
 > — ¿A qué curso o edad va dirigido?
@@ -53,7 +53,7 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > Normaliza siempre dividiendo por la suma. Repite tras cada respuesta.
 >
 > **3. Verosimilitudes por pregunta.**
-> Calcula P(acierto | H_i, q) dinámicamente para cada pregunta q usando la función logística IRT 3PL:
+> Si las hipótesis son jerárquicas o representan niveles de dominio, calcula P(acierto | H_i, q) usando la función logística IRT 3PL:
 > P(acierto | H_i, q) = c_q + (1 − c_q) · 1 / (1 + exp(−a · (θ_i − b_q)))
 > donde:
 > — θ_i es el valor numérico de la hipótesis H_i;
@@ -61,6 +61,7 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > — a es el parámetro de discriminación; usa 1.5 por defecto salvo indicación contraria;
 > — c_q = 1/m_q es la probabilidad mínima de acierto por azar, siendo m_q el número de opciones de la pregunta (0 si no hay azar).
 > P(fallo | H_i, q) = 1 − P(acierto | H_i, q).
+> Si las hipótesis no son jerárquicas —por ejemplo, errores conceptuales alternativos sin relación de orden—, no uses la función logística: define verosimilitudes diagnósticas específicas para cada hipótesis según la relación diagnóstica entre pregunta e hipótesis.
 > No uses tablas fijas de verosimilitudes. Cada pregunta genera las suyas a partir de sus parámetros.
 >
 > **4. Selección de la siguiente pregunta.**
@@ -82,7 +83,7 @@ Las instrucciones técnicas y pedagógicas completas que el modelo leerá e impl
 > Si se usa actualización bayesiana y selección por máxima ganancia esperada de información, la recuperación queda en gran parte integrada en el mecanismo adaptativo: el sistema favorece automáticamente preguntas más informativas a medida que el posterior cambia. Aun así, el sistema debe evitar bloqueos prácticos mediante un límite máximo de preguntas, variedad suficiente de preguntas por nivel, y la posibilidad de revisar hipótesis si aparecen evidencias contrarias. La recuperación completa no está garantizada si las preguntas están mal calibradas, si hay pocas disponibles en algún nivel, o si el alumno responde al azar.
 >
 > **7. Preguntas.**
-> Usa solo preguntas autocorregibles (opción múltiple, verdadero/falso, numérica con tolerancia, respuesta breve exacta, emparejamiento, ordenación). No incluyas preguntas abiertas largas si no existe corrección automática fiable. Asigna a cada pregunta: texto, dificultad b_q (valor numérico centrado en cero), número de opciones m_q, y categoría o concepto evaluado. Cuando el docente exprese la dificultad de forma cualitativa, conviértela a valores numéricos centrados en cero con intervalos iguales: 2 categorías → (−0.5, 0.5); 3 → (−1, 0, 1); 4 → (−1.5, −0.5, 0.5, 1.5); 5 → (−2, −1, 0, 1, 2). Para los valores θ_i de los niveles o hipótesis jerárquicas, usa la misma convención de centrado e intervalos iguales, pero con un rango el doble de amplio: θ_max = 2 · b_max. Esto es obligatorio: si θ_max = b_max, el nivel extremo y la dificultad extrema coinciden en el punto de inflexión logístico y el sistema nunca selecciona las preguntas de ese extremo. La forma más robusta es calcular θ_max automáticamente como 2 · max|b_q| a partir del banco de preguntas. Si las hipótesis no son jerárquicas (por ejemplo, distintos errores conceptuales), no uses la función logística: define las verosimilitudes directamente según la relación diagnóstica entre cada pregunta y cada hipótesis.
+> Usa solo preguntas autocorregibles (opción múltiple, verdadero/falso, numérica con tolerancia, respuesta breve exacta, emparejamiento, ordenación). No incluyas preguntas abiertas largas si no existe corrección automática fiable. Asigna a cada pregunta: texto, dificultad b_q (valor numérico centrado en cero), número de opciones m_q, y categoría o concepto evaluado. Cuando el docente exprese la dificultad de forma cualitativa, conviértela a valores numéricos centrados en cero con intervalos iguales: 2 categorías → (−0.5, 0.5); 3 → (−1, 0, 1); 4 → (−1.5, −0.5, 0.5, 1.5); 5 → (−2, −1, 0, 1, 2). Para los valores θ_i de los niveles o hipótesis jerárquicas, usa la misma convención de centrado e intervalos iguales, pero con un rango el doble de amplio: θ_max = 2 · b_max. Esta convención es muy recomendable: si θ_max = b_max, el nivel extremo y la dificultad extrema coinciden en el punto de inflexión logístico, lo que puede hacer que las preguntas extremas sean menos informativas o se infrautilicen. La forma más robusta es calcular θ_max automáticamente como 2 · max|b_q| a partir del banco de preguntas. Si las hipótesis no son jerárquicas (por ejemplo, distintos errores conceptuales), no uses la función logística: define las verosimilitudes directamente según la relación diagnóstica entre cada pregunta y cada hipótesis.
 >
 > **8. Resultado final.**
 > Presenta una interpretación pedagógica: qué domina el alumno, qué dificultades muestra, qué lagunas conviene revisar, qué se recomienda como siguiente paso. Muestra el nivel de confianza de la estimación (probabilidad de la hipótesis más probable). Si la entropía final supera H_stop, indica explícitamente que el diagnóstico es provisional. No te limites a mostrar una puntuación o etiqueta.
@@ -379,7 +380,7 @@ Cuando el docente define la dificultad de forma cualitativa, el sistema debe con
 | 4 | −1.5 · · −0.5 · · 0.5 · · 1.5 |
 | 5 | −2 · · −1 · · 0 · · 1 · · 2 |
 
-Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, **pero deben abarcar un rango estrictamente mayor que el de \(b_q\)**. Esta condición es crítica: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística, donde la ganancia de información es mínima, y el algoritmo adaptativo nunca selecciona las preguntas de ese extremo de dificultad. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) garantiza que las preguntas difíciles sean informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta\) automáticamente a partir del banco de preguntas: \(\theta_{\max} = 2 \cdot \max|b_q|\).
+Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, **pero deben abarcar un rango estrictamente mayor que el de \(b_q\)**. Esta condición es crítica: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística, donde la ganancia de información es mínima, lo que puede hacer que las preguntas de ese extremo de dificultad sean menos informativas o se infrautilicen. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) garantiza que las preguntas difíciles sean informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta\) automáticamente a partir del banco de preguntas: \(\theta_{\max} = 2 \cdot \max|b_q|\).
 
 ## 9. Número variable de niveles e hipótesis
 
@@ -395,7 +396,7 @@ Algunos ejemplos posibles:
 
 El umbral de entropía y los criterios de parada deben adaptarse al número de hipótesis consideradas. No debe usarse el mismo umbral para todos los diseños sin justificación.
 
-Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0.80), el umbral de entropía equivalente es:
+Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0.80), un umbral de entropía orientativo asociado a ese nivel de confianza es:
 
 \[
 H_{\text{stop}}=
@@ -409,8 +410,8 @@ Esta fórmula supone que la probabilidad restante se reparte uniformemente entre
 |:---:|:---:|
 | 2 | 0.72 |
 | 3 | 0.92 |
-| 4 | 1.06 |
-| 5 | 1.16 |
+| 4 | 1.04 |
+| 5 | 1.12 |
 
 La fórmula anterior supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis, lo que no siempre ocurre en distribuciones reales. Por ejemplo, con tres hipótesis, las distribuciones (0.80, 0.10, 0.10) y (0.80, 0.19, 0.01) tienen la misma hipótesis máxima pero distinta entropía. Por tanto, el umbral \(H_{\text{stop}}\) debe entenderse como una **aproximación práctica**, no como un equivalente exacto. En la implementación, conviene comprobar ambos criterios de forma complementaria: entropía por debajo del umbral e hipótesis más probable por encima de \(p_{\min}\).
 
@@ -520,7 +521,7 @@ Por ejemplo, si el sistema duda entre nivel medio y avanzado, una pregunta difí
 
 Cuando la selección de preguntas se realiza por máxima ganancia de información esperada, **la recuperación queda en gran parte integrada** en el propio mecanismo bayesiano: si el alumno inicialmente falla pero después responde correctamente preguntas más difíciles, el posterior se desplaza automáticamente y el sistema selecciona preguntas más exigentes. No suele ser necesaria una lógica de recuperación explícita, pero la recuperación completa no está garantizada si las preguntas están mal calibradas, si hay pocas disponibles en algún nivel, o si el alumno responde al azar.
 
-Los mecanismos de recuperación explícitos solo son necesarios cuando la selección de preguntas se basa en reglas simples de dificultad (subir tras acierto, bajar tras fallo), porque en ese caso el sistema puede quedar bloqueado en un nivel incorrecto. Si se usa selección por ganancia de información, ese bloqueo no puede ocurrir.
+Los mecanismos de recuperación explícitos solo son necesarios cuando la selección de preguntas se basa en reglas simples de dificultad (subir tras acierto, bajar tras fallo), porque en ese caso el sistema puede quedar bloqueado en un nivel incorrecto. Si se usa selección por ganancia de información, el riesgo de bloqueo se reduce mucho, porque el sistema reevalúa el posterior tras cada respuesta. Aun así, puede haber bloqueos prácticos si el banco de preguntas es limitado, si las verosimilitudes están mal calibradas o si se detiene la prueba demasiado pronto.
 
 Lo que sí debe garantizarse en cualquier diseño:
 
@@ -644,3 +645,5 @@ El sistema puede ayudar a orientar decisiones, pero sus resultados deben interpr
 - la entropía final sigue siendo alta.
 
 El valor principal del enfoque está en hacer explícita la incertidumbre y en adaptar la actividad a las evidencias disponibles.
+
+En recursos de aprendizaje prolongados —tutoriales, práctica adaptativa, refuerzo o ampliación—, el estado del alumno puede cambiar durante la propia sesión. En esos casos, el posterior no debe interpretarse solo como diagnóstico de un estado fijo, sino como una estimación dinámica que puede combinar evidencias recientes, ayudas utilizadas, progreso observado y cambios en el desempeño.
