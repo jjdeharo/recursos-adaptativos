@@ -253,15 +253,15 @@
       <li><a href="#s23">Alcance y límites</a></li>
     </ol>
     <p style="margin-top:0.9rem; font-size:0.88rem;">Ver también: <a href="matematicas.html">Explicación matemática detallada con ejemplos numéricos →</a></p>
-    <p style="margin-top:0.4rem; font-size:0.88rem;"><a href="documentacion_evaluacion_adaptativa_bayesiana.md" download>Descargar protocolo en Markdown</a> — archivo fuente listo para adjuntar o pegar en cualquier modelo de IA</p>
+    <p style="margin-top:0.4rem; font-size:0.88rem;"><a href="especificacion_operativa_ia.md" download>Descargar especificación operativa para IA</a> — archivo breve listo para adjuntar o pegar en cualquier modelo de IA</p>
   </div>
 
   <section id="instruccion-uso">
     <h2>Instrucción de uso</h2>
-    <p>Para generar un recurso educativo adaptativo bayesiano con IA, adjunta <a href="documentacion_evaluacion_adaptativa_bayesiana.md" download>este documento</a> a cualquier modelo de IA y usa el siguiente prompt:</p>
+    <p>Para generar un recurso educativo adaptativo bayesiano con IA, adjunta <a href="especificacion_operativa_ia.md" download>la especificación operativa corta</a> a cualquier modelo de IA y usa el siguiente prompt:</p>
     <div class="prompt-wrap">
       <button class="copy-btn" id="copy-simple-btn" onclick="copySimplePrompt()">Copiar</button>
-      <div class="master-prompt" id="simple-prompt-text">Lee el documento adjunto e implementa el sistema siguiendo las instrucciones que contiene.</div>
+      <div class="master-prompt" id="simple-prompt-text">Lee el documento adjunto e implementa el recurso siguiendo exactamente sus reglas operativas.</div>
     </div>
     <p>El modelo pedirá al docente la información necesaria antes de diseñar nada. Si quieres anticiparla, el docente puede rellenar la siguiente plantilla y adjuntarla junto con el documento:</p>
     <blockquote>
@@ -331,6 +331,7 @@ P(H_i | fallo) = P(fallo | H_i, q) · P(H_i) / P(F)
 IG(q) = H_actual − [P(A) · H(posterior_acierto) + P(F) · H(posterior_fallo)]
 donde H = −Σ p_i · log2(p_i) es la entropía de Shannon.
 Selecciona la pregunta con mayor IG. Entre candidatas con IG prácticamente igual, elige al azar con peso inversamente proporcional al número de veces que su categoría o concepto ha aparecido (diversidad de contenidos). No uses selección determinista entre empates: produce test repetitivos.
+En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, distingue dos fases: primero una fase diagnóstica mínima, en la que cada categoría relevante debe recibir una muestra suficiente de intentos; después una fase de refuerzo, en la que se prioriza lo que el alumno domina menos. En la fase diagnóstica, Shannon y la ganancia esperada de información son el criterio principal. En la fase de refuerzo, Shannon debe usarse para elegir la mejor pregunta dentro de la categoría seleccionada, pero la categoría principal debe elegirse por necesidad pedagógica o menor dominio estimado. Un valor por defecto razonable es exigir al menos 2 intentos por categoría antes de pasar a la fase de refuerzo.
 
 <strong>5. Criterio de parada.</strong>
 Detén el test cuando la entropía H caiga por debajo del umbral:
@@ -554,7 +555,7 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
         <tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
       </tbody>
     </table>
-    <p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero deben abarcar un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es crítica: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística, donde la ganancia de información es mínima, lo que puede hacer que las preguntas de ese extremo de dificultad sean menos informativas o se infrautilicen. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) garantiza que las preguntas difíciles sean informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta_{\max}\) automáticamente: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+    <p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero deben abarcar un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta_{\max}\) automáticamente: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
   </section>
 
   <section id="s9">
@@ -564,8 +565,8 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
       <li>dos estados: domina / no domina;</li>
       <li>tres niveles: básico / medio / avanzado;</li>
       <li>cuatro niveles: inicial / básico / competente / avanzado;</li>
-      <li>hipótesis conceptuales: error A / error B / dominio parcial / dominio completo;</li>
-      <li>hipótesis por necesidades: refuerzo previo / práctica guiada / consolidación / ampliación.</li>
+      <li>hipótesis conceptuales alternativas dentro de una misma dimensión: error A / error B / dominio correcto;</li>
+      <li>hipótesis por necesidades, siempre que sean alternativas en la decisión que se modela: refuerzo previo / práctica guiada / consolidación / ampliación.</li>
     </ul>
     <p>El umbral de entropía y los criterios de parada deben adaptarse al número de hipótesis consideradas. No debe usarse el mismo umbral para todos los diseños sin justificación.</p>
     <p>Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0,80), un umbral de entropía orientativo asociado a ese nivel de confianza es:</p>
@@ -583,6 +584,7 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
       </tbody>
     </table>
     <p>La fórmula anterior supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis, lo que no siempre ocurre en distribuciones reales. Por ejemplo, con tres hipótesis, las distribuciones (0,80, 0,10, 0,10) y (0,80, 0,19, 0,01) tienen la misma hipótesis máxima pero distinta entropía. Por tanto, el umbral \(H_{\text{stop}}\) debe entenderse como una <strong>aproximación práctica</strong>, no como un equivalente exacto. En la implementación, conviene comprobar ambos criterios de forma complementaria: entropía por debajo del umbral e hipótesis más probable por encima de \(p_{\min}\).</p>
+    <p>Las hipótesis de una misma distribución deben ser mutuamente excluyentes y cubrir las alternativas relevantes para esa decisión. Si varios errores, lagunas o necesidades pueden coexistir, conviene usar distribuciones separadas por concepto, dimensión o categoría, en lugar de forzarlas dentro de una única lista de hipótesis.</p>
     <p>Cuando las hipótesis no son jerárquicas —por ejemplo, distintos errores conceptuales sin relación de orden entre ellos—, la función logística IRT puede no ser el modelo más adecuado, porque asume que existe una escala única de «más o menos nivel». En esos casos conviene definir las verosimilitudes de otra forma: por ejemplo, asignando directamente una probabilidad de acierto alta para las preguntas que diagnostican la hipótesis correcta y una probabilidad más baja para las que la confunden con otras hipótesis. La actualización bayesiana sigue siendo idéntica; solo cambia la forma de generar las verosimilitudes.</p>
   </section>
 
@@ -645,6 +647,17 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
     <p>El sistema no debe limitarse a subir la dificultad tras un acierto y bajarla tras un fallo.</p>
     <p>Debe tener en cuenta: historial de respuestas, conceptos ya evaluados, errores detectados, variedad de contenidos, dificultad relativa de las preguntas, tipo de pregunta, número de opciones de cada pregunta, probabilidad de acierto por azar, y grado de seguridad de la estimación actual.</p>
     <p>Cuando varias preguntas tienen la misma ganancia de información esperada —lo que ocurre frecuentemente cuando comparten los mismos parámetros de dificultad y número de opciones—, la selección entre ellas no debe ser determinista. Se recomienda una <strong>selección aleatoria ponderada</strong>: calcular la ganancia de todas las candidatas, reunir las que están dentro de un margen mínimo del máximo, y elegir entre ellas con una probabilidad proporcional al inverso de las veces que su categoría o concepto ha aparecido ya. Esto combina máxima utilidad informativa con diversidad temática, sin imponer restricciones rígidas. Una selección determinista entre empates produce test sistemáticamente repetitivos entre distintas sesiones.</p>
+    <h3>13.1. Diagnóstico inicial y refuerzo posterior</h3>
+    <p>En recursos de práctica adaptativa, refuerzo o entrenamiento por tipos, la selección no debe perseguir siempre el mismo objetivo. Al principio conviene diagnosticar; después conviene intervenir sobre lo menos dominado.</p>
+    <p>Se recomienda una estrategia en dos fases:</p>
+    <ol>
+      <li><strong>Fase diagnóstica inicial.</strong> Mientras existan categorías, conceptos o tipos de problema con menos de una muestra mínima de intentos, el sistema debe priorizarlos. El objetivo es evitar conclusiones basadas en una muestra demasiado pequeña. Dentro de esas categorías, puede elegirse la pregunta con mayor ganancia esperada de información. Un valor por defecto razonable es exigir al menos 2 intentos por categoría.</li>
+      <li><strong>Fase de refuerzo.</strong> Cuando todas las categorías relevantes tengan muestra mínima, el sistema debe priorizar la categoría con menor dominio estimado o mayor necesidad pedagógica. Una vez elegida la categoría, la pregunta concreta no debe ser necesariamente la más difícil. Conviene combinar la ganancia esperada de información con una medida de adecuación de dificultad, de modo que el sistema prefiera ejercicios informativos pero cercanos al nivel estimado del alumno.</li>
+    </ol>
+    <p>Esta separación evita un uso excesivo de la entropía de Shannon. La entropía responde a la pregunta “¿dónde tengo más incertidumbre?”, pero no siempre responde a “¿qué necesita practicar más el alumno?”. En evaluación diagnóstica pura, maximizar la reducción de incertidumbre puede ser el criterio principal. En práctica adaptativa y refuerzo, debe combinarse con una función de utilidad pedagógica que dé prioridad a los contenidos menos dominados.</p>
+    <p>En términos operativos, la fase de refuerzo puede usar una puntuación de utilidad como:</p>
+    <p><code>utilidad = α · IG_normalizada + (1 − α) · ajuste_de_dificultad</code></p>
+    <p>donde <code>ajuste_de_dificultad</code> disminuye cuando la dificultad de la pregunta se aleja mucho del nivel estimado del alumno. Un valor inicial razonable es <code>α = 0.6</code> o <code>0.7</code>, para conservar valor diagnóstico sin convertir el refuerzo en una sucesión de ejercicios demasiado difíciles.</p>
   </section>
 
   <section id="s14">

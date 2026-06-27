@@ -4,7 +4,7 @@
 
 Este documento sirve para que una IA implemente recursos educativos adaptativos bayesianos de forma fiable.  
 Es una especificación operativa breve.  
-Si hace falta fundamento teórico, ejemplos o justificación matemática, consulta `documentacion_evaluacion_adaptativa_bayesiana.md`.  
+Si hace falta fundamento teórico, ejemplos o justificación matemática, consulta `documentacion.html` y `matematicas.html`.
 Si hubiera conflicto entre ambos documentos, prevalece este.
 
 ## Instrucción de uso
@@ -49,6 +49,7 @@ Adjunta este documento a la IA y usa este prompt:
 - Si no hay información previa fiable, usa distribución uniforme.
 - Si las hipótesis son jerárquicas, asígnales valores `theta` ordenados y centrados.
 - Si el docente no fija valores, usa una escala simétrica centrada en 0.
+- Cuando uses dificultades `b_q` centradas, haz que la escala `theta` abarque un rango mayor que la escala de dificultad. Regla práctica: `theta_max = 2 * max(abs(b_q))`.
 
 ## Actualización bayesiana
 
@@ -105,6 +106,13 @@ Para cada candidata disponible:
 
 Selecciona la candidata con mayor ganancia esperada de información.
 
+En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
+
+1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase.
+2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es combinar ganancia de información con adecuación de dificultad, penalizando preguntas demasiado alejadas de la zona de trabajo.
+
+No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
+
 Si varias son prácticamente equivalentes:
 
 - rompe empates con aleatorización;
@@ -116,12 +124,18 @@ No uses selección determinista simple en empates.
 
 Detén la sesión cuando se cumplan criterios razonables de cierre, por ejemplo:
 
+- mínimo de preguntas ya cumplido;
 - entropía por debajo de `H_stop`;
 - hipótesis más probable por encima de `p_min`;
-- mínimo de preguntas ya cumplido;
 - no quedan preguntas útiles;
 - la mejor pregunta restante aporta muy poca información;
 - se alcanza el máximo práctico.
+
+Si usas `p_min`, calcula el umbral orientativo:
+
+`H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
+
+Tras cumplir el mínimo de preguntas, un cierre diagnóstico firme debe comprobar preferentemente ambas condiciones: `H <= H_stop` y `max(p_i) >= p_min`. Si se cierra por máximo, banco agotado o utilidad marginal baja sin cumplirlas, presenta el resultado como provisional.
 
 Reglas mínimas:
 
@@ -205,6 +219,7 @@ Si el docente no especifica parámetros:
 - `a = 1.5`;
 - `p_min = 0.80`;
 - mínimo de preguntas: entre `4` y `6`;
+- mínimo de diagnóstico por categoría en práctica adaptativa: `2` intentos;
 - máximo práctico: entre `10` y `20`, según el tipo de recurso.
 
 ## Qué no debe hacer la IA
@@ -214,3 +229,7 @@ Si el docente no especifica parámetros:
 - No cerrar el recurso sin justificar la certeza alcanzada.
 - No presentar como firme un resultado con incertidumbre alta.
 - No limitar la salida a una puntuación desnuda.
+
+## Nota sobre el modelo
+
+La función IRT 3PL descrita aquí se usa como generador inicial de verosimilitudes cuando no hay datos empíricos. No equivale a una calibración psicométrica validada. Si se acumulan suficientes respuestas reales, conviene recalibrar dificultades, discriminación y pseudoazar.

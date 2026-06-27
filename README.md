@@ -15,11 +15,11 @@ El protocolo recogido en este sitio define cómo diseñar e implementar ese meca
 
 ## Crear un recurso con IA
 
-1. Descarga el archivo [`documentacion_evaluacion_adaptativa_bayesiana.md`](documentacion_evaluacion_adaptativa_bayesiana.md)
+1. Descarga el archivo [`especificacion_operativa_ia.md`](especificacion_operativa_ia.md)
 2. Adjúntalo a cualquier modelo de IA (Claude, GPT-4, Gemini…)
 3. Escribe el prompt:
 
-   > Lee el documento adjunto e implementa el sistema siguiendo las instrucciones que contiene.
+   > Lee el documento adjunto e implementa el recurso siguiendo exactamente sus reglas operativas.
 
 El modelo pedirá al docente el tema, el curso, el tipo de recurso y la finalidad antes de diseñar nada. El propio documento incluye una plantilla para anticipar esa información.
 
@@ -29,7 +29,7 @@ El resultado es siempre una página web estática autocontenida (HTML + CSS + JS
 
 ## Documentación matemática
 
-Los fundamentos matemáticos detallados del sistema están disponibles en [`matematicas.md`](matematicas.md) e incluyen:
+Los fundamentos matemáticos detallados del sistema están disponibles en [`matematicas.html`](https://jjdeharo.github.io/recursos-adaptativos/matematicas.html) e incluyen:
 
 - Derivación completa de la regla de Bayes aplicada al estado del alumno
 - Modelo IRT 3PL con análisis del parámetro de discriminación y la curva característica del ítem
@@ -76,9 +76,8 @@ Repositorio: [github.com/jjdeharo/bayes-itinerario](https://github.com/jjdeharo/
 recursos-adaptativos/
 ├── index.html                                        Página principal del sitio
 ├── documentacion.html                                Protocolo completo (versión web)
-├── documentacion_evaluacion_adaptativa_bayesiana.md  Protocolo en Markdown (para adjuntar a IA)
+├── especificacion_operativa_ia.md                    Especificación breve para adjuntar a IA
 ├── matematicas.html                                  Fundamentos matemáticos (versión web)
-├── matematicas.md                                    Fundamentos matemáticos (Markdown)
 └── README.md                                         Este documento
 ```
 
