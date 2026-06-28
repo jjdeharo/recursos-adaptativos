@@ -228,8 +228,8 @@
 
       <section>
         <h2>Qué es esto</h2>
-        <p>Un recurso educativo adaptativo bayesiano modifica su comportamiento en función de las respuestas del alumno. En lugar de seguir una secuencia fija, el sistema mantiene una estimación probabilística sobre el estado de aprendizaje y selecciona en cada momento la acción más informativa: la pregunta que más reduce la incertidumbre, la explicación más adecuada al nivel estimado, el ejercicio con mayor utilidad pedagógica.</p>
-        <p>Este sitio ya tiene dos capas de documentación: una <strong>especificación operativa corta para IA</strong> y un <strong>documento completo de referencia</strong>. Los programas enlazados son ejemplos de aplicación generados con esa metodología.</p>
+        <p>Un <strong>recurso educativo adaptativo bayesiano</strong> modifica su comportamiento en función de las respuestas del alumno. El sistema mantiene una <strong>estimación probabilística</strong> sobre el estado de aprendizaje y la usa para decidir qué conviene hacer en cada momento: <strong>diagnosticar mejor</strong>, <strong>reforzar lo menos dominado</strong>, ofrecer una explicación, cambiar la dificultad, proponer otra actividad o guiar un itinerario.</p>
+        <p>El método <strong>no se limita a tests adaptativos</strong>. Sirve también para <strong>práctica graduada</strong>, <strong>actividades de refuerzo o ampliación</strong>, tutoriales, <strong>itinerarios por etapas</strong>, simuladores y otros recursos que tomen <strong>decisiones pedagógicas a partir de evidencias</strong>. Puede trabajar con <strong>crédito parcial</strong>, <strong>diagnóstico por dimensiones</strong> y <strong>selección adaptativa en dos fases</strong> cuando el objetivo es practicar además de diagnosticar.</p>
       </section>
 
       <section>
@@ -260,16 +260,12 @@
 
       <section>
         <h2>Crear tu propio recurso con IA</h2>
-        <p>Para generar un recurso con IA, usa solo la <strong>especificación operativa corta</strong>. Está pensada para que un docente pueda adjuntarla directamente al modelo sin tener que decidir entre varios documentos.</p>
-        <div class="prompt-wrap">
-          <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">Copiar</button>
-          <div class="master-prompt" id="prompt-text">Lee el documento adjunto e implementa el recurso siguiendo exactamente sus reglas operativas.</div>
-        </div>
+        <p>Para generar un recurso con IA, usa solo la <strong>especificación operativa para IA</strong>. Está pensada para que un docente pueda adjuntarla directamente al modelo sin tener que decidir entre varios documentos.</p>
         <div class="doc-list">
           <div class="doc-item">
             <span class="di-icon">🧩</span>
             <span>
-              <div class="di-title">Documento principal para IA</div>
+              <div class="di-title">Especificación operativa para IA</div>
               <div class="di-desc">Descarga este documento y adjúntalo a tu conversación con la IA. Le explica cómo debe construir o transformar tu aplicación para que se adapte al nivel de cada alumno.</div>
               <div class="link-row">
                 <a class="dl-btn" href="especificacion_operativa_ia.md" download>⬇ Descargar especificación operativa para IA (.md)</a>
@@ -281,19 +277,19 @@
 
       <section>
         <h2>Para saber más</h2>
-        <p>Si quieres entender el método con más detalle, aquí tienes la documentación completa y la explicación matemática. No hace falta adjuntar estos documentos a la IA para usar el sistema.</p>
+        <p>El sitio se organiza en <strong>tres documentos complementarios</strong>: una <strong>especificación operativa para IA</strong>, una <strong>guía completa de referencia</strong> y una <strong>explicación matemática detallada</strong>. Para usar el sistema con IA basta con adjuntar la <strong>especificación operativa para IA</strong>; los otros dos documentos sirven para entender, justificar o reproducir el método con más profundidad.</p>
         <a class="protocol-link" href="documentacion.html">
           <span class="pl-icon">📖</span>
           <span>
             <div class="pl-title">Protocolo de recursos adaptativos bayesianos</div>
-            <div class="pl-desc">Explica cómo funciona el sistema: sus reglas, sus partes y cómo adaptarlo a distintos contenidos. Para quien quiere entender o reproducir el método.</div>
+            <div class="pl-desc">Explica las <strong>reglas de diseño</strong>, los <strong>tipos de recurso admitidos</strong>, la <strong>adaptación por fases</strong>, los <strong>itinerarios por etapas</strong> y el uso pedagógico del modelo en contextos distintos.</div>
           </span>
         </a>
         <a class="protocol-link" href="matematicas.html">
           <span class="pl-icon">∑</span>
           <span>
             <div class="pl-title">Fundamentos matemáticos</div>
-            <div class="pl-desc">Justifica el porqué de cada decisión del modelo con demostraciones y ejemplos numéricos. Para quien quiere entender la base teórica.</div>
+            <div class="pl-desc">Desarrolla la base formal del sistema: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropía</strong>, <strong>ganancia de información</strong>, <strong>crédito parcial</strong> y ejemplos numéricos completos.</div>
           </span>
         </a>
       </section>
@@ -310,37 +306,6 @@
   <span class="sep">·</span>
   Código: <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL-3.0</a>
 </footer>
-
-<script>
-function copyPrompt() {
-  const el  = document.getElementById('prompt-text');
-  const btn = document.getElementById('copy-btn');
-  const text = el.innerText;
-  navigator.clipboard.writeText(text).then(function() {
-    btn.textContent = '¡Copiado!';
-    btn.classList.add('copied');
-    setTimeout(function() {
-      btn.textContent = 'Copiar';
-      btn.classList.remove('copied');
-    }, 2000);
-  }).catch(function() {
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    ta.style.position = 'fixed';
-    ta.style.opacity = '0';
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    btn.textContent = '¡Copiado!';
-    btn.classList.add('copied');
-    setTimeout(function() {
-      btn.textContent = 'Copiar';
-      btn.classList.remove('copied');
-    }, 2000);
-  });
-}
-</script>
 
 </body>
 </html>
