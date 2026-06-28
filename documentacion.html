@@ -321,6 +321,7 @@ donde:
 P(fallo | H_i, q) = 1 − P(acierto | H_i, q).
 Si las hipótesis no son jerárquicas —por ejemplo, errores conceptuales alternativos sin relación de orden—, no uses la función logística: define verosimilitudes diagnósticas específicas para cada hipótesis según la relación diagnóstica entre pregunta e hipótesis.
 No uses tablas fijas de verosimilitudes. Cada pregunta genera las suyas a partir de sus parámetros.
+Si una respuesta admite grados (varios pasos o componentes ponderados, aciertos parciales), resúmela en una puntuación s entre 0 y 1 y usa una verosimilitud suave L(H_i) = s · P(acierto | H_i, q) + (1 − s) · P(fallo | H_i, q), que entra en Bayes igual que cualquier otra verosimilitud. Si el ítem se corrige por varios componentes con distinto número de opciones, su azar agregado es c_q = Σ_j w_j · (1/m_j), con Σ_j w_j = 1. Si quieres diagnosticar qué habilidades o pasos falla el alumno, mantén distribuciones bayesianas en paralelo (una por nivel y una por dimensión) y actualízalas todas con la misma respuesta.
 
 <strong>4. Selección de la siguiente pregunta.</strong>
 Para cada pregunta disponible q, calcula la ganancia esperada de información:
@@ -418,6 +419,9 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
       <li>puede pasar a una tarea de ampliación.</li>
     </ul>
     <p>Al inicio, si no hay información previa del alumno, el sistema puede partir de probabilidades equilibradas. Si hay información previa fiable, puede usar una distribución inicial justificada.</p>
+    <h3>3.1. Estado multidimensional</h3>
+    <p>El estado del alumno no tiene por qué ser una sola distribución. Cuando interesa saber no solo cuánto domina, sino qué habilidades o pasos concretos falla, el sistema puede mantener varias distribuciones de probabilidad en paralelo: una por categoría o nivel y otra por cada dimensión diagnóstica (una habilidad, un paso del proceso, un tipo de error).</p>
+    <p>Todas se actualizan con la misma respuesta del alumno: el resultado global modifica la creencia sobre el nivel, y cada parte de la respuesta modifica la creencia sobre la dimensión correspondiente. Así, la estimación de nivel indica qué conviene practicar, y el diagnóstico por dimensión indica qué conviene explicar o reforzar. Cada dimensión puede tener su propia probabilidad de acierto por azar, por lo que sus porcentajes no son directamente comparables entre sí; la referencia común es el valor de nivel subyacente.</p>
   </section>
 
   <section id="s4">
@@ -491,6 +495,11 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
     <p>Las distribuciones posteriores al acierto y al fallo se calculan aplicando Bayes antes de obtener la respuesta real:</p>
     <div class="math-block">\[P(H_i\mid\text{acierto})=\frac{P(\text{acierto}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{fallo})=\frac{P(\text{fallo}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
     <p>Cuando sea posible, la pregunta más útil será la que produzca mayor reducción esperada de entropía.</p>
+
+    <h3>5.8. Verosimilitud con crédito parcial</h3>
+    <p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1, y la verosimilitud se obtiene interpolando entre la de acierto y la de fallo:</p>
+    <div class="math-block">\[L(H_i)=s\,P(\text{acierto}\mid H_i,q)+(1-s)\,P(\text{fallo}\mid H_i,q)\]</div>
+    <p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno; si \(s=0{,}5\), la verosimilitud es plana y no modifica la distribución. Esta verosimilitud suave entra en la actualización bayesiana igual que cualquier otra: solo cambia la forma de construirla. La puntuación \(s\) debe calcularse de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios cuyos pesos suman 1. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
   </section>
 
   <section id="s6">
@@ -618,6 +627,7 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
     <p>Si dentro de una misma prueba hay preguntas con distinto número de opciones, cada pregunta debe usar su propia probabilidad mínima de acierto por azar.</p>
     <p>En selección múltiple con varias respuestas correctas, la probabilidad de acierto por azar puede ser distinta. El sistema debe tratar este caso de forma específica, especialmente si se exige coincidencia exacta con la combinación correcta.</p>
     <p>En respuestas numéricas con tolerancia o respuestas breves exactas, la probabilidad de acierto por azar puede considerarse nula o muy baja, según el diseño.</p>
+    <p>Cuando un ítem se corrige por varios componentes con distinto número de opciones —por ejemplo, una tarea con varios pasos—, su probabilidad de acierto por azar no es la de una sola pregunta. En ese caso se calcula como la media ponderada de los azares de cada componente, usando los mismos pesos con que se puntúa la respuesta. Ese valor agregado es el que alimenta la función logística del ítem completo.</p>
   </section>
 
   <section id="s12">
@@ -658,6 +668,9 @@ El resultado final debe ajustarse al tipo de recurso: en una evaluación, ofrece
     <p>En términos operativos, la fase de refuerzo puede usar una puntuación de utilidad como:</p>
     <p><code>utilidad = α · IG_normalizada + (1 − α) · ajuste_de_dificultad</code></p>
     <p>donde <code>ajuste_de_dificultad</code> disminuye cuando la dificultad de la pregunta se aleja mucho del nivel estimado del alumno. Un valor inicial razonable es <code>α = 0.6</code> o <code>0.7</code>, para conservar valor diagnóstico sin convertir el refuerzo en una sucesión de ejercicios demasiado difíciles.</p>
+    <h3>13.2. Refuerzo continuo y cautela con poca evidencia</h3>
+    <p>Los criterios de parada (sección 17) suponen que el objetivo es diagnosticar y cerrar. En recursos de práctica o refuerzo abierto, en cambio, puede no haber final: la sesión continúa mientras el alumno practica, y el estado estimado se entiende como una estimación viva, no como un diagnóstico cerrado. En ese modo, la entropía y la confianza sirven para informar del grado de seguridad, no para terminar la sesión, y la selección en dos fases se mantiene durante toda la práctica.</p>
+    <p>Con pocos intentos, una sola respuesta puede desplazar mucho la estimación. Para no comunicar un dominio infundado, conviene exigir una muestra mínima por categoría o dimensión antes de mostrar niveles altos de dominio, y presentar la estimación como provisional mientras la evidencia sea escasa. Es una decisión de presentación: no cambia el cálculo bayesiano, solo cómo se traduce a la interfaz.</p>
   </section>
 
   <section id="s14">

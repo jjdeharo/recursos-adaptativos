@@ -80,6 +80,36 @@ Esto debe hacerse después de cada interacción relevante.
 - Si las hipótesis no son jerárquicas, no uses IRT logística. Define verosimilitudes diagnósticas específicas.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
 
+## Respuestas con crédito parcial
+
+- Si una respuesta no es solo acierto o fallo, sino que admite grados (varios pasos, componentes ponderados, aciertos parciales), resúmela en una puntuación `s` entre `0` y `1`.
+- Construye la verosimilitud por interpolación entre acierto y fallo:
+
+`L(H_i) = s * P(acierto | H_i, q) + (1 - s) * P(fallo | H_i, q)`
+
+- Usa esta `L(H_i)` en la actualización bayesiana en lugar de elegir entre `P(acierto)` y `P(fallo)`. La normalización y el resto del proceso no cambian.
+- Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno; `s = 0.5` no aporta información y deja el posterior casi intacto.
+- Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
+- No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
+
+## Suelo de azar en ítems compuestos
+
+- Si un ítem se corrige por varios componentes con distinto número de opciones, su probabilidad de acierto por azar no es `1/m`.
+- Calcula el suelo agregado como media ponderada de los azares de cada componente:
+
+`c_q = Σ_j w_j * c_j`  con  `c_j = 1 / m_j`  y  `Σ_j w_j = 1`
+
+- Usa ese `c_q` agregado en la función logística al generar las verosimilitudes del ítem completo.
+- Los pesos `w_j` deben coincidir con los que uses para calcular la puntuación `s` del crédito parcial.
+
+## Diagnóstico multidimensional
+
+- Si necesitas saber no solo el nivel global sino qué habilidades o pasos fallan, mantén varias distribuciones bayesianas en paralelo: una por categoría o nivel y otra por cada dimensión diagnóstica (habilidad, paso, tipo de error).
+- Actualiza con la misma respuesta todas las distribuciones relevantes: el resultado global alimenta la creencia de nivel; cada subcriterio alimenta la creencia de su dimensión.
+- Cada dimensión puede tener su propio suelo de azar `c` según su número de opciones, por lo que sus porcentajes no son directamente comparables entre sí: la referencia común es el valor latente `theta`.
+- No metas en una sola distribución dimensiones que pueden coexistir: usa distribuciones separadas.
+- El nivel por categoría guía qué practicar; el diagnóstico por dimensión guía qué explicar o reforzar.
+
 ## Preguntas y actividades
 
 Cada pregunta o interacción autocorregible debe tener, cuando proceda:
@@ -143,6 +173,13 @@ Reglas mínimas:
 - no alargues artificialmente la sesión cuando la utilidad marginal ya es baja;
 - si la incertidumbre sigue siendo alta, el resultado debe indicarse como provisional.
 
+## Refuerzo continuo sin parada
+
+- En recursos de práctica o refuerzo abierto puede no haber criterio de parada: la sesión continúa mientras el alumno practique.
+- En ese modo, el estado estimado no es un diagnóstico cerrado, sino una estimación viva que se actualiza con cada respuesta.
+- No apliques `H_stop` ni `p_min` para cerrar la sesión; úsalos, si acaso, solo para informar del grado de confianza alcanzado.
+- Mantén la selección en dos fases durante toda la sesión: diagnóstico mínimo por categoría y, después, refuerzo de lo menos dominado.
+
 ## Itinerarios por etapas
 
 Si el recurso tiene fases, técnicas o etapas sucesivas:
@@ -201,6 +238,8 @@ Si es un itinerario o actividad de aprendizaje, añade además:
 - ayudas usadas;
 - áreas a reforzar.
 
+No declares un dominio alto basándote en muy pocos intentos. Exige una muestra mínima por categoría o dimensión antes de mostrar niveles altos de dominio, y limita o marca como provisional la estimación cuando la evidencia sea escasa.
+
 No devuelvas solo una nota o etiqueta.
 
 ## Restricciones de implementación
@@ -220,7 +259,10 @@ Si el docente no especifica parámetros:
 - `p_min = 0.80`;
 - mínimo de preguntas: entre `4` y `6`;
 - mínimo de diagnóstico por categoría en práctica adaptativa: `2` intentos;
-- máximo práctico: entre `10` y `20`, según el tipo de recurso.
+- máximo práctico: entre `10` y `20`, según el tipo de recurso;
+- peso de la ganancia de información en la fase de refuerzo: `α = 0.65` (rango razonable `0.6`–`0.7`);
+- crédito parcial: pesos de subcriterios definidos por el diseño, sumando `1`;
+- muestra mínima por categoría o dimensión antes de mostrar dominio alto: `2`–`4` intentos.
 
 ## Qué no debe hacer la IA
 
@@ -229,6 +271,8 @@ Si el docente no especifica parámetros:
 - No cerrar el recurso sin justificar la certeza alcanzada.
 - No presentar como firme un resultado con incertidumbre alta.
 - No limitar la salida a una puntuación desnuda.
+- No tratar como binaria una respuesta que admite grados: usa crédito parcial.
+- No declarar dominio alto con muestra insuficiente.
 
 ## Nota sobre el modelo
 

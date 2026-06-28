@@ -230,6 +230,14 @@
 </tbody>
 </table>
 <p>Los valores concretos dependen de la escala de dificultad de las preguntas. La relación exacta entre θ y b se explica en §8.</p>
+<h3>2.4. Estado multidimensional</h3>
+<p>El estado del alumno no tiene por qué ser una única distribución. Cuando interesa saber no solo <em>cuánto</em> domina sino <em>qué</em> componentes falla, conviene mantener <strong>varias distribuciones bayesianas en paralelo</strong>:</p>
+<ul>
+<li>una distribución por <strong>categoría</strong> o nivel (qué tipo de tarea domina);</li>
+<li>una distribución por cada <strong>dimensión diagnóstica</strong> (habilidad, paso del proceso o tipo de error).</li>
+</ul>
+<p>Cada distribución \(\mathbf{p}^{(d)}\) sobre las hipótesis de la dimensión \(d\) se actualiza de forma independiente con la maquinaria de §3–§4, pero todas se alimentan de la <strong>misma respuesta</strong>: el resultado global actualiza la creencia de nivel y cada subcriterio actualiza la creencia de su dimensión. Esto permite distinguir <em>qué practicar</em> (nivel por categoría) de <em>qué reforzar</em> (diagnóstico por dimensión).</p>
+<p>Cada dimensión puede tener su propio suelo de azar \(c^{(d)}\) (véase §4.6–4.7), por lo que un mismo valor latente \(\theta\) produce porcentajes visibles distintos según la dimensión. Los porcentajes entre dimensiones <strong>no son directamente comparables</strong>; la referencia común es \(\theta\). Las dimensiones que pueden coexistir no deben forzarse dentro de una sola distribución: se modelan por separado (véase §9 del protocolo).</p>
 </section>
 
 <section id="s3">
@@ -306,6 +314,34 @@
 <p>En preguntas de opción múltiple con \(m_q\) opciones, puede usarse \(c_q = 1/m_q\) como aproximación inicial en ausencia de datos empíricos:</p>
 <div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
 <p>En un modelo IRT calibrado, \(c_q\) debería estimarse a partir de datos reales, porque el pseudoazar no siempre coincide con el azar puro: los distractores no son igualmente atractivos y algunos alumnos eliminan opciones antes de responder. Esta probabilidad pertenece a <strong>cada pregunta</strong>, no al test en conjunto. En respuestas numéricas o de texto exacto donde el azar es irrelevante, se usa \(c_q = 0\).</p>
+
+<h3>4.7. Ítems compuestos: suelo de azar agregado</h3>
+<p>Una pregunta no siempre se corrige como un único acierto o fallo. Si la tarea se evalúa por varios <strong>componentes</strong> \(j\) (pasos, decisiones o subrespuestas), cada uno con su propio número de opciones \(m_j\) y su peso \(w_j\), la probabilidad de acertar el ítem completo por puro azar no es \(1/m\), sino la <strong>media ponderada</strong> de los azares de cada componente:</p>
+<div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
+<p>Por ejemplo, un ítem con tres componentes de pesos \((0.5,\,0.3,\,0.2)\) y opciones \((2,\,4,\,6)\) tiene un suelo agregado:</p>
+<div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
+<p>Este \(c_q\) agregado es el que entra en la ICC (§4.2) al generar las verosimilitudes del ítem completo. Los pesos \(w_j\) deben ser los mismos que se usan para puntuar el crédito parcial (§4.8).</p>
+
+<h3>4.8. Crédito parcial: verosimilitud suave</h3>
+<p>Cuando la respuesta admite grados —no solo acierto o fallo, sino una puntuación \(s \in [0, 1]\) obtenida de los componentes ponderados— la verosimilitud no debe elegir entre \(P(A)\) y \(P(F)\), sino <strong>interpolar</strong> entre ambas:</p>
+<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>Como \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escribiendo \(p_i = P(A \mid H_i, q)\):</p>
+<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<p>Esta \(L(H_i)\) sustituye a la verosimilitud en la actualización bayesiana de §3.2; el resto del proceso (normalización incluida) no cambia. Casos límite:</p>
+<ul>
+<li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), acierto pleno.</li>
+<li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), fallo pleno.</li>
+<li>\(s = 0.5\): \(L(H_i) = 0.5\) para toda hipótesis, una verosimilitud plana que no modifica el posterior.</li>
+</ul>
+<p>La puntuación \(s\) debe calcularse de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios con \(\sum_j w_j = 1\).</p>
+<h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Ejemplo numérico</h4>
+<p>Tres hipótesis \(\theta \in \{-2, 0, 2\}\), ítem de dificultad media (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), prior uniforme \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). Las verosimilitudes de acierto pleno son aproximadamente \(p = (0.40,\, 0.68,\, 0.97)\). Con una respuesta parcial \(s = 0.75\):</p>
+<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
+<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
+<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
+<p>Aplicando Bayes y normalizando (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)):</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
+<p>El posterior se desplaza hacia el dominio, pero de forma más moderada que con un acierto pleno (\(s = 1\) daría \(\approx (0.20,\, 0.33,\, 0.47)\)). El crédito parcial gradúa así la fuerza de la evidencia según la calidad de la respuesta.</p>
 </section>
 
 <section id="s5">
@@ -420,6 +456,15 @@
 <li><strong>Ganancia mínima útil</strong>: si la mejor pregunta disponible tiene \(IG < \varepsilon_{\min}\), el banco de preguntas se ha agotado informativamente y continuar no mejora el diagnóstico.</li>
 <li><strong>Cobertura mínima de conceptos</strong>: asegurar que ciertos conceptos obligatorios hayan sido evaluados.</li>
 </ul>
+<h3>7.6. Refuerzo continuo sin parada</h3>
+<p>Todo lo anterior asume un objetivo de <strong>diagnóstico</strong>: estimar el estado del alumno y cerrar. En recursos de <strong>práctica o refuerzo abierto</strong> ese objetivo cambia: la finalidad no es converger y detenerse, sino sostener la práctica. En ese modo:</p>
+<ul>
+<li>Puede <strong>no haber criterio de parada</strong>: la sesión continúa mientras el alumno practique.</li>
+<li>El posterior no se interpreta como un diagnóstico cerrado, sino como una <strong>estimación viva</strong> que se actualiza con cada respuesta y puede reflejar el aprendizaje ocurrido durante la propia sesión.</li>
+<li>\(H_{\text{stop}}\) y \(p_{\min}\) no se usan para cerrar; a lo sumo, para <strong>informar</strong> del grado de confianza alcanzado.</li>
+<li>La selección en dos fases (§6.4 del protocolo) se mantiene durante toda la sesión: diagnóstico mínimo por categoría y, después, refuerzo de lo menos dominado.</li>
+</ul>
+<p><strong>Cautela por tamaño de muestra.</strong> Con pocos intentos, el posterior puede desplazarse mucho por una sola respuesta. Para no comunicar un dominio infundado, conviene exigir una <strong>muestra mínima</strong> por categoría o dimensión (por ejemplo, 2–4 intentos) antes de mostrar niveles altos de dominio, y marcar como provisional la estimación mientras la evidencia sea escasa. Esta cautela es una decisión de presentación: no altera el posterior bayesiano, solo cómo se traduce a la interfaz.</p>
 </section>
 
 <section id="s8">
