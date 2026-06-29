@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Protocol for Bayesian adaptive educational systems</title>
+<script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+<script async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: clip; scrollbar-gutter: stable; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.25rem 2rem 1.5rem;
+      text-align: center;
+      max-width: 860px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      border-radius: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+    }
+    .back-link:hover { color: white; text-decoration: underline; }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+    }
+    .toc-card ol {
+      margin-left: 1.2rem;
+      font-size: 0.9rem;
+    }
+    .toc-card li { margin-bottom: 0.2rem; }
+    .toc-card a { color: var(--primary); text-decoration: none; }
+    .toc-card a:hover { text-decoration: underline; }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin-left: 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    li { margin-bottom: 0.25rem; }
+    li:last-child { margin-bottom: 0; }
+
+    .math-block {
+      overflow-x: auto;
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      background: var(--code-bg);
+      border-left: 3px solid var(--primary-light);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.97em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    thead tr { background: var(--primary); color: white; }
+    th { padding: 0.6rem 0.9rem; text-align: left; font-weight: 600; }
+    td { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    td:not(:first-child), th:not(:first-child) { text-align: center; }
+
+    blockquote {
+      border-left: 4px solid var(--primary-light);
+      background: #f0f0ff;
+      border-radius: 0 8px 8px 0;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      font-size: 0.93rem;
+      color: #3730a3;
+    }
+    blockquote p { margin-bottom: 0.6rem; }
+    blockquote p:last-child { margin-bottom: 0; }
+    blockquote strong { color: #3730a3; }
+
+    .prompt-wrap { position: relative; margin: 1rem 0; }
+    .master-prompt {
+      background: #1e1b4b;
+      color: #e0e7ff;
+      border-radius: 8px;
+      padding: 1.5rem 1.75rem 1.5rem 1.75rem;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .master-prompt strong { color: #a5b4fc; }
+    .copy-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: #3730a3;
+      color: #e0e7ff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.35rem 0.8rem;
+      font-size: 0.78rem;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .copy-btn:hover  { background: #4f46e5; }
+    .copy-btn.copied { background: #059669; color: white; }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .site-footer {
+      background: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 1.1rem 1.5rem;
+      line-height: 1.8;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      border-radius: 1rem;
+    }
+    .site-footer a { color: #a5b4fc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+
+    @media (max-width: 600px) {
+      section { padding: 1.25rem 1.1rem; }
+      .master-prompt { padding: 1rem 1rem; }
+    }
+  
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn active" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<a class="back-link" href="index.html">← Home</a>
+<h1>Protocol for Bayesian adaptive educational systems</h1>
+<p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.0</p>
+</div>
+<div class="container">
+<div class="toc-card">
+<h2>Content</h2>
+<ol>
+<li><a href="#s1">Purpose of the protocol</a></li>
+<li><a href="#s2">General principle</a></li>
+<li><a href="#s3">Representation of student status</a></li>
+<li><a href="#s4">Bayesian update</a></li>
+<li><a href="#s5">Basic model formulas</a></li>
+<li><a href="#s6">System-generated likelihoods</a></li>
+<li><a href="#s7">Dynamic likelihoods per question</a></li>
+<li><a href="#s8">Difficulty of the questions</a></li>
+<li><a href="#s9">Variable number of levels and hypotheses</a></li>
+<li><a href="#s10">Acceptable question types</a></li>
+<li><a href="#s11">Probability of success by chance</a></li>
+<li><a href="#s12">Using a logistic function</a></li>
+<li><a href="#s13">Adaptive selection of the next question</a></li>
+<li><a href="#s14">Expected reduction in uncertainty</a></li>
+<li><a href="#s15">Recovery mechanisms</a></li>
+<li><a href="#s16">Shannon entropy as a measure of uncertainty</a></li>
+<li><a href="#s17">Completion criteria</a></li>
+<li><a href="#s18">Final result</a></li>
+<li><a href="#s19">Adaptation to the teaching context</a></li>
+<li><a href="#s20">Teacher template</a></li>
+<li><a href="#s21">Design rules for AI</a></li>
+<li><a href="#s22">Portable Master Instruction</a></li>
+<li><a href="#s23">Scope and limits</a></li>
+</ol>
+<p style="margin-top:0.9rem; font-size:0.88rem;">See also: <a href="matematicas_en.html">Detailed mathematical explanation with numerical examples →</a></p>
+<p style="margin-top:0.4rem; font-size:0.88rem;"><a download="" href="especificacion_operativa_ia_en.md">Download Operational Specification for AI</a> — short file ready to attach or paste into any AI model</p>
+</div>
+<section id="s1">
+<h2>1. Purpose of the protocol</h2>
+<p>This document serves as a guide for creating adaptive educational applications, activities or quizzes based on Bayesian inference and Shannon entropy.</p>
+<p>The objective is not to create a linear test or a rigid sequence of questions, but rather a system capable of adapting the student's experience based on their answers. Each response is interpreted as evidence that progressively modifies a probability distribution on different educational hypotheses.</p>
+<p>These hypotheses may refer to:</p>
+<ul>
+<li>level of conceptual mastery;</li>
+<li>probable errors;</li>
+<li>previous ideas;</li>
+<li>specific gaps;</li>
+<li>reinforcement needs;</li>
+<li>preparation to advance to a higher level.</li>
+</ul>
+<p>The system must produce a pedagogical interpretation, not just a score.</p>
+</section>
+<section id="s2">
+<h2>2. General principle</h2>
+<p>The system must use the student's responses as evidence to update hypotheses about their learning situation.</p>
+<p>Each response should modify the estimate gradually. A single answer should not determine the outcome by itself.</p>
+<p>A correct answer should increase the likelihood of certain hypotheses and an incorrect answer should increase the likelihood of others, always according to the likelihoods associated with each question.</p>
+<p>The system must avoid definitive conclusions when uncertainty remains high.</p>
+</section>
+<section id="s3">
+<h2>3. Representation of the student's status</h2>
+<p>The student's state should be represented as a probability distribution over several hypotheses.</p>
+<p>For example, a simple system might use three hypotheses:</p>
+<ul>
+<li>basic level;</li>
+<li>intermediate level;</li>
+<li>advanced level.</li>
+</ul>
+<p>But the system should not necessarily assume three levels. It must be able to adapt to more or fewer levels, depending on the educational context.</p>
+<p>Non-strictly hierarchical hypotheses can also be used, for example:</p>
+<ul>
+<li>understand the concept;</li>
+<li>confuses two closely related ideas;</li>
+<li>applies a rule mechanically;</li>
+<li>has a prior gap;</li>
+<li>needs procedural reinforcement;</li>
+<li>can move to an extension task.</li>
+</ul>
+<p>If there is no prior information about the student, the system can begin with balanced probabilities. If reliable prior information exists, a justified initial distribution can be used instead.</p>
+<h3>3.1. Multidimensional state</h3>
+<p>The student's state does not have to be represented by a single distribution. When it is useful to know not only how much has been mastered, but also which specific skills or steps are failing, the system can maintain several probability distributions in parallel: one per category or level and another for each diagnostic dimension (a skill, a process step, or a type of error).</p>
+<p>All of them are updated from the same student response: the overall result modifies the belief about level, and each part of the response modifies the belief about the corresponding dimension. In this way, the level estimate indicates what should be practised, while the diagnosis by dimension indicates what should be explained or reinforced. Each dimension may have its own probability of success by chance, so percentages from different dimensions are not directly comparable; the shared reference is the underlying latent level.</p>
+</section>
+<section id="s4">
+<h2>4. Bayesian update</h2>
+<p>The system must update the probability distribution using Bayesian inference.</p>
+<p>For each hypothesis, the probability of observing the student's response if that hypothesis were true must be estimated.</p>
+<p>That probability is the likelihood.</p>
+<p>If the student answers a question correctly, the system must use the probability of success under each hypothesis. If the answer is incorrect, it must use the probability of failure under each hypothesis.</p>
+<p>The result of each update must be a new probability distribution on the considered hypotheses.</p>
+<p>The process must be repeated after each response.</p>
+</section>
+<section id="s5">
+<h2>5. Basic model formulas</h2>
+<p>Although the document should remain understandable for teachers, it is advisable to include the essential formulas so that the AI can implement the system coherently.</p>
+<h3>5.1. Initial distribution of hypotheses</h3>
+<p>If there are \(n\) hypotheses and no reliable prior information exists, a uniform distribution can be used:</p>
+<div class="math-block">\[P(H_i)=\frac{1}{n}\]</div>
+<p>Here \(H_i\) represents one possible hypothesis about the student's state.</p>
+<h3>5.2. Bayesian update</h3>
+<p>After each answer, the probability of each hypothesis is updated by:</p>
+<div class="math-block">\[P(H_i\mid R)=\frac{P(R\mid H_i)P(H_i)}{P(R)}\]</div>
+<p>The denominator is calculated by adding over all the hypotheses:</p>
+<div class="math-block">\[P(R)=\sum_i P(R\mid H_i)P(H_i)\]</div>
+<p>Here \(R\) is the observed response, which may be correct, incorrect, or another automatically scorable result anticipated by the system.</p>
+<h3>5.3. Probability of success and failure</h3>
+<p>For each question \(q\) and each hypothesis \(H_i\), the system must estimate:</p>
+<div class="math-block">\[P(\text{correct}\mid H_i,q)\]</div>
+<p>If the student answers incorrectly, the system uses:</p>
+<div class="math-block">\[P(\text{incorrect}\mid H_i,q)=1-P(\text{correct}\mid H_i,q)\]</div>
+<p>These probabilities are the likelihoods that fuel Bayesian updating.</p>
+<h3>5.4. Minimum probability of success by chance</h3>
+<p>In multiple choice questions, the minimum probability of being correct by chance depends on the number of options in each question:</p>
+<div class="math-block">\[c_q=\frac{1}{m_q}\]</div>
+<p>Here \(c_q\) is the probability of answering question \(q\) correctly by chance, and \(m_q\) is the number of options in that question.</p>
+<p>For example, a four-option question has:</p>
+<div class="math-block">\[c_q=\frac{1}{4}=0.25\]</div>
+<p>This probability should belong to each question, not to the entire test.</p>
+<h3>5.5. Logistic generation of likelihoods</h3>
+<p>The system should be able to generate these likelihoods automatically. A recommended option is to use a logistic function adjusted for chance:</p>
+<div class="math-block">\[P(\text{correct}\mid H_i,q)=c_q+(1-c_q)\cdot\frac{1}{1+e^{-a(\theta_i-b_q)}}\]</div>
+<p>Where:</p>
+<ul>
+<li>\(\theta_i\) numerically represents the hypothesis or level \(H_i\);</li>
+<li>\(b_q\) represents the difficulty of question \(q\);</li>
+<li>\(a\) controls sensitivity or discrimination;</li>
+<li>\(c_q\) is the minimum probability of success by chance.</li>
+</ul>
+<p>This formula does not replace Bayes. It only generates the likelihoods that Bayes needs.</p>
+<p>The \(a\) parameter controls the slope of the logistic curve. A high value makes the function discriminate more between close hypotheses; a lower value produces smoother transitions. The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, <strong>a value of 1.0 to 1.5 is a reasonable starting point</strong>; 1.5 is a good default choice.</p>
+<h3>5.6. Shannon entropy</h3>
+<p>The uncertainty of the system is measured by:</p>
+<div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
+<p>Where \(p_i\) is the current probability of each hypothesis.</p>
+<p>The maximum entropy, when all hypotheses are equally probable, is:</p>
+<div class="math-block">\[H_{\max}=\log_2(n)\]</div>
+<p>This value helps adjust the stopping threshold to the number of hypotheses considered.</p>
+<h3>5.7. Expected information gain</h3>
+<p>To select the next question, the system can estimate the expected reduction in uncertainty:</p>
+<div class="math-block">\[IG(q)=H(\text{before})-\left[P(A)\,H(\text{after correct})+P(F)\,H(\text{after incorrect})\right]\]</div>
+<p>Where \(P(A)\) is the total expected probability of success and \(P(F)\) is the total expected probability of failure, calculated using the law of total probability:</p>
+<div class="math-block">\[P(A)=\sum_i P(H_i)\cdot P(\text{correct}\mid H_i,q)\]</div>
+<div class="math-block">\[P(F)=1-P(A)\]</div>
+<p>The posterior distributions for a correct and an incorrect response are calculated by applying Bayes before the actual answer is known:</p>
+<div class="math-block">\[P(H_i\mid\text{correct})=\frac{P(\text{correct}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{incorrect})=\frac{P(\text{incorrect}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
+<p>When possible, the most useful question will be the one that produces the greatest expected reduction in entropy.</p>
+<h3>5.8. Likelihood with partial credit</h3>
+<p>The formulas above assume that the response is binary: correct or incorrect. But many tasks are solved through steps or components and allow partial credit. In those cases, instead of classifying the response as simply correct or incorrect, it is summarised as a score \(s\) between 0 and 1, and the likelihood is obtained by interpolating between success and failure:</p>
+<div class="math-block">\[L(H_i)=s\,P(\text{correct}\mid H_i,q)+(1-s)\,P(\text{incorrect}\mid H_i,q)\]</div>
+<p>If \(s=1\), it is equivalent to a completely correct answer; if \(s=0\), to a completely incorrect answer; if \(s=0.5\), the likelihood is flat and does not modify the distribution. This soft likelihood enters Bayesian updating just like any other: it only changes the way it is constructed. The \(s\) score must be calculated explicitly and automatically, usually as a weighted sum of subcriteria whose weights add up to 1. The formal development and a numerical example are in the <a href="matematicas_en.html">mathematical explanation</a>.</p>
+</section>
+<section id="s6">
+<h2>6. Likelihoods generated by the system</h2>
+<p>Likelihoods are the central element of the system.</p>
+<p>For each question, the system must estimate:</p>
+<ul>
+<li>what probability a student in each hypothesis would have of answering it correctly;</li>
+<li>what probability a student in each hypothesis would have of answering it incorrectly.</li>
+</ul>
+<p>The teacher should not have to manually fill out a probability table. That task must be done by the system.</p>
+<p>The teacher should only provide understandable pedagogical information, such as:</p>
+<ul>
+<li>number of levels or hypotheses;</li>
+<li>relative difficulty of each question;</li>
+<li>question type;</li>
+<li>number of options, if applicable;</li>
+<li>concept evaluated;</li>
+<li>possible associated conceptual error.</li>
+</ul>
+<p>From this information, the program must automatically generate the likelihoods. This can be done with a generative model, preferably a chance-adjusted logistic function, and the values can later be recalibrated with real data if enough responses are available.</p>
+<p>The recommended workflow is therefore:</p>
+<ol>
+<li>The teacher designs or reviews the questions and assigns them difficulty and format.</li>
+<li>The system automatically calculates the probabilities of success and failure for each hypothesis.</li>
+<li>Bayes uses these probabilities as likelihoods.</li>
+<li>If real data accumulates, the system can adjust its parameters to improve calibration.</li>
+</ol>
+<p>Teacher judgment should guide the definition of levels, difficulties, objectives, and concepts, but it should not require teachers to enter numerical probabilities.</p>
+</section>
+<section id="s7">
+<h2>7. Dynamic likelihoods per question</h2>
+<p>The application should not depend on a fixed global likelihood table.</p>
+<p>Each question should be able to have its own parameters, especially:</p>
+<ul>
+<li>estimated difficulty;</li>
+<li>question type;</li>
+<li>number of options, if applicable;</li>
+<li>minimum probability of success by chance;</li>
+<li>concept or skill assessed;</li>
+<li>possible associated conceptual error.</li>
+</ul>
+<p>This allows the system to work with questions of different types within the same test.</p>
+<p>For example, a test may include two-option, four-option, five-option, matching, and numerical-response questions. Each one must generate its own likelihoods.</p>
+</section>
+<section id="s8">
+<h2>8. Difficulty of the questions</h2>
+<p>Each question must have an estimated difficulty.</p>
+<p>Difficulty can be expressed qualitatively, for example as easy, medium, or difficult. It can also be expressed on a more flexible scale.</p>
+<p>The system should not assume that there will always be three difficulties. It must adapt to the number of categories defined by the teacher.</p>
+<p>When the teacher defines difficulty qualitatively, the system must convert it into numerical values so that it can work with the logistic function. A useful convention is to center the values at zero and space them at equal intervals:</p>
+<table>
+<thead>
+<tr><th>Difficulty Categories</th><th>Numerical values \(b_q\)</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>−0.5 · · 0.5</td></tr>
+<tr><td>3</td><td>−1 · · 0 · · 1</td></tr>
+<tr><td>4</td><td>−1.5 · · −0.5 · · 0.5 · · 1.5</td></tr>
+<tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
+</tbody>
+</table>
+<p>The \(\theta_i\) numerical values of the levels or hierarchical hypotheses follow the same convention of centering at zero with equal intervals, <strong>but they must cover a range strictly greater than that of \(b_q\)</strong>. This condition is important: if \(\theta_{\max} = b_{\max}\), the extreme level and the extreme difficulty coincide at the inflection point of the logistic curve. At that point the question is very discriminating, but the probability of correctness at the extreme level can still be moderate, so getting it right weakly confirms that level. A factor of 2 works well in practice: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). For example, with 3 \(b \in \{-1, 0, +1\}\) difficulties and 3 levels, using \(\theta \in \{-2, 0, +2\}\) makes difficult questions more informative for advanced learners. The most robust thing is to calculate \(\theta_{\max}\) automatically: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+</section>
+<section id="s9">
+<h2>9. Variable number of levels and hypotheses</h2>
+<p>The system must allow different numbers of hypotheses:</p>
+<ul>
+<li>two states: masters / does not master;</li>
+<li>three levels: basic / intermediate / advanced;</li>
+<li>four levels: initial / basic / competent / advanced;</li>
+<li>alternative conceptual hypotheses within the same dimension: error A / error B / correct understanding;</li>
+<li>need-based hypotheses, provided that they are alternatives within the decision being modeled: prior reinforcement / guided practice / consolidation / extension.</li>
+</ul>
+<p>The entropy threshold and stopping criteria must be adapted to the number of hypotheses considered. The same threshold should not be used for all designs without justification.</p>
+<p>If you want to stop when the most probable hypothesis exceeds a \(p_{\min}\) confidence level (for example, 0.80), an indicative entropy threshold associated with that confidence level is:</p>
+<div class="math-block">\[H_{\text{stop}}=-p_{\min}\log_2 p_{\min}-(1-p_{\min})\log_2\!\left(\frac{1-p_{\min}}{n-1}\right)\]</div>
+<p>This formula assumes that the remaining probability is distributed evenly among the other \(n-1\) hypotheses. Some guide values with \(p_{\min}=0.80\):</p>
+<table>
+<thead>
+<tr><th>Hypothesis \(n\)</th><th>\(H_{\text{stop}}\) (bits)</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>0.72</td></tr>
+<tr><td>3</td><td>0.92</td></tr>
+<tr><td>4</td><td>1.04</td></tr>
+<tr><td>5</td><td>1.12</td></tr>
+</tbody>
+</table>
+<p>The above formula assumes that the remaining probability is distributed evenly among the other \(n-1\) hypotheses, which does not always happen in real distributions. For example, with three hypotheses, the distributions (0.80, 0.10, 0.10) and (0.80, 0.19, 0.01) have the same maximum hypothesis but different entropy. Therefore, the \(H_{\text{stop}}\) threshold should be understood as a <strong>practical approach</strong>, not as an exact equivalent. In the implementation, it is advisable to check both criteria in a complementary way: entropy below the threshold and most probable hypothesis above \(p_{\min}\).</p>
+<p>The hypotheses of the same distribution must be mutually exclusive and cover the relevant alternatives for that decision. If multiple errors, gaps, or needs can coexist, it is a good idea to use separate distributions by concept, dimension, or category, rather than forcing them into a single list of hypotheses.</p>
+<p>When the hypotheses are not hierarchical—for example, different conceptual errors with no order relationship between them—the IRT logistic function may not be the most appropriate model, because it assumes a single scale of “more or less mastery”. In these cases it is better to define the likelihoods in another way: for example, by directly assigning a high probability of success to questions that diagnose the correct hypothesis and a lower probability to those that confuse it with other hypotheses. Bayesian updating remains identical; only the way the likelihoods are generated changes.</p>
+</section>
+<section id="s10">
+<h2>10. Types of acceptable questions</h2>
+<p>If the system must work automatically, it should use automatically scorable question types.</p>
+<p>Suitable formats include, among others:</p>
+<ul>
+<li>multiple choice with one correct answer;</li>
+<li>true/false;</li>
+<li>multiple selection with clear correction criteria;</li>
+<li>matching;</li>
+<li>ordering;</li>
+<li>numerical response with tolerance;</li>
+<li>exact short answer.</li>
+</ul>
+<p>Long open-ended questions should not be included if the program cannot reliably correct them automatically.</p>
+<p>Open questions can be useful in a general educational activity, but they should not be part of the automatic adaptive engine if there is no reliable mechanism for correction or teaching intervention.</p>
+</section>
+<section id="s11">
+<h2>11. Probability of success by chance</h2>
+<p>In multiple choice questions, the minimum probability of being correct by chance must depend on the number of options in each question. This probability belongs to each item, not to the entire test.</p>
+<p>Examples:</p>
+<ul>
+<li>2-option question: minimum probability of success by chance of 50%;</li>
+<li>3-option question: minimum probability of success by chance of 33.3%;</li>
+<li>4-option question: minimum probability of success by chance of 25%;</li>
+<li>5-option question: minimum probability of success by chance of 20%.</li>
+</ul>
+<p>If within the same test there are questions with a different number of options, each question must use its own minimum probability of success by chance.</p>
+<p>In multiple selection with several correct answers, the probability of success by chance may be different. The system must handle this case specifically, especially if exact matching with the correct combination is required.</p>
+<p>In numerical responses with tolerance or exact short responses, the probability of correctness by chance may be considered null or very low, depending on the design.</p>
+<p>When an item is scored through several components with different numbers of options—for example, a task with several steps—its probability of correctness by chance is not that of a single question. In that case it is calculated as the weighted average of the chance levels of each component, using the same weights with which the response is scored. This aggregated value is what feeds the logistic function of the complete item.</p>
+</section>
+<section id="s12">
+<h2>12. Use of a logistic function</h2>
+<p>Where appropriate, likelihoods can be generated using a chance-adjusted logistic function.</p>
+<p>The general idea is that the probability of correctness should increase when the student's hypothetical level exceeds the difficulty of the question, and should decrease when the difficulty exceeds the student's hypothetical level.</p>
+<p>If this model is used, an important condition must be respected: the probability of correctness must not be less than the probability of correctness due to chance inherent to the question.</p>
+<p>Therefore, a four-option question should not assign a probability of success less than 25%, because a student who answers at random has that probability of being correct.</p>
+<p>The logistic function does not replace Bayes. It only serves to generate the likelihoods that Bayes needs.</p>
+<p>The system must allow this generation to be adjustable. For example, there may be a sensitivity or discrimination parameter that determines how much a question separates between some hypotheses and others.</p>
+</section>
+<section id="s13">
+<h2>13. Adaptive selection of the next question or activity</h2>
+<p>From the current estimate, the program should dynamically select the next question, explanation or activity.</p>
+<p>The selection should aim at pedagogical usefulness and may serve to:</p>
+<ul>
+<li>confirm a probable hypothesis;</li>
+<li>distinguish between close hypotheses;</li>
+<li>detect a conceptual error;</li>
+<li>check a specific gap;</li>
+<li>reinforce a difficulty;</li>
+<li>cover content not yet assessed;</li>
+<li>allow the student to demonstrate a higher level;</li>
+<li>decide whether reinforcement or extension is more appropriate.</li>
+</ul>
+<p>The system should not limit itself to raising the difficulty after a success and lowering it after a failure.</p>
+<p>The system should take into account response history, concepts already assessed, detected errors, content variety, relative question difficulty, question type, number of options in each question, probability of success by chance, and the confidence level of the current estimate.</p>
+<p>When several questions have the same expected information gain, which often happens when they share the same difficulty parameters and number of options, the choice among them should not be deterministic. A <strong>weighted random selection</strong> is recommended: calculate the gain for all candidates, gather those within a small margin of the maximum, and choose among them with probability inversely proportional to how often their category or concept has already appeared. This combines maximum informative usefulness with thematic diversity, without imposing rigid restrictions. Deterministic tie-breaking leads to systematically repetitive tests across different sessions.</p>
+<h3>13.1. Initial diagnosis and subsequent reinforcement</h3>
+<p>In adaptive practice, reinforcement, or skill-training resources, selection should not always pursue the same objective. At first it is useful to diagnose; afterwards it is better to intervene where mastery is weakest.</p>
+<p>A two-phase strategy is recommended:</p>
+<ol>
+<li><strong>Initial diagnostic phase.</strong> As long as there are categories, concepts, or problem types with less than a minimum sample of attempts, the system must prioritize them. The goal is to avoid conclusions based on too small a sample. Within these categories, the question with the greatest expected gain of information can be chosen. A reasonable default is to require at least 2 attempts per category.</li>
+<li><strong>Reinforcement phase.</strong> When all relevant categories have a minimum sample, the system must prioritize the category with the lowest estimated mastery or greatest pedagogical need. Once the category is chosen, the specific question does not necessarily have to be the most difficult. It is advisable to combine the expected gain of information with a measure of difficulty adequacy, so that the system prefers informative exercises but close to the student's estimated level.</li>
+</ol>
+<p>This separation avoids excessive use of Shannon entropy. Entropy answers the question “where do I have the most uncertainty?”, but it does not always answer “what does the student need to practice the most?” In pure diagnostic evaluation, maximizing uncertainty reduction may be the main criterion. In adaptive practice and reinforcement, it should be combined with a pedagogical utility function that gives priority to less mastered content.</p>
+<p>Operationally, the reinforcement phase can use a utility score such as:</p>
+<p><code>utility = α · Normalized_GI + (1 − α) · difficulty_adjustment</code></p>
+<p>where <code>difficulty_adjustment</code> decreases when the question difficulty moves too far away from the student's estimated level. A reasonable initial value is <code>α = 0.6</code> or <code>0.7</code>, so as to preserve diagnostic value without turning reinforcement into a succession of overly difficult exercises.</p>
+<h3>13.2. Continuous reinforcement and caution with little evidence</h3>
+<p>The stopping criteria (section 17) assume that the goal is to diagnose and stop. In open practice or reinforcement resources, however, there may be no fixed endpoint: the session continues while the student practises, and the estimated state should be understood as an evolving estimate, not as a closed diagnosis. In that mode, entropy and confidence indicate the degree of certainty rather than ending the session, and the two-phase selection strategy remains active throughout the practice.</p>
+<p>With only a few attempts, a single answer can shift the estimate substantially. To avoid communicating unfounded mastery, it is advisable to require a minimum sample per category or dimension before showing high levels of mastery, and to present the estimate as provisional while the evidence remains scarce. This is a presentation decision: it does not change the Bayesian calculation, only how it is reflected in the interface.</p>
+</section>
+<section id="s14">
+<h2>14. Expected reduction in uncertainty</h2>
+<p>When possible, the system should select the question that most reduces the expected uncertainty.</p>
+<p>To do so, the system must estimate, before presenting the question:</p>
+<ul>
+<li>what would happen if the student gets it right;</li>
+<li>what would happen if the student fails;</li>
+<li>how the probability distribution would change in each case;</li>
+<li>what entropy each posterior distribution would have;</li>
+<li>what would be the expected uncertainty after asking that question.</li>
+</ul>
+<p>The best question does not have to be the one that matches the most probable level. It can be a question that helps distinguish between two still plausible hypotheses.</p>
+<p>For example, if the system hesitates between intermediate and advanced levels, a difficult question may be more useful than a medium one. If it hesitates between basic and intermediate, a medium or easy question may be more informative, depending on the likelihoods.</p>
+</section>
+<section id="s15">
+<h2>15. Recovery mechanisms</h2>
+<p>When the selection of questions is made based on the maximum expected information gain, <strong>recovery remains largely integrated</strong> in the Bayesian mechanism itself: if the student initially fails but then correctly answers more difficult questions, the posterior is automatically moved and the system selects more demanding questions. Explicit retrieval logic is usually not necessary, but full retrieval is not guaranteed if the questions are poorly calibrated, if few are available at any level, or if the student responds at random.</p>
+<p>Explicit recovery mechanisms are only necessary when question selection is based on simple difficulty rules (up after a correct answer, down after an incorrect one), because in that case the system may get stuck at the wrong level. If selection by information gain is used, the risk of blocking is greatly reduced, because the system reevaluates the posterior after each response. Still, practical blocking can occur if the question bank is limited, if the likelihoods are poorly calibrated, or if the test is stopped too early.</p>
+<p>What must be guaranteed in any design:</p>
+<ul>
+<li>The system should not lock the student irreversibly into an initial category.</li>
+<li>If the student fails at first but then shows consistent signs of mastery, the Bayesian posterior will reflect that change.</li>
+<li>If the student starts with correct answers but then shows relevant errors, the system will review the probability distribution.</li>
+<li>The adaptation must be dynamic in each response, not just at the beginning or the end.</li>
+</ul>
+</section>
+<section id="s16">
+<h2>16. Shannon entropy as a measure of uncertainty</h2>
+<p>A reasonable degree of confidence should be estimated through Shannon entropy applied to the probability distribution over the hypotheses.</p>
+<p>When probabilities are widely spread, entropy is high and the system remains uncertain. When one hypothesis concentrates most of the probability, entropy is low and the system is more confident.</p>
+<p>Entropy must serve to:</p>
+<ul>
+<li>decide if it is appropriate to continue asking;</li>
+<li>compare uncertainty before and after a question;</li>
+<li>select informative questions;</li>
+<li>determine if the final diagnosis is firm or provisional.</li>
+</ul>
+<p>The stopping threshold must be adjusted to the number of hypotheses considered and the desired degree of precision.</p>
+</section>
+<section id="s17">
+<h2>17. Completion criteria</h2>
+<p>The process should end when there is reasonable confidence about the student's learning state or when a practical limit is reached.</p>
+<p>Possible stopping criteria are:</p>
+<ul>
+<li><strong>The entropy falls below the threshold \(H_{\text{stop}}\) and the most probable hypothesis exceeds \(p_{\min}\).</strong> Both criteria are complementary and it is advisable to check both: \(H_{\text{stop}}\) is calculated assuming uniform distribution of the remainder, which is an approximation (see §9).</li>
+<li><strong>A maximum number of questions is reached.</strong> It is useful to distinguish between a theoretical maximum and a practical maximum. The former can be estimated by minimax search on the tree of possible responses; the latter should be set for usability. In a demo or short educational tool, for example, a hard limit of 20 questions may be imposed, showing a provisional result if the system has not converged earlier.</li>
+<li><strong>The best question available is no longer useful.</strong> If, after a sufficient number of questions, the expected information gain of the best candidate falls below a minimum threshold, it is advisable to stop the session and return a provisional diagnosis instead of artificially lengthening it.</li>
+<li>The minimum planned concepts have already been covered.</li>
+<li>There are no useful questions available.</li>
+<li>The cost of continuing to ask exceeds the expected pedagogical gain.</li>
+</ul>
+<p>If the final entropy is still high, the system should clearly indicate this. In that case, the result should be presented as a provisional estimate, not as a firm conclusion.</p>
+</section>
+<section id="s18">
+<h2>18. Final result</h2>
+<p>The final result must be presented as a pedagogical interpretation.</p>
+<p>Where appropriate, it should include:</p>
+<ul>
+<li>what the student seems to master;</li>
+<li>what difficulties the student appears to show;</li>
+<li>what misconceptions are likely;</li>
+<li>what gaps should be reviewed;</li>
+<li>what type of reinforcement is recommended;</li>
+<li>what advancement activity might be proposed;</li>
+<li>how confident the estimate is;</li>
+<li>whether the diagnosis is firm or provisional.</li>
+</ul>
+<p>It should not be limited to displaying a score or a label.</p>
+<p>The purpose of the system is to help make educational decisions.</p>
+</section>
+<section id="s19">
+<h2>19. Adaptation to the teaching context</h2>
+<p>The concept of an adaptive educational resource should be understood broadly. An adaptive test is only one particular case. The same logic can be applied to explanations, practice activities, simulators, learning pathways, hint systems, reinforcement activities, extension activities, or resource recommendation tools. What matters is that the resource makes pedagogical decisions on the basis of the evidence gathered during the interaction with the student.</p>
+<p>The concrete implementation must adapt to the educational context indicated by the teacher.</p>
+<p>Before designing the system, it is advisable to collect information about:</p>
+<ul>
+<li>topic or teaching unit;</li>
+<li>age or grade of the students;</li>
+<li>learning objectives;</li>
+<li>number of levels or hypotheses;</li>
+<li>types of questions or interactions allowed;</li>
+<li>approximate number of questions or steps;</li>
+<li>maximum duration;</li>
+<li>type of adaptive resource desired (evaluation, practice, itinerary, tutorial, simulator, game, recommender, review...);</li>
+<li>main purpose (detect level, identify errors, reinforce, practice, consolidate, expand, guide, recommend...);</li>
+<li>what the system should adapt (difficulty, type of activity, explanation, help, clues, rhythm, itinerary...);</li>
+<li>type of expected output (diagnosis, progress report, learning path, proposal for the next activity...);</li>
+<li>desired format;</li>
+<li>necessary degree of precision.</li>
+</ul>
+<p>The system must adapt its decisions to that context.</p>
+</section>
+<section id="s20">
+<h2>20. Template for the teacher</h2>
+<p>The operational template for collecting the teacher's initial information is no longer included in this document.</p>
+<p>For that practical use, rely on the <a download="" href="especificacion_operativa_ia_en.md"><strong>AI operational specification</strong></a>, also linked from the <a href="index.html"><strong>main page</strong></a>.</p>
+</section>
+<section id="s21">
+<h2>21. Design rules for AI</h2>
+<p>When generating an application or activity based on this protocol, the AI must follow these rules:</p>
+<ol>
+<li>Do not create a rigid path or a linear test.</li>
+<li>Don't limit yourself to increasing difficulty after success and lowering it after failure.</li>
+<li>Represent the student's state using probabilities on hypotheses.</li>
+<li>Update those probabilities gradually.</li>
+<li>Dynamically generate likelihoods, without requiring the teacher to enter probability tables.</li>
+<li>Take into account the difficulty of each question.</li>
+<li>Take into account the number of options for each question.</li>
+<li>Do not use long open questions if they cannot be corrected automatically.</li>
+<li>Select questions by pedagogical usefulness and expected information.</li>
+<li>Use Shannon entropy to measure uncertainty.</li>
+<li>Allow recovery from wrong initial estimates.</li>
+<li>Present the result as a pedagogical interpretation.</li>
+<li>Indicate when the estimate is provisional.</li>
+<li>Adapt to the context provided by the teacher.</li>
+<li>Avoid unnecessary technical details if the user only needs methodology.</li>
+</ol>
+</section>
+<section id="s22">
+<h2>22. Portable master instruction</h2>
+<p>The portable master instruction is kept in the short file <a download="" href="especificacion_operativa_ia_en.md"><strong>especificacion_operativa_ia_en.md</strong></a>, intended to be attached directly to an AI model.</p>
+</section>
+<section id="s23">
+<h2>23. Scope and limits</h2>
+<p>This protocol does not replace teacher judgment.</p>
+<p>The system can help guide decisions, but its results should be interpreted with caution, especially when:</p>
+<ul>
+<li>there are few questions;</li>
+<li>the questions are not well calibrated;</li>
+<li>the initial likelihoods come from a generating model not calibrated with real data;</li>
+<li>the student responds at random;</li>
+<li>the application context is very limited;</li>
+<li>the final entropy is still high.</li>
+</ul>
+<p>The main value of the approach is in making uncertainty explicit and in adapting the activity to the available evidence.</p>
+<p>In extended learning resources such as tutorials, adaptive practice, reinforcement, or extension activities, the student's state may change during the session itself. In such cases, the posterior should not be interpreted only as the diagnosis of a fixed state, but as a dynamic estimate that can combine recent evidence, support used, observed progress, and changes in performance.</p>
+</section>
+</div>
+<footer class="site-footer">
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José de Haro</a>
+<span class="sep">·</span>
+  Content: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+  Code: <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener" target="_blank">AGPL-3.0</a>
+<span class="sep">·</span>
+<a href="matematicas_en.html">Detailed mathematical explanation</a>
+<span class="sep">·</span>
+<a href="index.html">← Home</a>
+</footer>
+<script>
+(function () {
+  const currentLang = 'en';
+  const pageMap = {"es": "documentacion.html", "en": "documentacion_en.html", "ca": "documentacion_ca.html"};
+  const labels = {"es": {"copy": "Copiar", "copied": "¡Copiado!"}, "en": {"copy": "Copy", "copied": "Copied!"}, "ca": {"copy": "Copiar", "copied": "Copiat!"}};
+  localStorage.setItem('lang', currentLang);
+
+  function copyTextFrom(elId, btnId) {
+    const el = document.getElementById(elId);
+    const btn = document.getElementById(btnId);
+    if (!el || !btn) return;
+    const text = el.innerText;
+    const copyLabel = labels[currentLang].copy;
+    const copiedLabel = labels[currentLang].copied;
+    function markCopied() {
+      btn.textContent = copiedLabel;
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = copyLabel;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    navigator.clipboard.writeText(text).then(markCopied).catch(function() {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      markCopied();
+    });
+  }
+  window.switchDocLang = function (lang) {
+    localStorage.setItem('lang', lang);
+    window.location.href = pageMap[lang] || pageMap.es;
+  };
+})();
+</script>
+</body>
+</html>

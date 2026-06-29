@@ -1,10 +1,13 @@
 <!DOCTYPE html>
+
+
+
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</title>
-  <script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</title>
+<script>
     MathJax = {
       tex: {
         inlineMath: [['\\(', '\\)']],
@@ -14,8 +17,8 @@
       options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
     };
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
-  <style>
+<script async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
     :root {
       --primary: #4f46e5;
       --primary-light: #818cf8;
@@ -154,37 +157,55 @@
     @media (max-width: 600px) {
       section { padding: 1.25rem 1.1rem; }
     }
-  </style>
+  
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+</style>
 </head>
 <body>
-
-<div class="header">
-  <a class="back-link" href="documentacion.html">← Protocolo</a>
-  <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
-  <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
+<div class="header"><div class="lang-switcher"><button class="lang-btn active" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<a class="back-link" href="documentacion.html">← Protocolo</a>
+<h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
+<p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.0</p>
 </div>
-
 <div class="container">
-
-  <div class="toc-card">
-    <h2>Índice</h2>
-    <ol>
-  <li><a href="#s1">1. El problema que resuelve el sistema</a></li>
-  <li><a href="#s2">2. Representación probabilística del estado del alumno</a></li>
-  <li><a href="#s3">3. Inferencia bayesiana</a></li>
-  <li><a href="#s4">4. Modelo IRT de tres parámetros</a></li>
-  <li><a href="#s5">5. Entropía de Shannon como medida de incertidumbre</a></li>
-  <li><a href="#s6">6. Ganancia esperada de información</a></li>
-  <li><a href="#s7">7. Criterio de parada</a></li>
-  <li><a href="#s8">8. Convención de escala entre θ y b</a></li>
-  <li><a href="#s9">9. Ejemplo numérico completo</a></li>
-  <li><a href="#s10">10. Hipótesis no jerárquicas</a></li>
-  <li><a href="#s11">11. Límites del modelo</a></li>
-  <li><a href="#s12">Referencias y lecturas adicionales</a></li>
+<div class="toc-card">
+<h2>Índice</h2>
+<ol>
+<li><a href="#s1">1. El problema que resuelve el sistema</a></li>
+<li><a href="#s2">2. Representación probabilística del estado del alumno</a></li>
+<li><a href="#s3">3. Inferencia bayesiana</a></li>
+<li><a href="#s4">4. Modelo IRT de tres parámetros</a></li>
+<li><a href="#s5">5. Entropía de Shannon como medida de incertidumbre</a></li>
+<li><a href="#s6">6. Ganancia esperada de información</a></li>
+<li><a href="#s7">7. Criterio de parada</a></li>
+<li><a href="#s8">8. Convención de escala entre θ y b</a></li>
+<li><a href="#s9">9. Ejemplo numérico completo</a></li>
+<li><a href="#s10">10. Hipótesis no jerárquicas</a></li>
+<li><a href="#s11">11. Límites del modelo</a></li>
+<li><a href="#s12">Referencias y lecturas adicionales</a></li>
 </ol>
-
-  </div>
-
+</div>
 <section id="s1">
 <h2>1. El problema que resuelve el sistema</h2>
 <p>Un sistema de evaluación tradicional asigna las mismas preguntas a todos los alumnos en el mismo orden. Esto genera dos ineficiencias:</p>
@@ -200,7 +221,6 @@
 </ol>
 <p>Este documento describe la matemática detrás de cada uno de esos tres ingredientes.</p>
 </section>
-
 <section id="s2">
 <h2>2. Representación probabilística del estado del alumno</h2>
 <h3>2.1. El espacio de hipótesis</h3>
@@ -239,7 +259,6 @@
 <p>Cada distribución \(\mathbf{p}^{(d)}\) sobre las hipótesis de la dimensión \(d\) se actualiza de forma independiente con la maquinaria de §3–§4, pero todas se alimentan de la <strong>misma respuesta</strong>: el resultado global actualiza la creencia de nivel y cada subcriterio actualiza la creencia de su dimensión. Esto permite distinguir <em>qué practicar</em> (nivel por categoría) de <em>qué reforzar</em> (diagnóstico por dimensión).</p>
 <p>Cada dimensión puede tener su propio suelo de azar \(c^{(d)}\) (véase §4.6–4.7), por lo que un mismo valor latente \(\theta\) produce porcentajes visibles distintos según la dimensión. Los porcentajes entre dimensiones <strong>no son directamente comparables</strong>; la referencia común es \(\theta\). Las dimensiones que pueden coexistir no deben forzarse dentro de una sola distribución: se modelan por separado (véase §9 del protocolo).</p>
 </section>
-
 <section id="s3">
 <h2>3. Inferencia bayesiana</h2>
 <h3>3.1. El teorema de Bayes</h3>
@@ -272,7 +291,6 @@
 </ul>
 <p>Alternativas como las redes de reglas o los sistemas expertos clásicos no tienen estas propiedades y pueden quedar bloqueadas en diagnósticos incorrectos cuando el alumno responde de forma inesperada.</p>
 </section>
-
 <section id="s4">
 <h2>4. Modelo IRT de tres parámetros</h2>
 <h3>4.1. El problema de las verosimilitudes</h3>
@@ -314,14 +332,12 @@
 <p>En preguntas de opción múltiple con \(m_q\) opciones, puede usarse \(c_q = 1/m_q\) como aproximación inicial en ausencia de datos empíricos:</p>
 <div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
 <p>En un modelo IRT calibrado, \(c_q\) debería estimarse a partir de datos reales, porque el pseudoazar no siempre coincide con el azar puro: los distractores no son igualmente atractivos y algunos alumnos eliminan opciones antes de responder. Esta probabilidad pertenece a <strong>cada pregunta</strong>, no al test en conjunto. En respuestas numéricas o de texto exacto donde el azar es irrelevante, se usa \(c_q = 0\).</p>
-
 <h3>4.7. Ítems compuestos: suelo de azar agregado</h3>
 <p>Una pregunta no siempre se corrige como un único acierto o fallo. Si la tarea se evalúa por varios <strong>componentes</strong> \(j\) (pasos, decisiones o subrespuestas), cada uno con su propio número de opciones \(m_j\) y su peso \(w_j\), la probabilidad de acertar el ítem completo por puro azar no es \(1/m\), sino la <strong>media ponderada</strong> de los azares de cada componente:</p>
 <div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
 <p>Por ejemplo, un ítem con tres componentes de pesos \((0.5,\,0.3,\,0.2)\) y opciones \((2,\,4,\,6)\) tiene un suelo agregado:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
 <p>Este \(c_q\) agregado es el que entra en la ICC (§4.2) al generar las verosimilitudes del ítem completo. Los pesos \(w_j\) deben ser los mismos que se usan para puntuar el crédito parcial (§4.8).</p>
-
 <h3>4.8. Crédito parcial: verosimilitud suave</h3>
 <p>Cuando la respuesta admite grados —no solo acierto o fallo, sino una puntuación \(s \in [0, 1]\) obtenida de los componentes ponderados— la verosimilitud no debe elegir entre \(P(A)\) y \(P(F)\), sino <strong>interpolar</strong> entre ambas:</p>
 <div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
@@ -343,7 +359,6 @@
 <div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
 <p>El posterior se desplaza hacia el dominio, pero de forma más moderada que con un acierto pleno (\(s = 1\) daría \(\approx (0.20,\, 0.33,\, 0.47)\)). El crédito parcial gradúa así la fuerza de la evidencia según la calidad de la respuesta.</p>
 </section>
-
 <section id="s5">
 <h2>5. Entropía de Shannon como medida de incertidumbre</h2>
 <h3>5.1. Definición</h3>
@@ -373,7 +388,6 @@
 <h3>5.4. Por qué la entropía y no la probabilidad máxima</h3>
 <p>La probabilidad de la hipótesis más probable (\(\max_i p_i\)) es un indicador intuitivo, pero la entropía captura más información: distingue entre \((0.80, 0.15, 0.05)\) y \((0.80, 0.19, 0.01)\), que tienen el mismo máximo pero distinta distribución del resto. La entropía es además la cantidad natural que aparece en la ganancia de información (§6), lo que hace el sistema matemáticamente coherente.</p>
 </section>
-
 <section id="s6">
 <h2>6. Ganancia esperada de información</h2>
 <h3>6.1. El criterio de selección</h3>
@@ -413,7 +427,6 @@
 </ol>
 <p>Esto combina máxima utilidad informativa con diversidad temática.</p>
 </section>
-
 <section id="s7">
 <h2>7. Criterio de parada</h2>
 <h3>7.1. Objetivo del umbral</h3>
@@ -445,7 +458,7 @@
 <li>\((0.80,\; 0.19,\; 0.01)\): \(H = 0.78\) bits</li>
 </ul>
 <p>La segunda tiene entropía menor aunque el máximo sea el mismo, porque la probabilidad está más concentrada. Por tanto, <strong>conviene comprobar ambos criterios de forma complementaria</strong>:</p>
-<div class="math-block">\[\text{parar si } H(\mathbf{p}) < H_{\text{stop}} \text{ Y } \max_i P(H_i) \geq p_{\min}\]</div>
+<div class="math-block">\[\text{parar si } H(\mathbf{p}) &lt; H_{\text{stop}} \text{ Y } \max_i P(H_i) \geq p_{\min}\]</div>
 <p>Ambos criterios no son completamente independientes: cuando \(H_{\text{stop}}\) se deriva del mismo \(p_{\min}\), el criterio de entropía no añade una exigencia distinta al de probabilidad máxima. El criterio de probabilidad máxima garantiza el nivel mínimo de confianza en la hipótesis ganadora; la entropía actúa como control complementario de la incertidumbre global. Como alternativa, puede añadirse un criterio de separación:</p>
 <div class="math-block">\[P(H_{\text{ganadora}}) - P(H_{\text{segunda}}) \geq \Delta_{\min}\]</div>
 <p>que exige no solo que la hipótesis más probable supere \(p_{\min}\), sino que esté suficientemente separada de la segunda candidata.</p>
@@ -453,7 +466,7 @@
 <p>Además del criterio de entropía, el sistema debe contemplar:</p>
 <ul>
 <li><strong>Límite máximo de preguntas</strong>: evita sesiones infinitas cuando la convergencia es lenta.</li>
-<li><strong>Ganancia mínima útil</strong>: si la mejor pregunta disponible tiene \(IG < \varepsilon_{\min}\), el banco de preguntas se ha agotado informativamente y continuar no mejora el diagnóstico.</li>
+<li><strong>Ganancia mínima útil</strong>: si la mejor pregunta disponible tiene \(IG &lt; \varepsilon_{\min}\), el banco de preguntas se ha agotado informativamente y continuar no mejora el diagnóstico.</li>
 <li><strong>Cobertura mínima de conceptos</strong>: asegurar que ciertos conceptos obligatorios hayan sido evaluados.</li>
 </ul>
 <h3>7.6. Refuerzo continuo sin parada</h3>
@@ -466,7 +479,6 @@
 </ul>
 <p><strong>Cautela por tamaño de muestra.</strong> Con pocos intentos, el posterior puede desplazarse mucho por una sola respuesta. Para no comunicar un dominio infundado, conviene exigir una <strong>muestra mínima</strong> por categoría o dimensión (por ejemplo, 2–4 intentos) antes de mostrar niveles altos de dominio, y marcar como provisional la estimación mientras la evidencia sea escasa. Esta cautela es una decisión de presentación: no altera el posterior bayesiano, solo cómo se traduce a la interfaz.</p>
 </section>
-
 <section id="s8">
 <h2>8. Convención de escala entre θ y b</h2>
 <h3>8.1. El problema del punto de inflexión</h3>
@@ -490,7 +502,6 @@
 <div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
 <p>y distribuir los valores \(\theta_i\) uniformemente en \([-\theta_{\max},\; +\theta_{\max}]\). Así la escala se adapta automáticamente al banco de preguntas, sin necesidad de ajuste manual.</p>
 </section>
-
 <section id="s9">
 <h2>9. Ejemplo numérico completo</h2>
 <h3>9.1. Configuración</h3>
@@ -607,7 +618,6 @@
 <p>Nótese que el acierto en la pregunta media ha subido la entropía respecto al paso 1: la evidencia ha repartido más la probabilidad entre \(H_1\) y \(H_2\), aumentando la incertidumbre. Esto es correcto: el sistema sigue descartando casi por completo el nivel avanzado, pero ahora duda más entre básico y medio.</p>
 <p>Con \(p_{\min} = 0.80\) y \(n = 3\), el umbral es \(H_{\text{stop}} = 0.92\) bits. La entropía actual (1.080 bits) está por encima del umbral, así que el test continúa.</p>
 </section>
-
 <section id="s10">
 <h2>10. Hipótesis no jerárquicas</h2>
 <p>La función logística IRT 3PL asume que las hipótesis tienen un orden: más θ significa más nivel. Esto es adecuado para evaluar dominio, pero no cuando las hipótesis son errores conceptuales alternativos sin relación de orden.</p>
@@ -631,7 +641,6 @@
 </table>
 <p>Estas verosimilitudes las define el docente o la IA a partir del conocimiento sobre qué errores produce cada confusión. La <strong>actualización bayesiana es idéntica</strong>; solo cambia la fuente de las verosimilitudes.</p>
 </section>
-
 <section id="s11">
 <h2>11. Límites del modelo</h2>
 <h3>11.1. Calibración inicial</h3>
@@ -659,31 +668,69 @@
 <li>Las preguntas no habían sido calibradas con datos reales.</li>
 </ul>
 </section>
-
 <section id="s12">
 <h2>Referencias y lecturas adicionales</h2>
 <ul>
-<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. En Lord & Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
-<li><strong>Cover, T. M. & Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2.ª ed.). Wiley. [Entropía de Shannon e información mutua.]</li>
-<li><strong>van der Linden, W. J. & Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. En Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2.ª ed.). Wiley. [Entropía de Shannon e información mutua.]</li>
+<li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" target="_blank" rel="noopener">bilateria.org</a></em></p>
+<p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
-
-
 </div>
-
 <footer class="site-footer">
-  © <a href="https://bilateria.org" target="_blank" rel="noopener">Juan José de Haro</a>
-  <span class="sep">·</span>
-  Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
-  <span class="sep">·</span>
-  <a href="documentacion.html">← Protocolo</a>
-  <span class="sep">·</span>
-  <a href="index.html">← Inicio</a>
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José de Haro</a>
+<span class="sep">·</span>
+  Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+<a href="documentacion.html">← Protocolo</a>
+<span class="sep">·</span>
+<a href="index.html">← Inicio</a>
 </footer>
+<script>
+(function () {
+  const currentLang = 'es';
+  const pageMap = {"es": "matematicas.html", "en": "matematicas_en.html", "ca": "matematicas_ca.html"};
+  const labels = {"es": {"copy": "Copiar", "copied": "¡Copiado!"}, "en": {"copy": "Copy", "copied": "Copied!"}, "ca": {"copy": "Copiar", "copied": "Copiat!"}};
+  localStorage.setItem('lang', currentLang);
 
+  function copyTextFrom(elId, btnId) {
+    const el = document.getElementById(elId);
+    const btn = document.getElementById(btnId);
+    if (!el || !btn) return;
+    const text = el.innerText;
+    const copyLabel = labels[currentLang].copy;
+    const copiedLabel = labels[currentLang].copied;
+    function markCopied() {
+      btn.textContent = copiedLabel;
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = copyLabel;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    navigator.clipboard.writeText(text).then(markCopied).catch(function() {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      markCopied();
+    });
+  }
+
+  window.copySimplePrompt = function () { copyTextFrom('simple-prompt-text', 'copy-simple-btn'); };
+  window.copyPrompt = function () { copyTextFrom('master-prompt-text', 'copy-prompt-btn'); };
+  window.switchDocLang = function (lang) {
+    localStorage.setItem('lang', lang);
+    window.location.href = pageMap[lang] || pageMap.es;
+  };
+})();
+</script>
 </body>
 </html>

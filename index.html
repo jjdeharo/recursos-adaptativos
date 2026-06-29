@@ -211,13 +211,41 @@
     .site-footer a { color: #a5b4fc; text-decoration: none; }
     .site-footer a:hover { text-decoration: underline; }
     .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+
+    /* LANG SWITCHER */
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
   </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>Recursos educativos adaptativos bayesianos</h1>
-  <p>Protocolo para crear recursos educativos que se adaptan al alumno usando inferencia bayesiana y entropía de Shannon</p>
+  <div class="lang-switcher">
+    <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+  </div>
+  <h1 data-i18n="h1">Recursos educativos adaptativos bayesianos</h1>
+  <p data-i18n="header_sub">Protocolo para crear recursos educativos que se adaptan al alumno usando inferencia bayesiana y entropía de Shannon</p>
 </div>
 
 <div class="container">
@@ -227,28 +255,28 @@
     <div class="col">
 
       <section>
-        <h2>Qué es esto</h2>
-        <p>Un <strong>recurso educativo adaptativo bayesiano</strong> modifica su comportamiento en función de las respuestas del alumno. El sistema mantiene una <strong>estimación probabilística</strong> sobre el estado de aprendizaje y la usa para decidir qué conviene hacer en cada momento: <strong>diagnosticar mejor</strong>, <strong>reforzar lo menos dominado</strong>, ofrecer una explicación, cambiar la dificultad, proponer otra actividad o guiar un itinerario.</p>
-        <p>El método <strong>no se limita a tests adaptativos</strong>. Sirve también para <strong>práctica graduada</strong>, <strong>actividades de refuerzo o ampliación</strong>, tutoriales, <strong>itinerarios por etapas</strong>, simuladores y otros recursos que tomen <strong>decisiones pedagógicas a partir de evidencias</strong>. Puede trabajar con <strong>crédito parcial</strong>, <strong>diagnóstico por dimensiones</strong> y <strong>selección adaptativa en dos fases</strong> cuando el objetivo es practicar además de diagnosticar.</p>
+        <h2 data-i18n="h2_what">Qué es esto</h2>
+        <p data-i18n-html="p_what_1">Un <strong>recurso educativo adaptativo bayesiano</strong> modifica su comportamiento en función de las respuestas del alumno. El sistema mantiene una <strong>estimación probabilística</strong> sobre el estado de aprendizaje y la usa para decidir qué conviene hacer en cada momento: <strong>diagnosticar mejor</strong>, <strong>reforzar lo menos dominado</strong>, ofrecer una explicación, cambiar la dificultad, proponer otra actividad o guiar un itinerario.</p>
+        <p data-i18n-html="p_what_2">El método <strong>no se limita a tests adaptativos</strong>. Sirve también para <strong>práctica graduada</strong>, <strong>actividades de refuerzo o ampliación</strong>, tutoriales, <strong>itinerarios por etapas</strong>, simuladores y otros recursos que tomen <strong>decisiones pedagógicas a partir de evidencias</strong>. Puede trabajar con <strong>crédito parcial</strong>, <strong>diagnóstico por dimensiones</strong> y <strong>selección adaptativa en dos fases</strong> cuando el objetivo es practicar además de diagnosticar.</p>
       </section>
 
       <section>
-        <h2>Ejemplos de aplicación</h2>
+        <h2 data-i18n="h2_examples">Ejemplos de aplicación</h2>
         <div class="examples-grid">
           <a class="example-card" href="https://jjdeharo.github.io/bayes-test/" target="_blank" rel="noopener">
             <span class="ex-icon">📊</span>
-            <div class="ex-title">Test adaptativo</div>
-            <div class="ex-desc">Evaluación diagnóstica sobre cultura general que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.</div>
+            <div class="ex-title" data-i18n="ex_test_title">Test adaptativo</div>
+            <div class="ex-desc" data-i18n="ex_test_desc">Evaluación diagnóstica sobre cultura general que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.</div>
           </a>
           <a class="example-card" href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">
             <span class="ex-icon">🗺️</span>
-            <div class="ex-title">Itinerario adaptativo</div>
-            <div class="ex-desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.</div>
+            <div class="ex-title" data-i18n="ex_itin_title">Itinerario adaptativo</div>
+            <div class="ex-desc" data-i18n="ex_itin_desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.</div>
           </a>
           <a class="example-card" href="https://jjdeharo.github.io/labcom/#practica" target="_blank" rel="noopener" style="grid-column: 1 / -1;">
             <span class="ex-icon">🧮</span>
-            <div class="ex-title">Práctica con diagnóstico previo</div>
-            <div class="ex-desc">Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).</div>
+            <div class="ex-title" data-i18n="ex_prac_title">Práctica con diagnóstico previo</div>
+            <div class="ex-desc" data-i18n="ex_prac_desc">Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).</div>
           </a>
         </div>
       </section>
@@ -259,16 +287,18 @@
     <div class="col">
 
       <section>
-        <h2>Crear tu propio recurso con IA</h2>
-        <p>Para generar un recurso con IA, adjunta la <strong>especificación operativa para IA</strong> a tu conversación. La IA leerá ese fichero y sabrá exactamente cómo construir o transformar tu recurso para que se adapte al nivel de cada alumno.</p>
+        <h2 data-i18n="h2_create">Crear tu propio recurso con IA</h2>
+        <p data-i18n-html="p_create">Para generar un recurso con IA, adjunta la <strong>especificación operativa para IA</strong> a tu conversación. La IA leerá ese fichero y sabrá exactamente cómo construir o transformar tu recurso para que se adapte al nivel de cada alumno.</p>
         <div class="doc-list">
           <div class="doc-item">
             <span class="di-icon">🧩</span>
             <span>
-              <div class="di-title">Especificación operativa para IA</div>
-              <div class="di-desc">Descarga este documento y adjúntalo a tu conversación con la IA. Le explica cómo debe construir o transformar tu aplicación para que se adapte al nivel de cada alumno.</div>
+              <div class="di-title" data-i18n="di_spec_title">Especificación operativa para IA</div>
+              <div class="di-desc" data-i18n="di_spec_desc">Descarga este documento y adjúntalo a tu conversación con la IA. Le explica cómo debe construir o transformar tu aplicación para que se adapte al nivel de cada alumno.</div>
               <div class="link-row">
-                <a class="dl-btn" href="especificacion_operativa_ia.md" download>⬇ Descargar especificación operativa para IA (.md)</a>
+                <a class="dl-btn" href="especificacion_operativa_ia.md" download data-i18n-href="dl_href">
+                  <span data-i18n="dl_btn">⬇ Descargar especificación operativa para IA (.md)</span>
+                </a>
               </div>
             </span>
           </div>
@@ -276,20 +306,20 @@
       </section>
 
       <section>
-        <h2>Para saber más</h2>
-        <p>Aquí tienes los <strong>dos documentos de referencia</strong> del método: una <strong>guía completa</strong> y una <strong>explicación matemática detallada</strong>. Sirven para entender, justificar o reproducir el sistema con más profundidad.</p>
-        <a class="protocol-link" href="documentacion.html">
+        <h2 data-i18n="h2_more">Para saber más</h2>
+        <p data-i18n-html="p_more">Aquí tienes los <strong>dos documentos de referencia</strong> del método: una <strong>guía completa</strong> y una <strong>explicación matemática detallada</strong>. Sirven para entender, justificar o reproducir el sistema con más profundidad.</p>
+        <a class="protocol-link" href="documentacion.html" data-i18n-href="doc_href">
           <span class="pl-icon">📖</span>
           <span>
-            <div class="pl-title">Protocolo para sistemas educativos adaptativos bayesianos</div>
-            <div class="pl-desc">Define el modelo bayesiano del <strong>estado del alumno</strong>: <strong>actualización de probabilidades</strong>, <strong>dificultad de las preguntas</strong>, <strong>selección adaptativa</strong> de la siguiente actividad, <strong>criterios de finalización</strong> y <strong>reglas de diseño</strong> para la IA.</div>
+            <div class="pl-title" data-i18n="pl_doc_title">Protocolo para sistemas educativos adaptativos bayesianos</div>
+            <div class="pl-desc" data-i18n-html="pl_doc_desc">Define el modelo bayesiano del <strong>estado del alumno</strong>: <strong>actualización de probabilidades</strong>, <strong>dificultad de las preguntas</strong>, <strong>selección adaptativa</strong> de la siguiente actividad, <strong>criterios de finalización</strong> y <strong>reglas de diseño</strong> para la IA.</div>
           </span>
         </a>
-        <a class="protocol-link" href="matematicas.html">
+        <a class="protocol-link" href="matematicas.html" data-i18n-href="math_href">
           <span class="pl-icon">∑</span>
           <span>
-            <div class="pl-title">Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</div>
-            <div class="pl-desc">Desarrolla la base formal del sistema: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropía</strong>, <strong>ganancia de información</strong>, <strong>crédito parcial</strong> y ejemplos numéricos completos.</div>
+            <div class="pl-title" data-i18n="pl_math_title">Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</div>
+            <div class="pl-desc" data-i18n-html="pl_math_desc">Desarrolla la base formal del sistema: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropía</strong>, <strong>ganancia de información</strong>, <strong>crédito parcial</strong> y ejemplos numéricos completos.</div>
           </span>
         </a>
       </section>
@@ -302,10 +332,145 @@
 <footer class="site-footer">
   © <a href="https://bilateria.org" target="_blank" rel="noopener">Juan José de Haro</a>
   <span class="sep">·</span>
-  Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
+  <span data-i18n="label_content">Contenido</span>: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>
   <span class="sep">·</span>
-  Código: <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL-3.0</a>
+  <span data-i18n="label_code">Código</span>: <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener">AGPL-3.0</a>
 </footer>
+
+<script>
+(function () {
+  const t = {
+    es: {
+      page_title:   'Recursos educativos adaptativos bayesianos',
+      h1:           'Recursos educativos adaptativos bayesianos',
+      header_sub:   'Protocolo para crear recursos educativos que se adaptan al alumno usando inferencia bayesiana y entropía de Shannon',
+      h2_what:      'Qué es esto',
+      p_what_1:     'Un <strong>recurso educativo adaptativo bayesiano</strong> modifica su comportamiento en función de las respuestas del alumno. El sistema mantiene una <strong>estimación probabilística</strong> sobre el estado de aprendizaje y la usa para decidir qué conviene hacer en cada momento: <strong>diagnosticar mejor</strong>, <strong>reforzar lo menos dominado</strong>, ofrecer una explicación, cambiar la dificultad, proponer otra actividad o guiar un itinerario.',
+      p_what_2:     'El método <strong>no se limita a tests adaptativos</strong>. Sirve también para <strong>práctica graduada</strong>, <strong>actividades de refuerzo o ampliación</strong>, tutoriales, <strong>itinerarios por etapas</strong>, simuladores y otros recursos que tomen <strong>decisiones pedagógicas a partir de evidencias</strong>. Puede trabajar con <strong>crédito parcial</strong>, <strong>diagnóstico por dimensiones</strong> y <strong>selección adaptativa en dos fases</strong> cuando el objetivo es practicar además de diagnosticar.',
+      h2_examples:  'Ejemplos de aplicación',
+      ex_test_title:'Test adaptativo',
+      ex_test_desc: 'Evaluación diagnóstica sobre cultura general que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.',
+      ex_itin_title:'Itinerario adaptativo',
+      ex_itin_desc: 'Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.',
+      ex_prac_title:'Práctica con diagnóstico previo',
+      ex_prac_desc: 'Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).',
+      h2_create:    'Crear tu propio recurso con IA',
+      p_create:     'Para generar un recurso con IA, adjunta la <strong>especificación operativa para IA</strong> a tu conversación. La IA leerá ese fichero y sabrá exactamente cómo construir o transformar tu recurso para que se adapte al nivel de cada alumno.',
+      di_spec_title:'Especificación operativa para IA',
+      di_spec_desc: 'Descarga este documento y adjúntalo a tu conversación con la IA. Le explica cómo debe construir o transformar tu aplicación para que se adapte al nivel de cada alumno.',
+      dl_btn:       '⬇ Descargar especificación operativa para IA (.md)',
+      dl_href:      'especificacion_operativa_ia.md',
+      h2_more:      'Para saber más',
+      p_more:       'Aquí tienes los <strong>dos documentos de referencia</strong> del método: una <strong>guía completa</strong> y una <strong>explicación matemática detallada</strong>. Sirven para entender, justificar o reproducir el sistema con más profundidad.',
+      pl_doc_title: 'Protocolo para sistemas educativos adaptativos bayesianos',
+      pl_doc_desc:  'Define el modelo bayesiano del <strong>estado del alumno</strong>: <strong>actualización de probabilidades</strong>, <strong>dificultad de las preguntas</strong>, <strong>selección adaptativa</strong> de la siguiente actividad, <strong>criterios de finalización</strong> y <strong>reglas de diseño</strong> para la IA.',
+      doc_href:     'documentacion.html',
+      pl_math_title:'Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos',
+      pl_math_desc: 'Desarrolla la base formal del sistema: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropía</strong>, <strong>ganancia de información</strong>, <strong>crédito parcial</strong> y ejemplos numéricos completos.',
+      math_href:    'matematicas.html',
+      label_content:'Contenido',
+      label_code:   'Código'
+    },
+    en: {
+      page_title:   'Bayesian adaptive educational resources',
+      h1:           'Bayesian adaptive educational resources',
+      header_sub:   'Protocol for creating educational resources that adapt to students using Bayesian inference and Shannon entropy',
+      h2_what:      'What is this',
+      p_what_1:     'A <strong>Bayesian adaptive educational resource</strong> modifies its behaviour based on the student\'s responses. The system maintains a <strong>probabilistic estimate</strong> of the learning state and uses it to decide what to do at each moment: <strong>better diagnosis</strong>, <strong>reinforcing the least mastered content</strong>, offering an explanation, adjusting difficulty, proposing another activity or guiding a learning path.',
+      p_what_2:     'The method <strong>is not limited to adaptive tests</strong>. It also works for <strong>graded practice</strong>, <strong>reinforcement or extension activities</strong>, tutorials, <strong>stage-by-stage pathways</strong>, simulations and other resources that make <strong>pedagogical decisions based on evidence</strong>. It can handle <strong>partial credit</strong>, <strong>multidimensional diagnosis</strong> and <strong>two-phase adaptive selection</strong> when the goal is to practise as well as diagnose.',
+      h2_examples:  'Application examples',
+      ex_test_title:'Adaptive test',
+      ex_test_desc: 'Diagnostic assessment on general knowledge that selects questions by maximum information gain and provides a pedagogical diagnosis at the end.',
+      ex_itin_title:'Adaptive pathway',
+      ex_itin_desc: 'Learning resource that adapts the route, explanations and activities to the estimated state of the student.',
+      ex_prac_title:'Practice with prior diagnosis',
+      ex_prac_desc: 'Combinatorics practice that first diagnoses the level in each type of problem and then reinforces the weakest ones, using a Bayesian model with information gain (IRT + Shannon entropy).',
+      h2_create:    'Create your own resource with AI',
+      p_create:     'To generate a resource with AI, attach the <strong>AI operational specification</strong> to your conversation. The AI will read that file and know exactly how to build or transform your resource so it adapts to each student\'s level.',
+      di_spec_title:'AI operational specification',
+      di_spec_desc: 'Download this document and attach it to your conversation with the AI. It explains how it should build or transform your application to adapt to each student\'s level.',
+      dl_btn:       '⬇ Download AI operational specification (.md)',
+      dl_href:      'especificacion_operativa_ia_en.md',
+      h2_more:      'Learn more',
+      p_more:       'Here are the <strong>two reference documents</strong> of the method: a <strong>complete guide</strong> and a <strong>detailed mathematical explanation</strong>. They serve to understand, justify or reproduce the system in greater depth.',
+      pl_doc_title: 'Protocol for Bayesian adaptive educational systems',
+      pl_doc_desc:  'Defines the Bayesian model of the <strong>student\'s state</strong>: <strong>probability updates</strong>, <strong>question difficulty</strong>, <strong>adaptive selection</strong> of the next activity, <strong>termination criteria</strong> and <strong>design rules</strong> for the AI.',
+      doc_href:     'documentacion_en.html',
+      pl_math_title:'Mathematical foundations of Bayesian adaptive educational systems',
+      pl_math_desc: 'Develops the formal basis of the system: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropy</strong>, <strong>information gain</strong>, <strong>partial credit</strong> and complete numerical examples.',
+      math_href:    'matematicas_en.html',
+      label_content:'Content',
+      label_code:   'Code'
+    },
+    ca: {
+      page_title:   'Recursos educatius adaptatius bayesians',
+      h1:           'Recursos educatius adaptatius bayesians',
+      header_sub:   `Protocol per crear recursos educatius que s'adapten a l'alumne mitjançant inferència bayesiana i entropia de Shannon`,
+      h2_what:      'Què és això',
+      p_what_1:     `Un <strong>recurs educatiu adaptatiu bayesià</strong> modifica el seu comportament en funció de les respostes de l'alumne. El sistema manté una <strong>estimació probabilística</strong> sobre l'estat d'aprenentatge i l'utilitza per decidir què convé fer en cada moment: <strong>diagnosticar millor</strong>, <strong>reforçar el menys dominat</strong>, oferir una explicació, canviar la dificultat, proposar una altra activitat o guiar un itinerari.`,
+      p_what_2:     `El mètode <strong>no es limita a tests adaptatius</strong>. Serveix també per a <strong>pràctica graduada</strong>, <strong>activitats de reforç o ampliació</strong>, tutorials, <strong>itineraris per etapes</strong>, simuladors i altres recursos que prenguin <strong>decisions pedagògiques a partir d'evidències</strong>. Pot treballar amb <strong>crèdit parcial</strong>, <strong>diagnòstic per dimensions</strong> i <strong>selecció adaptativa en dues fases</strong> quan l'objectiu és practicar a més de diagnosticar.`,
+      h2_examples:  `Exemples d'aplicació`,
+      ex_test_title:'Test adaptatiu',
+      ex_test_desc: `Avaluació diagnòstica sobre cultura general que selecciona preguntes per màxim guany d'informació i ofereix un diagnòstic pedagògic en acabar.`,
+      ex_itin_title:'Itinerari adaptatiu',
+      ex_itin_desc: `Recurs d'aprenentatge que adapta el recorregut, les explicacions i les activitats a l'estat estimat de l'alumne.`,
+      ex_prac_title:'Pràctica amb diagnòstic previ',
+      ex_prac_desc: `Pràctica de combinatòria que primer diagnostica el nivell en cada tipus de problema i després reforça els més febles, fent servir un model bayesià amb guany d'informació (IRT + entropia de Shannon).`,
+      h2_create:    'Crea el teu propi recurs amb IA',
+      p_create:     `Per generar un recurs amb IA, adjunta l'<strong>especificació operativa per a IA</strong> a la teva conversa. La IA llegirà aquest fitxer i sabrà exactament com construir o transformar el teu recurs perquè s'adapti al nivell de cada alumne.`,
+      di_spec_title:'Especificació operativa per a IA',
+      di_spec_desc: `Descarrega aquest document i adjunta'l a la teva conversa amb la IA. Li explica com ha de construir o transformar la teva aplicació perquè s'adapti al nivell de cada alumne.`,
+      dl_btn:       '⬇ Descarregar especificació operativa per a IA (.md)',
+      dl_href:      'especificacion_operativa_ia_ca.md',
+      h2_more:      'Per saber-ne més',
+      p_more:       `Aquí tens els <strong>dos documents de referència</strong> del mètode: una <strong>guia completa</strong> i una <strong>explicació matemàtica detallada</strong>. Serveixen per entendre, justificar o reproduir el sistema amb més profunditat.`,
+      pl_doc_title: 'Protocol per a sistemes educatius adaptatius bayesians',
+      pl_doc_desc:  `Defineix el model bayesià de l'<strong>estat de l'alumne</strong>: <strong>actualització de probabilitats</strong>, <strong>dificultat de les preguntes</strong>, <strong>selecció adaptativa</strong> de la següent activitat, <strong>criteris de finalització</strong> i <strong>regles de disseny</strong> per a la IA.`,
+      doc_href:     'documentacion_ca.html',
+      pl_math_title:'Fonaments matemàtics dels sistemes educatius adaptatius bayesians',
+      pl_math_desc: `Desenvolupa la base formal del sistema: <strong>Bayes</strong>, <strong>IRT</strong>, <strong>entropia</strong>, <strong>guany d'informació</strong>, <strong>crèdit parcial</strong> i exemples numèrics complets.`,
+      math_href:    'matematicas_ca.html',
+      label_content:'Contingut',
+      label_code:   'Codi'
+    }
+  };
+
+  function getLang() {
+    const s = localStorage.getItem('lang');
+    if (s && t[s]) return s;
+    const nav = (navigator.language || 'es').toLowerCase();
+    if (nav.startsWith('ca')) return 'ca';
+    if (nav.startsWith('es')) return 'es';
+    return 'en';
+  }
+
+  function applyLang(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t[lang][el.dataset.i18n];
+      if (v !== undefined) el.textContent = v;
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => {
+      const v = t[lang][el.dataset.i18nHtml];
+      if (v !== undefined) el.innerHTML = v;
+    });
+    document.querySelectorAll('[data-i18n-href]').forEach(el => {
+      const v = t[lang][el.dataset.i18nHref];
+      if (v !== undefined) el.href = v;
+    });
+    document.querySelectorAll('.lang-btn').forEach(b =>
+      b.classList.toggle('active', b.dataset.lang === lang));
+    document.documentElement.lang = lang;
+    document.title = t[lang].page_title;
+  }
+
+  window.setLang = function (lang) {
+    localStorage.setItem('lang', lang);
+    applyLang(lang);
+  };
+
+  applyLang(getLang());
+})();
+</script>
 
 </body>
 </html>

@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mathematical foundations of Bayesian adaptive educational systems</title>
+<script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+<script async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: clip; scrollbar-gutter: stable; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.25rem 2rem 1.5rem;
+      text-align: center;
+      max-width: 860px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      border-radius: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+    }
+    .back-link:hover { color: white; text-decoration: underline; }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    .toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+    }
+    .toc-card ol {
+      margin-left: 1.2rem;
+      font-size: 0.9rem;
+    }
+    .toc-card li { margin-bottom: 0.2rem; }
+    .toc-card a { color: var(--primary); text-decoration: none; }
+    .toc-card a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border);
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol {
+      margin-left: 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    li { margin-bottom: 0.25rem; }
+    li:last-child { margin-bottom: 0; }
+    .math-block {
+      overflow-x: auto;
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      background: var(--code-bg);
+      border-left: 3px solid var(--primary-light);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.97em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    thead tr { background: var(--primary); color: white; }
+    th { padding: 0.6rem 0.9rem; text-align: left; font-weight: 600; }
+    td { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    td:not(:first-child), th:not(:first-child) { text-align: center; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+    .site-footer {
+      background: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 1.1rem 1.5rem;
+      line-height: 1.8;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      border-radius: 1rem;
+    }
+    .site-footer a { color: #a5b4fc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+    @media (max-width: 600px) {
+      section { padding: 1.25rem 1.1rem; }
+    }
+  
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn active" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<a class="back-link" href="documentacion_en.html">← Protocol</a>
+<h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
+<p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.0</p>
+</div>
+<div class="container">
+<div class="toc-card">
+<h2>Index</h2>
+<ol>
+<li><a href="#s1">1. The problem that the system solves</a></li>
+<li><a href="#s2">2. Probabilistic representation of the student's state</a></li>
+<li><a href="#s3">3. Bayesian inference</a></li>
+<li><a href="#s4">4. Three-parameter IRT model</a></li>
+<li><a href="#s5">5. Shannon entropy as a measure of uncertainty</a></li>
+<li><a href="#s6">6. Expected information gain</a></li>
+<li><a href="#s7">7. Stopping criterion</a></li>
+<li><a href="#s8">8. Scaling convention between θ and b</a></li>
+<li><a href="#s9">9. Complete numerical example</a></li>
+<li><a href="#s10">10. Non-hierarchical hypotheses</a></li>
+<li><a href="#s11">11. Limits of the model</a></li>
+<li><a href="#s12">References and further reading</a></li>
+</ol>
+</div>
+<section id="s1">
+<h2>1. The problem that the system solves</h2>
+<p>A traditional assessment system assigns the same questions to all students in the same order. This generates two inefficiencies:</p>
+<ul>
+<li><strong>Questions that are too easy</strong> for advanced students do not provide useful information about their real level.</li>
+<li><strong>Questions that are too difficult</strong> for students with difficulties generate frustration without improving the diagnosis.</li>
+</ul>
+<p>Adaptive assessment solves this by selecting the most informative question at each moment given what is already known about the student. To do this you need three ingredients:</p>
+<ol>
+<li>one <strong>representation of the state of knowledge</strong> of the student (what we think we know about him).</li>
+<li>one <strong>update rule</strong> that changes that representation after each response.</li>
+<li>A <strong>selection criterion</strong> to choose which question to ask next.</li>
+</ol>
+<p>This document describes the mathematics behind each of those three ingredients.</p>
+</section>
+<section id="s2">
+<h2>2. Probabilistic representation of the student's state</h2>
+<h3>2.1. The hypothesis space</h3>
+<p>Instead of assigning the student a fixed value, such as a grade or label, the system maintains a <strong>probability distribution</strong> over a set of mutually exclusive and exhaustive hypotheses.</p>
+<p>Let \(\mathcal{H} = \{H_1, H_2, \ldots, H_n\}\) be the set of possible hypotheses. For example:</p>
+<div class="math-block">\[H_1 = \text{basic level}, \quad H_2 = \text{intermediate level}, \quad H_3 = \text{advanced level}\]</div>
+<p>At each moment, the system maintains a vector of probabilities:</p>
+<div class="math-block">\[\mathbf{p} = \bigl(P(H_1),\, P(H_2),\, \ldots,\, P(H_n)\bigr)\]</div>
+<p>with the restriction:</p>
+<div class="math-block">\[\sum_{i=1}^{n} P(H_i) = 1, \quad P(H_i) \geq 0 \;\; \forall i\]</div>
+<p>This vector expresses the <strong>system's degree of belief</strong> about the student's actual state, not a certainty.</p>
+<h3>2.2. Initial distribution</h3>
+<p>If there is no prior information about the student, the system starts from a <strong>uniform distribution</strong>:</p>
+<div class="math-block">\[P(H_i) = \frac{1}{n} \quad \forall i\]</div>
+<p>This choice reflects maximum ignorance: all hypotheses are equally plausible before any response is observed. If reliable prior information existed (results from previous courses, previous diagnoses), it could be used as a justified initial distribution.</p>
+<h3>2.3. Numerical value of each hypothesis</h3>
+<p>In order to use the logistic function that generates the likelihoods (see §4), each hypothesis \(H_i\) needs a numerical value \(\theta_i\) that represents its position on the domain scale. The recommended convention is to center the values at zero with equal intervals:</p>
+<table>
+<thead>
+<tr><th>\(n\) hypotheses</th><th>\(\theta_i\) values</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>\(-1,\; +1\)</td></tr>
+<tr><td>3</td><td>\(-2,\; 0,\; +2\)</td></tr>
+<tr><td>4</td><td>\(-3,\; -1,\; +1,\; +3\)</td></tr>
+<tr><td>5</td><td>\(-4,\; -2,\; 0,\; +2,\; +4\)</td></tr>
+</tbody>
+</table>
+<p>The specific values depend on the difficulty scale of the questions. The exact relationship between θ and b is explained in §8.</p>
+<h3>2.4. Multidimensional state</h3>
+<p>The student's state does not have to be a single distribution. When you want to know not only <em>how much</em> has been mastered but <em>which</em> components are failing, it is advisable to maintain <strong>several Bayesian distributions in parallel</strong>:</p>
+<ul>
+<li>a distribution by <strong>category</strong> or level (what type of task is mastered);</li>
+<li>a distribution for each <strong>diagnostic dimension</strong> (skill, process step or type of error).</li>
+</ul>
+<p>Each distribution \(\mathbf{p}^{(d)}\) over the hypotheses of dimension \(d\) is updated independently using the machinery of §3–§4, but all of them are fed by the <strong>same response</strong>: the overall result updates the belief about level and each subcriterion updates the belief about its corresponding dimension. This makes it possible to distinguish <em>what to practise</em> (level by category) from <em>what to reinforce</em> (diagnosis by dimension).</p>
+<p>Each dimension can have its own random floor \(c^{(d)}\) (see §4.6–4.7), so the same latent value \(\theta\) produces different visible percentages depending on the dimension. The percentages between dimensions <strong>are not directly comparable</strong>; the common reference is \(\theta\). Dimensions that can coexist should not be forced within a single distribution: they are modeled separately (see §9 of the protocol).</p>
+</section>
+<section id="s3">
+<h2>3. Bayesian inference</h2>
+<h3>3.1. Bayes' theorem</h3>
+<p>When the student answers a question, that answer is <strong>evidence</strong> that should modify our estimate of the student's state. The update mechanism is Bayes' theorem:</p>
+<div class="math-block">\[P(H_i \mid R) = \frac{P(R \mid H_i)\, P(H_i)}{P(R)}\]</div>
+<p>where:</p>
+<ul>
+<li>\(P(H_i)\) is the probability <strong>prior</strong>: what we believed before seeing the answer.</li>
+<li>\(P(R \mid H_i)\) is the <strong>likelihood</strong>: the probability of observing the response \(R\) if the student were actually in state \(H_i\).</li>
+<li>\(P(R)\) is the marginal probability of the response, calculated by adding over all the hypotheses:</li>
+</ul>
+<div class="math-block">\[P(R) = \sum_{j=1}^{n} P(R \mid H_j)\, P(H_j)\]</div>
+<ul>
+<li>\(P(H_i \mid R)\) is the <strong>posterior probability</strong>: the belief updated after observing \(R\).</li>
+</ul>
+<h3>3.2. Update after success or failure</h3>
+<p>In practice, the response \(R\) is binary: correct (A) or incorrect (F). The update takes the form:</p>
+<div class="math-block">\[P(H_i \mid A) = \frac{P(A \mid H_i)\, P(H_i)}{\displaystyle\sum_j P(A \mid H_j)\, P(H_j)}\]</div>
+<div class="math-block">\[P(H_i \mid F) = \frac{P(F \mid H_i)\, P(H_i)}{\displaystyle\sum_j P(F \mid H_j)\, P(H_j)}\]</div>
+<p>Note that the denominator is simply a normalization constant. In the implementation, it is enough to calculate the numerators for all \(i\) and divide by their sum.</p>
+<h3>3.3. Sequential update</h3>
+<p>If the student answers several questions, the process is applied <strong>sequentially</strong>: the posterior of one question becomes the prior of the next. This is mathematically equivalent to updating with all responses at once, as long as the responses are conditionally independent given the true hypothesis.</p>
+<div class="math-block">\[\mathbf{p}^{(t+1)} = \text{Bayes}\!\left(\mathbf{p}^{(t)},\; R_{t+1}\right)\]</div>
+<h3>3.4. Why Bayes and not other methods</h3>
+<p>Under the usual assumptions of probabilistic consistency and updating from observed evidence, Bayes' rule is the natural way to update probabilities. It satisfies all of the following at once:</p>
+<ul>
+<li><strong>Consistency</strong>: whether probabilities are updated in one step or several, the result is the same.</li>
+<li><strong>Proportionality</strong>: the update is proportional to how well each hypothesis predicts the observed response.</li>
+<li><strong>Non-dogmatism</strong>: no hypothesis is locked at 0 or 1 as long as its initial probability is strictly positive. That is why it is advisable to assign strictly positive initial probabilities to all plausible hypotheses.</li>
+</ul>
+<p>Alternatives such as rule networks or classical expert systems do not have these properties and can be blocked in incorrect diagnoses when the student responds unexpectedly.</p>
+</section>
+<section id="s4">
+<h2>4. Three-parameter IRT model</h2>
+<h3>4.1. The likelihood problem</h3>
+<p>To apply Bayes we need \(P(A \mid H_i, q)\): the probability that a student in state \(H_i\) answers question \(q\) correctly. This probability is the likelihood.</p>
+<p>The system must generate them automatically from the parameters of each question, without requiring the teacher to fill in probability tables.</p>
+<h3>4.2. The item characteristic curve (ICC)</h3>
+<p>The IRT (Item Response Theory) model provides a family of functions to model \(P(A \mid \theta, q)\). The three-parameter model (3PL) is:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{1 + e^{-a(\theta_i - b_q)}}\]</div>
+<p>The three parameters are:</p>
+<table>
+<thead>
+<tr><th>Parameter</th><th>Name</th><th>Meaning</th></tr>
+</thead>
+<tbody>
+<tr><td>\(a\)</td><td>Discrimination</td><td>Slope of the curve; controls how strongly the question separates different levels</td></tr>
+<tr><td>\(b_q\)</td><td>Difficulty</td><td>Value of \(\theta\) at which the probability of success, excluding chance, reaches 50%</td></tr>
+<tr><td>\(c_q\)</td><td>Pseudo-chance</td><td>Minimum probability of success; in the absence of empirical data, it can be approximated as \(c_q \approx 1/m\)</td></tr>
+</tbody>
+</table>
+<h3>4.3. Curve behavior</h3>
+<p>When \(\theta_i \gg b_q\) (the student is well above the difficulty), the exponent \(e^{-a(\theta_i - b_q)} \to 0\) and:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
+<p>When \(\theta_i \ll b_q\) (the student is well below the difficulty), the exponent \(\to +\infty\) and:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 0 = c_q\]</div>
+<p>When \(\theta_i = b_q\), the exponent argument is zero and:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{2} = \frac{1 + c_q}{2}\]</div>
+<p>This is the <strong>inflection point</strong> of the curve: where the slope is maximum and, therefore, where the question is most discriminating.</p>
+<h3>4.4. The discrimination parameter \(a\)</h3>
+<p>The \(a\) parameter controls the slope of the logistic curve. Its effect can be seen by deriving the ICC with respect to \(\theta\):</p>
+<div class="math-block">\[\frac{d}{d\theta} P(A \mid \theta, q) = a \cdot (1 - c_q) \cdot \frac{e^{-a(\theta - b_q)}}{\left(1 + e^{-a(\theta - b_q)}\right)^2}\]</div>
+<p>The maximum slope (in \(\theta = b_q\)) is:</p>
+<div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
+<p>A high value of \(a\) produces a steeper curve: the question discriminates better between students close to its difficulty, but provides little information to students clearly above or below it. A lower value produces a smoother curve: the question is useful over a wider range of levels, but is less discriminating.</p>
+<p>The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, <strong>\(a = 1.5\) is a reasonable starting point</strong>.</p>
+<h3>4.5. The probability of failure</h3>
+<div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
+<p>This is the likelihood that enters Bayesian updating when the learner answers incorrectly.</p>
+<h3>4.6. Minimum probability of success by chance</h3>
+<p>In multiple choice questions with \(m_q\) options, \(c_q = 1/m_q\) can be used as an initial approximation in the absence of empirical data:</p>
+<div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
+<p>In a calibrated IRT model, \(c_q\) should be estimated from real data, because pseudo-chance does not always coincide with pure chance: distractors are not equally attractive and some learners eliminate options before responding. This probability belongs to <strong>each question</strong>, not to the test as a whole. In numerical or exact-text answers where chance is irrelevant, \(c_q = 0\) is used.</p>
+<h3>4.7. Composite items: aggregated chance floor</h3>
+<p>A question is not always scored as a single correct or incorrect response. If the task is evaluated through several <strong>components</strong> \(j\) (steps, decisions, or subresponses), each with its own number of options \(m_j\) and weight \(w_j\), the probability of correctly guessing the complete item by pure chance is not \(1/m\), but the <strong>weighted average</strong> of the chance levels of each component:</p>
+<div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
+<p>For example, an item with three components of weights \((0.5,\,0.3,\,0.2)\) and options \((2,\,4,\,6)\) has an added floor:</p>
+<div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
+<p>This aggregated \(c_q\) is the value that enters the ICC (§4.2) when generating the likelihoods of the complete item. The weights \(w_j\) must be the same as those used to score partial credit (§4.8).</p>
+<h3>4.8. Partial credit: soft likelihood</h3>
+<p>When the answer allows degrees, not just correct or incorrect, but a score \(s \in [0, 1]\) obtained from weighted components, the likelihood should not choose between \(P(A)\) and \(P(F)\), but rather <strong>interpolate</strong> between them:</p>
+<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>Since \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), if we write \(p_i = P(A \mid H_i, q)\), then:</p>
+<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<p>This \(L(H_i)\) replaces the likelihood in the Bayesian update of §3.2; the rest of the process, including normalization, does not change. Boundary cases:</p>
+<ul>
+<li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), complete success.</li>
+<li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), full failure.</li>
+<li>\(s = 0.5\): \(L(H_i) = 0.5\) for every hypothesis, a flat likelihood that does not modify the posterior.</li>
+</ul>
+<p>The score \(s\) must be calculated explicitly and in a way that can be scored automatically, typically as a weighted sum of subcriteria with \(\sum_j w_j = 1\).</p>
+<h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Numerical example</h4>
+<p>Three hypotheses \(\theta \in \{-2, 0, 2\}\), item of medium difficulty (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), uniform prior \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). The probabilities of complete success are approximately \(p = (0.40,\, 0.68,\, 0.97)\). With a partial answer \(s = 0.75\):</p>
+<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
+<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
+<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
+<p>Applying Bayes and normalising (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)) gives:</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
+<p>The posterior shifts towards mastery, but in a more moderate way than after a fully correct answer (\(s = 1\) would give \(\approx (0.20,\, 0.33,\, 0.47)\)). Partial credit therefore modulates the strength of the evidence according to the quality of the answer.</p>
+</section>
+<section id="s5">
+<h2>5. Shannon entropy as a measure of uncertainty</h2>
+<h3>5.1. Definition</h3>
+<p>Shannon entropy measures the uncertainty of a probability distribution:</p>
+<div class="math-block">\[H(\mathbf{p}) = -\sum_{i=1}^{n} p_i \log_2 p_i\]</div>
+<p>It is measured in <strong>bits</strong>. By agreement, \(0 \cdot \log_2 0 = 0\).</p>
+<h3>5.2. Relevant properties</h3>
+<p><strong>Minimum entropy.</strong> If a hypothesis concentrates all the probability (\(p_k = 1\), \(p_{i \neq k} = 0\)), the entropy is zero: there is no uncertainty.</p>
+<p><strong>Maximum entropy.</strong> If all hypotheses are equiprobable (\(p_i = 1/n\)), the entropy is maximum:</p>
+<div class="math-block">\[H_{\max} = \log_2 n\]</div>
+<p>This corresponds to total ignorance about the student's state.</p>
+<p><strong>Non-increasing expected entropy.</strong> The subsequent entropy can increase or decrease after a specific response, depending on the evidence observed (as illustrated by the example in §9, where the correct answer in Q2 increases the entropy with respect to the previous step). What guarantees selection for maximum information gain is that the subsequent entropy <em>expected</em> —before knowing the answer—does not exceed the current entropy.</p>
+<h3>5.3. Numerical examples</h3>
+<p>With \(n = 3\) hypothesis:</p>
+<table>
+<thead>
+<tr><th>\(\mathbf{p}\) Distribution</th><th>\(H\) Entropy (bits)</th><th>Interpretation</th></tr>
+</thead>
+<tbody>
+<tr><td>\((0.33,\; 0.33,\; 0.33)\)</td><td>\(1.58\)</td><td>Total ignorance</td></tr>
+<tr><td>\((0.60,\; 0.30,\; 0.10)\)</td><td>\(1.30\)</td><td>High uncertainty</td></tr>
+<tr><td>\((0.80,\; 0.15,\; 0.05)\)</td><td>\(0.88\)</td><td>Probable diagnosis</td></tr>
+<tr><td>\((0.95,\; 0.04,\; 0.01)\)</td><td>\(0.32\)</td><td>Almost certain diagnosis</td></tr>
+<tr><td>\((1.00,\; 0.00,\; 0.00)\)</td><td>\(0.00\)</td><td>Absolute certainty</td></tr>
+</tbody>
+</table>
+<h3>5.4. Why entropy and not maximum probability</h3>
+<p>The probability of the most probable hypothesis (\(\max_i p_i\)) is an intuitive indicator, but entropy captures more information: it distinguishes between \((0.80, 0.15, 0.05)\) and \((0.80, 0.19, 0.01)\), which have the same maximum but different distribution from the rest. Entropy is also the natural quantity that appears in the information gain (§6), which makes the system mathematically coherent.</p>
+</section>
+<section id="s6">
+<h2>6. Expected information gain</h2>
+<h3>6.1. The selection criterion</h3>
+<p>The system chooses the next question by seeking to <strong>maximize the expected reduction in entropy</strong>. For each candidate question \(q\), the <strong>expected information gain</strong> is calculated:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \mathbb{E}\!\left[H(\mathbf{p}' \mid q)\right]\]</div>
+<p>where \(\mathbf{p}'\) is the posterior distribution after answering \(q\), and the expectation is over the two possible outcomes (hit or miss).</p>
+<h3>6.2. Complete development</h3>
+<p>We first define the marginal probability of success in the question \(q\), using the <strong>law of total probability</strong>:</p>
+<div class="math-block">\[P(A \mid q) = \sum_{i=1}^{n} P(H_i) \cdot P(A \mid H_i, q)\]</div>
+<p>And the marginal probability of failure:</p>
+<div class="math-block">\[P(F \mid q) = 1 - P(A \mid q)\]</div>
+<p>Next we calculate the <strong>posterior conditionals</strong>, applying Bayes <em>before knowing the real answer</em>:</p>
+<div class="math-block">\[P(H_i \mid A, q) = \frac{P(A \mid H_i, q)\, P(H_i)}{P(A \mid q)}\]</div>
+<div class="math-block">\[P(H_i \mid F, q) = \frac{P(F \mid H_i, q)\, P(H_i)}{P(F \mid q)}\]</div>
+<p>With these posteriors we calculate the entropy in each scenario:</p>
+<div class="math-block">\[H_A(q) = -\sum_{i} P(H_i \mid A, q) \log_2 P(H_i \mid A, q)\]</div>
+<div class="math-block">\[H_F(q) = -\sum_{i} P(H_i \mid F, q) \log_2 P(H_i \mid F, q)\]</div>
+<p>The expected entropy after asking the question \(q\) is:</p>
+<div class="math-block">\[\mathbb{E}\!\left[H(\mathbf{p}' \mid q)\right] = P(A \mid q) \cdot H_A(q) + P(F \mid q) \cdot H_F(q)\]</div>
+<p>And the information gain is:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \left[P(A \mid q) \cdot H_A(q) + P(F \mid q) \cdot H_F(q)\right]\]</div>
+<p>The system selects the question \(q^*\) with the highest \(IG\):</p>
+<div class="math-block">\[q^* = \arg\max_{q \in \mathcal{Q}} IG(q)\]</div>
+<p>where \(\mathcal{Q}\) is the set of available questions.</p>
+<h3>6.3. Connection with mutual information</h3>
+<p>The expected information gain from question \(q\) is exactly the <strong>mutual information</strong> between the response \(R_q\) and the student state \(H\):</p>
+<div class="math-block">\[IG(q) = I(H;\, R_q \mid \mathbf{p}) = \sum_{r \in \{A,F\}} P(r \mid q) \cdot KL\!\left(P(H \mid r, q) \;\|\; P(H)\right)\]</div>
+<p>where \(KL\) is the Kullback-Leibler divergence. Maximizing \(IG\) is equivalent to selecting the question whose answer, on average, most separates the posterior from the prior.</p>
+<h3>6.4. Ties and diversity of content</h3>
+<p>In practice, several questions can have identical or very close information gains, especially if they share the same parameters \(a\), \(b_q\) and \(c_q\). A deterministic selection between ties produces systematically repetitive tests between different sessions.</p>
+<p>The recommended solution is a <strong>weighted random selection</strong>:</p>
+<ol>
+<li>Calculate \(IG(q)\) for all available candidates.</li>
+<li>Gather the candidates with \(IG \geq IG_{\max} - \varepsilon\) (for example \(\varepsilon = 10^{-9}\)).</li>
+<li>Assign each candidate a weight inversely proportional to the number of times their category or concept has already appeared in the session.</li>
+<li>Choose with probability proportional to those weights.</li>
+</ol>
+<p>This combines maximum informative usefulness with thematic diversity.</p>
+</section>
+<section id="s7">
+<h2>7. Stopping criterion</h2>
+<h3>7.1. Purpose of the threshold</h3>
+<p>The system should stop when it has enough confidence in the student's status. The natural criterion is: stop when the most probable hypothesis exceeds a confidence level \(p_{\min}\) (for example, 0.80).</p>
+<p>However, checking \(\max_i P(H_i) \geq p_{\min}\) directly may not be enough, because it does not take into account how the remaining probability is distributed. Entropy is a more complete indicator.</p>
+<h3>7.2. Derivation of threshold \(H_{\text{stop}}\)</h3>
+<p>We look for the entropy of a distribution in which the most probable hypothesis has probability \(p_{\min}\) and the remaining probability \(1 - p_{\min}\) is distributed <strong>evenly</strong> among the other \(n - 1\) hypotheses:</p>
+<div class="math-block">\[p_k = p_{\min}, \quad p_{i \neq k} = \frac{1 - p_{\min}}{n - 1}\]</div>
+<p>The entropy of this distribution is:</p>
+<div class="math-block">\[H_{\text{stop}} = -p_{\min} \log_2 p_{\min} - (n-1) \cdot \frac{1 - p_{\min}}{n-1} \log_2\!\left(\frac{1 - p_{\min}}{n-1}\right)\]</div>
+<div class="math-block">\[H_{\text{stop}} = -p_{\min} \log_2 p_{\min} - (1 - p_{\min}) \log_2\!\left(\frac{1 - p_{\min}}{n-1}\right)\]</div>
+<h3>7.3. Guideline values</h3>
+<p>With \(p_{\min} = 0.80\):</p>
+<table>
+<thead>
+<tr><th>\(n\) hypotheses</th><th>\(H_{\max} = \log_2 n\) (bits)</th><th>\(H_{\text{stop}}\) (bits)</th><th>Remaining uncertainty fraction</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>1.00</td><td>0.72</td><td>72%</td></tr>
+<tr><td>3</td><td>1.58</td><td>0.92</td><td>58%</td></tr>
+<tr><td>4</td><td>2.00</td><td>1.04</td><td>52%</td></tr>
+<tr><td>5</td><td>2.32</td><td>1.12</td><td>48%</td></tr>
+</tbody>
+</table>
+<h3>7.4. Approximation and complementary criterion</h3>
+<p>The \(H_{\text{stop}}\) formula assumes that the remaining probability is uniformly distributed, which is an approximation. Two distributions with the same maximum can have different entropies:</p>
+<ul>
+<li>\((0.80,\; 0.10,\; 0.10)\): \(H = 0.92\) bits</li>
+<li>\((0.80,\; 0.19,\; 0.01)\): \(H = 0.78\) bits</li>
+</ul>
+<p>The second has lower entropy even though the maximum is the same, because the probability is more concentrated. Therefore, <strong>it is advisable to check both criteria in a complementary way</strong>:</p>
+<div class="math-block">\[\text{stop if } H(\mathbf{p}) &lt; H_{\text{stop}} \text{ and } \max_i P(H_i) \geq p_{\min}\]</div>
+<p>Both criteria are not completely independent: when \(H_{\text{stop}}\) is derived from the same \(p_{\min}\), the entropy criterion does not add a requirement other than the maximum probability criterion. The maximum likelihood criterion guarantees the minimum level of confidence in the winning hypothesis; entropy acts as a complementary control for global uncertainty. Alternatively, a separation criterion can be added:</p>
+<div class="math-block">\[P(H_{\text{winner}}) - P(H_{\text{runner-up}}) \geq \Delta_{\min}\]</div>
+<p>which requires not only that the most probable hypothesis exceeds \(p_{\min}\), but that it is sufficiently separated from the second candidate.</p>
+<h3>7.5. Additional stopping criteria</h3>
+<p>In addition to the entropy criterion, the system must consider:</p>
+<ul>
+<li><strong>Maximum question limit</strong>: avoid infinite sessions when convergence is slow.</li>
+<li><strong>Minimum useful gain</strong>: If the best available question has \(IG &lt; \varepsilon_{\min}\), the question bank has been informationally exhausted and continuing does not improve the diagnosis.</li>
+<li><strong>Minimum concept coverage</strong>: ensure that certain mandatory concepts have been evaluated.</li>
+</ul>
+<h3>7.6. Continuous reinforcement without stopping</h3>
+<p>All of the above assumes an objective of <strong>diagnosis</strong>: estimate the student's state and stop. In <strong>open practice or reinforcement</strong> resources, that objective changes: the goal is not to converge and stop, but to sustain practice. In that mode:</p>
+<ul>
+<li>there may be <strong>no stopping criterion</strong>: the session continues as long as the student practises.</li>
+<li>The posterior is not interpreted as a closed diagnosis, but as an <strong>evolving estimate</strong> updated with each response and capable of reflecting the learning that occurs during the session itself.</li>
+<li>\(H_{\text{stop}}\) and \(p_{\min}\) are not used to end the session; at most, they serve to <strong>inform</strong> the degree of confidence achieved.</li>
+<li>The two-phase selection (§6.4 of the protocol) is maintained throughout the session: minimum diagnosis by category and then reinforcement of the least mastered.</li>
+</ul>
+<p><strong>Caution due to sample size.</strong> With just a few attempts, the posterior can move a long way for a single answer. In order not to communicate an unfounded domain, it is advisable to require a <strong>minimum sample</strong> by category or dimension (e.g., 2–4 attempts) before showing high levels of mastery, and marking the estimate as tentative while evidence is scarce. This caution is a presentational decision: it does not alter the Bayesian posterior, only how it is translated to the interface.</p>
+</section>
+<section id="s8">
+<h2>8. Scaling convention between θ and b</h2>
+<h3>8.1. The tipping point problem</h3>
+<p>The IRT 3PL logistics curve has its maximum slope at \(\theta_i = b_q\). This means that the question \(q\) is <strong>more discriminating</strong> for students whose level is close to the \(b_q\) difficulty.</p>
+<p>If the extreme level \(\theta_{\max}\) matches the extreme difficulty \(b_{\max}\), the most difficult question places the advanced level right at the tipping point. At that point the probability of success is still not high: with 4 options and \(c_q = 0.25\), \((1+c_q)/2 = 0.625\) is valid. Therefore, getting that question right weakly confirms the advanced level.</p>
+<p>This may cause the system to underuse extreme questions: not because they are useless, but because other questions may produce a larger expected reduction in uncertainty.</p>
+<h3>8.2. The factor-2 rule</h3>
+<p>To avoid this problem, the range of \(\theta\) should be <strong>strictly greater</strong> than the range of \(b\). In this discrete system, the following practical convention is adopted:</p>
+<div class="math-block">\[|\theta_{\max}| = 2 \cdot \max_q |b_q|\]</div>
+<p>Factor 2 is a useful heuristic, not a standard universal IRT rule. It can be adjusted according to the value of \(a\), \(c_q\) and the target probability of success for extreme levels. If you want an extreme level student to have an objective probability \(P^*\) of getting an extreme question right, you can solve it:</p>
+<div class="math-block">\[\theta_{\max} - b_{\max} = \frac{1}{a}\operatorname{logit}\!\left(\frac{P^* - c}{1 - c}\right), \qquad \operatorname{logit}(x) = \ln\frac{x}{1-x}\]</div>
+<p>Thus the separation between scales is justified by a desired probability, not by a fixed factor.</p>
+<p><strong>Example.</strong> With 3 levels of difficulty \(b \in \{-1,\; 0,\; +1\}\):</p>
+<ul>
+<li>Incorrect scale: \(\theta \in \{-1,\; 0,\; +1\}\) → the advanced level and the difficult question have the same value; the logistic curve gives \(P(A) = (1 + c_q)/2 \approx 0.625\) for 4 options, a mediocre value to confirm the advanced level.</li>
+<li>Correct scale: \(\theta \in \{-2,\; 0,\; +2\}\) → the advanced level easily exceeds the extreme difficulty; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.82\), a value high enough for the question to be informative.</li>
+</ul>
+<p>where \(\sigma(x) = 1/(1 + e^{-x})\) is the standard sigmoid function.</p>
+<h3>8.3. Automatic calculation from the question bank</h3>
+<p>The most robust way is to calculate \(\theta_{\max}\) directly from the bank's difficulties:</p>
+<div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
+<p>and distribute the \(\theta_i\) values evenly in \([-\theta_{\max},\; +\theta_{\max}]\). Thus the scale automatically adapts to the question bank, without the need for manual adjustment.</p>
+</section>
+<section id="s9">
+<h2>9. Complete numerical example</h2>
+<h3>9.1. Settings</h3>
+<ul>
+<li><strong>Hypotheses</strong>: \(H_1\) (basic), \(H_2\) (intermediate), \(H_3\) (advanced)</li>
+<li><strong>Values</strong>: \(\theta_1 = -2\), \(\theta_2 = 0\), \(\theta_3 = +2\)</li>
+<li><strong>Initial prior</strong>: \(\mathbf{p}^{(0)} = (0.333,\; 0.333,\; 0.333)\)</li>
+<li><strong>Discrimination parameter</strong>: \(a = 1.5\)</li>
+<li><strong>Stopping criterion</strong>: \(p_{\min} = 0.80\), with a minimum of 2 questions before being able to finish</li>
+<li><strong>Question bank</strong> (simplified):</li>
+</ul>
+<table>
+<thead>
+<tr><th>ID</th><th>Difficulty \(b_q\)</th><th>\(m_q\) Options</th><th>\(c_q\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Q1</td><td>\(-1\) (easy)</td><td>4</td><td>0.25</td></tr>
+<tr><td>Q2</td><td>\(0\) (medium)</td><td>4</td><td>0.25</td></tr>
+<tr><td>Q3</td><td>\(+1\) (difficult)</td><td>4</td><td>0.25</td></tr>
+</tbody>
+</table>
+<h3>9.2. Likelihood calculation</h3>
+<p>For each pair \((\theta_i, b_q)\) we calculate \(P(A \mid \theta_i, q)\) with the formula IRT 3PL, \(a = 1.5\), \(c = 0.25\):</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = 0.25 + 0.75 \cdot \frac{1}{1 + e^{-1.5(\theta_i - b_q)}}\]</div>
+<p><strong>For Q1</strong> (\(b_1 = -1\)):</p>
+<table>
+<thead>
+<tr><th>Hypothesis</th><th>\(\theta_i - b_q\)</th><th>\(e^{-1.5 \cdot x}\)</th><th>\(\sigma\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-2 - (-1) = -1\)</td><td>\(e^{1.5} = 4.48\)</td><td>\(0.182\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(2 - (-1) = +3\)</td><td>\(e^{-4.5} = 0.011\)</td><td>\(0.989\)</td><td>\(0.992\)</td><td>\(0.008\)</td></tr>
+</tbody>
+</table>
+<p><strong>For Q2</strong> (\(b_2 = 0\)):</p>
+<table>
+<thead>
+<tr><th>Hypothesis</th><th>\(\theta_i - b_q\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-2\)</td><td>\(0.286\)</td><td>\(0.714\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0\)</td><td>\(0.625\)</td><td>\(0.375\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+2\)</td><td>\(0.964\)</td><td>\(0.036\)</td></tr>
+</tbody>
+</table>
+<p><strong>For Q3</strong> (\(b_3 = +1\)):</p>
+<table>
+<thead>
+<tr><th>Hypothesis</th><th>\(\theta_i - b_q\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-3\)</td><td>\(0.258\)</td><td>\(0.742\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(-1\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+</tbody>
+</table>
+<h3>9.3. Selection of the first question</h3>
+<p>With uniform prior \(\mathbf{p} = (0.333, 0.333, 0.333)\), we calculate the information gain for each question.</p>
+<p><strong>Initial entropy:</strong></p>
+<div class="math-block">\[H^{(0)} = -3 \cdot 0.333 \cdot \log_2(0.333) = \log_2 3 = 1.585 \text{ bits}\]</div>
+<p><strong>For Q1</strong> (\(b = -1\)):</p>
+<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.864 + 0.333 \cdot 0.992 = 0.748\]</div>
+<div class="math-block">\[P(F \mid Q1) = 0.252\]</div>
+<p>Posteriors after a correct answer:</p>
+<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.748} = 0.172, \quad P(H_2 \mid A) = \frac{0.864 \cdot 0.333}{0.748} = 0.385, \quad P(H_3 \mid A) = 0.443\]</div>
+<p>Posterior entropy if correct:</p>
+<div class="math-block">\[H_A(Q1) = -(0.172 \log_2 0.172 + 0.385 \log_2 0.385 + 0.443 \log_2 0.443) = 1.488 \text{ bits}\]</div>
+<p>Posteriors after an incorrect answer:</p>
+<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.252} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
+<p>Posterior entropy if it fails:</p>
+<div class="math-block">\[H_F(Q1) = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
+<p>Information gain:</p>
+<div class="math-block">\[IG(Q1) = 1.585 - (0.748 \cdot 1.488 + 0.252 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
+<p><strong>Summary of information gains</strong> (following the same procedure for Q2 and Q3):</p>
+<table>
+<thead>
+<tr><th>Question</th><th>\(IG\) (bits)</th></tr>
+</thead>
+<tbody>
+<tr><td>Q1 (\(b = -1\))</td><td><strong>0.280</strong></td></tr>
+<tr><td>Q2 (\(b = 0\))</td><td>\(0.275\)</td></tr>
+<tr><td>Q3 (\(b = +1\))</td><td>\(0.212\)</td></tr>
+</tbody>
+</table>
+<p>With \(c_q = 0.25\), the probability of success by chance breaks the symmetry between easy and difficult questions: a failure on an easy question is highly diagnostic, while a success on a difficult question can still be partially explained by chance. In this configuration, <strong>the system selects Q1</strong>, although Q2 is practically tied.</p>
+<h3>9.4. First answer: failure in Q1</h3>
+<p>The student fails Q1. We update:</p>
+<div class="math-block">\[P(H_1 \mid F, Q1) = \frac{0.613 \cdot 0.333}{0.613 \cdot 0.333 + 0.137 \cdot 0.333 + 0.008 \cdot 0.333} = \frac{0.204}{0.253} = 0.809\]</div>
+<div class="math-block">\[P(H_2 \mid F, Q1) = \frac{0.137 \cdot 0.333}{0.253} = 0.180, \quad P(H_3 \mid F, Q1) = \frac{0.008 \cdot 0.333}{0.253} = 0.011\]</div>
+<div class="math-block">\[\mathbf{p}^{(1)} = (0.809,\; 0.180,\; 0.011)\]</div>
+<p>Entropy after failure:</p>
+<div class="math-block">\[H^{(1)} = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
+<p>Entropy has dropped from 1.585 to 0.764 bits. The system suspects quite strongly that the student is of basic level.</p>
+<h3>9.5. Second question and correct in Q2</h3>
+<p>With \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), the system recalculates the information gains for Q2 and Q3 (Q1 has already been used). In this asymmetric state, Q2 is more informative because it helps to check whether the previous failure could have been accidental.</p>
+<p>The student <strong>answers Q2 correctly</strong> (intermediate). We update with \(P(A \mid H_i, Q2) = (0.286, 0.625, 0.964)\):</p>
+<div class="math-block">\[P(A \mid Q2, \mathbf{p}^{(1)}) = 0.809 \cdot 0.286 + 0.180 \cdot 0.625 + 0.011 \cdot 0.964 = 0.231 + 0.113 + 0.011 = 0.354\]</div>
+<div class="math-block">\[P(H_1 \mid A, Q2) = \frac{0.286 \cdot 0.809}{0.354} = 0.652, \quad P(H_2 \mid A, Q2) = \frac{0.625 \cdot 0.180}{0.354} = 0.318, \quad P(H_3 \mid A, Q2) = 0.030\]</div>
+<div class="math-block">\[\mathbf{p}^{(2)} = (0.652,\; 0.318,\; 0.030)\]</div>
+<div class="math-block">\[H^{(2)} = -(0.652 \log_2 0.652 + 0.318 \log_2 0.318 + 0.030 \log_2 0.030) = 1.080 \text{ bits}\]</div>
+<p>The success on the medium question shifts part of the probability towards \(H_2\), but the initial failure on an easy question still weighs heavily. The diagnosis is between basic and medium-low.</p>
+<h3>9.6. Evolution of the session</h3>
+<table>
+<thead>
+<tr><th>Step</th><th>Action</th><th>\(P(H_1)\)</th><th>\(P(H_2)\)</th><th>\(P(H_3)\)</th><th>\(H\) (bits)</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>Initial prior</td><td>0.333</td><td>0.333</td><td>0.333</td><td>1.585</td></tr>
+<tr><td>1</td><td>Q1 failure (easy)</td><td>0.809</td><td>0.180</td><td>0.011</td><td>0.764</td></tr>
+<tr><td>2</td><td>Answers Q2 correctly (medium)</td><td>0.652</td><td>0.318</td><td>0.030</td><td>1.080</td></tr>
+</tbody>
+</table>
+<p>Note that the correct answer to the middle question has increased the entropy compared to step 1: the evidence has distributed the probability more between \(H_1\) and \(H_2\), increasing the uncertainty. This is correct: the system continues to almost completely rule out the advanced level, but now hesitates more between basic and intermediate.</p>
+<p>With \(p_{\min} = 0.80\) and \(n = 3\), the threshold is \(H_{\text{stop}} = 0.92\) bits. The current entropy (1.080 bits) is above the threshold, so the test continues.</p>
+</section>
+<section id="s10">
+<h2>10. Non-hierarchical hypotheses</h2>
+<p>The IRT 3PL logistic function assumes that the hypotheses have an order: more θ means more level. This is appropriate for assessing mastery, but not when the hypotheses are alternative misconceptions with no relation of order.</p>
+<p><strong>Example.</strong> Let's assume three hypotheses:</p>
+<ul>
+<li>\(H_A\): confuse mass with weight</li>
+<li>\(H_B\): confuse speed with acceleration</li>
+<li>\(H_C\): correct domain</li>
+</ul>
+<p>In this case there is no single scale of "more or less mastery." The logistic function is not the appropriate model.</p>
+<p><strong>Alternative.</strong> Define the likelihoods directly according to the expected diagnosis of each question:</p>
+<table>
+<thead>
+<tr><th>Question</th><th>\(P(A \mid H_A)\)</th><th>\(P(A \mid H_B)\)</th><th>\(P(A \mid H_C)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Does the mass of an object change on the Moon?</td><td>0.20</td><td>0.80</td><td>0.95</td></tr>
+<tr><td>Does a car braking have acceleration?</td><td>0.75</td><td>0.15</td><td>0.95</td></tr>
+<tr><td>Is force proportional to mass?</td><td>0.50</td><td>0.50</td><td>0.90</td></tr>
+</tbody>
+</table>
+<p>These likelihoods are defined by the teacher or the AI based on knowledge of which errors each confusion produces. The <strong>Bayesian update is identical</strong>; only the source of the likelihoods changes.</p>
+</section>
+<section id="s11">
+<h2>11. Limits of the model</h2>
+<h3>11.1. Initial calibration</h3>
+<p>The likelihoods generated by the logistic function with parameters assigned by an expert are <strong>a priori estimates</strong>, not empirical measures. A real student may behave differently than the model predicts.</p>
+<p>If real data is accumulated (responses from many students), the parameters \(a\), \(b_q\) and \(c_q\) can be recalibrated using IRT (maximum marginal likelihood, Bayesian parameter estimation) estimation methods. Without sufficient data, the model is a reasonable approximation but not a precise measure.</p>
+<h3>11.2. Conditional independence</h3>
+<p>Sequential Bayesian updating assumes that the responses are <strong>conditionally independent</strong> given the true hypothesis: knowing \(H_i\) makes the correlation between answers irrelevant. This assumption is violated when:</p>
+<ul>
+<li>The questions deal with the same very specific concept and the answer to one gives clues to the next.</li>
+<li>The student learns during the test (the true hypothesis changes).</li>
+<li>The student answers randomly on questions that he does not know, with patterns that depend on fatigue or time.</li>
+</ul>
+<h3>11.3. Stability of the hypotheses</h3>
+<p>The model assumes that the student's state does not change during the session. In short diagnostic evaluation sessions this is reasonable. In long adaptive learning sessions, the student can improve during the interaction itself, which would cause the subsequent one to converge towards a hypothesis that no longer reflects the current state.</p>
+<h3>11.4. random answers</h3>
+<p>If the student responds systematically at random, the \(c_q\) parameter only partially protects: it reduces the upward bias in the probability of success, but does not eliminate the noise. With enough random responses, the posterior can converge toward incorrect hypotheses.</p>
+<h3>11.5. Minimum number of questions</h3>
+<p>With few questions, the posterior can be biased by coincidences (a non-representative streak of successes or failures). impose a <strong>minimum number of questions</strong> before activating the stop criterion reduces this risk, at the cost of lengthening the session.</p>
+<h3>11.6. The model does not replace teaching criteria</h3>
+<p>The system produces a <strong>probabilistic estimation</strong>, not an absolute truth. The results should be interpreted as an aid to educational decision, especially when:</p>
+<ul>
+<li>The session was short or the question bank was small.</li>
+<li>The final entropy exceeds the threshold \(H_{\text{stop}}\) (provisional diagnosis).</li>
+<li>The student showed an unusual pattern of responses.</li>
+<li>The questions had not been calibrated with real data.</li>
+</ul>
+</section>
+<section id="s12">
+<h2>References and further reading</h2>
+<ul>
+<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. At Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2nd ed.). Wiley. [Shannon entropy and mutual information.]</li>
+<li><strong>van der Linden, W.J. &amp; Hambleton, R.K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
+<li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
+</ul>
+<p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
+</section>
+</div>
+<footer class="site-footer">
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José de Haro</a>
+<span class="sep">·</span>
+  Content: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+<a href="documentacion_en.html">← Protocol</a>
+<span class="sep">·</span>
+<a href="index.html">← Home</a>
+</footer>
+<script>
+(function () {
+  const currentLang = 'en';
+  const pageMap = {"es": "matematicas.html", "en": "matematicas_en.html", "ca": "matematicas_ca.html"};
+  const labels = {"es": {"copy": "Copiar", "copied": "¡Copiado!"}, "en": {"copy": "Copy", "copied": "Copied!"}, "ca": {"copy": "Copiar", "copied": "Copiat!"}};
+  localStorage.setItem('lang', currentLang);
+
+  function copyTextFrom(elId, btnId) {
+    const el = document.getElementById(elId);
+    const btn = document.getElementById(btnId);
+    if (!el || !btn) return;
+    const text = el.innerText;
+    const copyLabel = labels[currentLang].copy;
+    const copiedLabel = labels[currentLang].copied;
+    function markCopied() {
+      btn.textContent = copiedLabel;
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = copyLabel;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    navigator.clipboard.writeText(text).then(markCopied).catch(function() {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      markCopied();
+    });
+  }
+
+  window.copySimplePrompt = function () { copyTextFrom('simple-prompt-text', 'copy-simple-btn'); };
+  window.copyPrompt = function () { copyTextFrom('master-prompt-text', 'copy-prompt-btn'); };
+  window.switchDocLang = function (lang) {
+    localStorage.setItem('lang', lang);
+    window.location.href = pageMap[lang] || pageMap.es;
+  };
+})();
+</script>
+</body>
+</html>

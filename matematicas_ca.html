@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+
+<html lang="ca">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</title>
+<script>
+    MathJax = {
+      tex: {
+        inlineMath: [['\\(', '\\)']],
+        displayMath: [['\\[', '\\]']],
+        packages: {'[+]': ['ams']}
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+<script async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+<style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: clip; scrollbar-gutter: stable; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.25rem 2rem 1.5rem;
+      text-align: center;
+      max-width: 860px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      border-radius: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+    }
+    .back-link:hover { color: white; text-decoration: underline; }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+    .toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+    }
+    .toc-card ol {
+      margin-left: 1.2rem;
+      font-size: 0.9rem;
+    }
+    .toc-card li { margin-bottom: 0.2rem; }
+    .toc-card a { color: var(--primary); text-decoration: none; }
+    .toc-card a:hover { text-decoration: underline; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border);
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+    ul, ol {
+      margin-left: 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    li { margin-bottom: 0.25rem; }
+    li:last-child { margin-bottom: 0; }
+    .math-block {
+      overflow-x: auto;
+      margin: 1rem 0;
+      padding: 0.75rem 1rem;
+      background: var(--code-bg);
+      border-left: 3px solid var(--primary-light);
+      border-radius: 0 6px 6px 0;
+      font-size: 0.97em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.9rem;
+    }
+    thead tr { background: var(--primary); color: white; }
+    th { padding: 0.6rem 0.9rem; text-align: left; font-weight: 600; }
+    td { padding: 0.55rem 0.9rem; border-bottom: 1px solid var(--border); }
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    td:not(:first-child), th:not(:first-child) { text-align: center; }
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+    .site-footer {
+      background: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 1.1rem 1.5rem;
+      line-height: 1.8;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      border-radius: 1rem;
+    }
+    .site-footer a { color: #a5b4fc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+    @media (max-width: 600px) {
+      section { padding: 1.25rem 1.1rem; }
+    }
+  
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn active" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<a class="back-link" href="documentacion_ca.html">← Protocol</a>
+<h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
+<p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.0</p>
+</div>
+<div class="container">
+<div class="toc-card">
+<h2>Índex</h2>
+<ol>
+<li><a href="#s1">1. El problema que resol el sistema</a></li>
+<li><a href="#s2">2. Representació probabilística de l'estat de l'alumne</a></li>
+<li><a href="#s3">3. Inferència bayesiana</a></li>
+<li><a href="#s4">4. Model IRT de tres paràmetres</a></li>
+<li><a href="#s5">5. Entropia de Shannon com a mesura d'incertesa</a></li>
+<li><a href="#s6">6. Guany esperat d'informació</a></li>
+<li><a href="#s7">7. Criteri de parada</a></li>
+<li><a href="#s8">8. Convenció d'escala entre θ i b</a></li>
+<li><a href="#s9">9. Exemple numèric complet</a></li>
+<li><a href="#s10">10. Hipòtesis no jeràrquiques</a></li>
+<li><a href="#s11">11. Límits del model</a></li>
+<li><a href="#s12">Referències i lectures addicionals</a></li>
+</ol>
+</div>
+<section id="s1">
+<h2>1. El problema que resol el sistema</h2>
+<p>Un sistema d'avaluació tradicional assigna les mateixes preguntes a tots els alumnes en el mateix ordre. Això genera dues ineficiències:</p>
+<ul>
+<li><strong>Preguntes massa fàcils</strong> per a alumnes avançats no aporten informació útil sobre el seu nivell real.</li>
+<li><strong>Preguntes massa difícils</strong> per a alumnes amb dificultats generen frustració sense millorar-ne el diagnòstic.</li>
+</ul>
+<p>L'avaluació adaptativa resol això seleccionant a cada moment la pregunta més informativa atès el que ja se sap de l'alumne. Per això necessita tres ingredients:</p>
+<ol>
+<li>Una <strong>representació de l'estat de coneixement</strong> de l'alumne (què en creiem saber).</li>
+<li>Una <strong>regla d'actualització</strong> que canviï aquesta representació després de cada resposta.</li>
+<li>Un <strong>criteri de selecció</strong> que triï quina pregunta formular a continuació.</li>
+</ol>
+<p>Aquest document descriu la matemàtica darrere de cadascun d'aquests tres ingredients.</p>
+</section>
+<section id="s2">
+<h2>2. Representació probabilística de l'estat de l'alumne</h2>
+<h3>2.1. L'espai d'hipòtesis</h3>
+<p>En lloc d'assignar a l'alumne un valor fix (una nota, una etiqueta), el sistema en manté una <strong>distribució de probabilitats</strong> sobre un conjunt d'hipòtesis mútuament excloents i exhaustives.</p>
+<p>Sigui \(\mathcal{H} = \{H_1, H_2, \ldots, H_n\}\) el conjunt d'hipòtesis possibles. Per exemple:</p>
+<div class="math-block">\[H_1 = \text{nivell bàsic}, \quad H_2 = \text{nivell mitjà}, \quad H_3 = \text{nivell avançat}\]</div>
+<p>A cada moment, el sistema manté un vector de probabilitats:</p>
+<div class="math-block">\[\mathbf{p} = \bigl(P(H_1),\, P(H_2),\, \ldots,\, P(H_n)\bigr)\]</div>
+<p>amb la restricció:</p>
+<div class="math-block">\[\sum_{i=1}^{n} P(H_i) = 1, \quad P(H_i) \geq 0 \;\; \forall i\]</div>
+<p>Aquest vector expressa el <strong>grau de creença</strong> del sistema sobre l'estat real de l'alumne, no una certesa.</p>
+<h3>2.2. Distribució inicial</h3>
+<p>Si no hi ha informació prèvia sobre l'alumne, el sistema parteix d'una <strong>distribució uniforme</strong>:</p>
+<div class="math-block">\[P(H_i) = \frac{1}{n} \quad \forall i\]</div>
+<p>Aquesta elecció reflecteix una ignorància màxima: totes les hipòtesis són igualment plausibles abans d'observar cap resposta. Si existís informació prèvia fiable (resultats de cursos anteriors, diagnòstics previs), es podria fer servir com a distribució inicial justificada.</p>
+<h3>2.3. Valor numèric de cada hipòtesi</h3>
+<p>Per poder utilitzar la funció logística que genera les versemblances (vegeu §4), cada hipòtesi \(H_i\) necessita un valor numèric \(\theta_i\) que representi la seva posició a l'escala de domini. La convenció recomanada és centrar els valors en zero amb intervals iguals:</p>
+<table>
+<thead>
+<tr><th>\(n\) hipòtesis</th><th>Valors \(\theta_i\)</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>\(-1,\; +1\)</td></tr>
+<tr><td>3</td><td>\(-2,\; 0,\; +2\)</td></tr>
+<tr><td>4</td><td>\(-3,\; -1,\; +1,\; +3\)</td></tr>
+<tr><td>5</td><td>\(-4,\; -2,\; 0,\; +2,\; +4\)</td></tr>
+</tbody>
+</table>
+<p>Els valors concrets depenen de l'escala de dificultat de les preguntes. La relació exacta entre θ i b s'explica a §8.</p>
+<h3>2.4. Estat multidimensional</h3>
+<p>L'estat de l'alumne no ha de ser una única distribució. Quan interessa saber no només <em>quant</em> domina sinó <em>què</em> components falla, convé mantenir <strong>diverses distribucions bayesianes en paral·lel</strong>:</p>
+<ul>
+<li>una distribució per <strong>categoria</strong> o nivell (quin tipus de tasca domina);</li>
+<li>una distribució per cada <strong>dimensió diagnòstica</strong> (habilitat, pas del procés o tipus d'error).</li>
+</ul>
+<p>Cada distribució \(\mathbf{p}^{(d)}\) sobre les hipòtesis de la dimensió \(d\) s'actualitza de forma independent amb la maquinària de §3–§4, però totes s'alimenten de la <strong>mateixa resposta</strong>: el resultat global actualitza la creença de nivell i cada subcriteri actualitza la creença de la seva dimensió. Això permet distingir <em>què practicar</em> (nivell per categoria) de <em>què reforçar</em> (diagnòstic per dimensió).</p>
+<p>Cada dimensió pot tenir el seu propi sòl d'atzar \(c^{(d)}\) (vegeu §4.6–4.7), per la qual cosa un mateix valor latent \(\theta\) produeix percentatges visibles diferents segons la dimensió. Els percentatges entre dimensions <strong>no són directament comparables</strong>; la referència comuna és \(\theta\). Les dimensions que poden coexistir no s'han de forçar dins d'una sola distribució: es modelen per separat (vegeu §9 del protocol).</p>
+</section>
+<section id="s3">
+<h2>3. Inferència bayesiana</h2>
+<h3>3.1. El teorema de Bayes</h3>
+<p>Quan l'alumne respon una pregunta, aquesta resposta és una <strong>evidència</strong> que ha de modificar la nostra estimació del seu estat. El mecanisme d'actualització és el teorema de Bayes:</p>
+<div class="math-block">\[P(H_i \mid R) = \frac{P(R \mid H_i)\, P(H_i)}{P(R)}\]</div>
+<p>on:</p>
+<ul>
+<li>\(P(H_i)\) és la probabilitat <strong>prior</strong>: el que crèiem abans de veure la resposta.</li>
+<li>\(P(R \mid H_i)\) és la <strong>versemblança</strong>: la probabilitat d'observar la resposta \(R\) si l'alumne estigués realment a l'estat \(H_i\).</li>
+<li>\(P(R)\) és la probabilitat marginal de la resposta, calculada sumant sobre totes les hipòtesis:</li>
+</ul>
+<div class="math-block">\[P(R) = \sum_{j=1}^{n} P(R \mid H_j)\, P(H_j)\]</div>
+<ul>
+<li>\(P(H_i \mid R)\) és la probabilitat <strong>posterior</strong>: la creença actualitzada després d'observar \(R\).</li>
+</ul>
+<h3>3.2. Actualització després d'un encert o una fallada</h3>
+<p>A la pràctica, la resposta \(R\) és binària: encert (A) o fallada (F). L'actualització pren la forma:</p>
+<div class="math-block">\[P(H_i \mid A) = \frac{P(A \mid H_i)\, P(H_i)}{\displaystyle\sum_j P(A \mid H_j)\, P(H_j)}\]</div>
+<div class="math-block">\[P(H_i \mid F) = \frac{P(F \mid H_i)\, P(H_i)}{\displaystyle\sum_j P(F \mid H_j)\, P(H_j)}\]</div>
+<p>Noteu que el denominador és simplement una constant de normalització. En la implementació, només cal calcular els numeradors per a tots els \(i\) i dividir per la seva suma.</p>
+<h3>3.3. Actualització seqüencial</h3>
+<p>Si l'alumne respon diverses preguntes, el procés s'aplica de manera <strong>seqüencial</strong>: el posterior d'una pregunta es converteix en el prior de la següent. Això és matemàticament equivalent a actualitzar amb totes les respostes alhora, sempre que les respostes siguin condicionalment independents atesa la hipòtesi veritable.</p>
+<div class="math-block">\[\mathbf{p}^{(t+1)} = \text{Bayes}\!\left(\mathbf{p}^{(t)},\; R_{t+1}\right)\]</div>
+<h3>3.4. Per què Bayes i no altres mètodes</h3>
+<p>Sota els supòsits habituals de coherència probabilística i actualització per evidència observada, la regla de Bayes és la manera natural d'actualitzar les probabilitats. Satisfà simultàniament:</p>
+<ul>
+<li><strong>Consistència</strong>: si s'actualitzen les probabilitats en dues passes o en una, el resultat és el mateix.</li>
+<li><strong>Proporcionalitat</strong>: l'actualització és proporcional a quant prediu cada hipòtesi la resposta observada.</li>
+<li><strong>No dogmatisme</strong>: cap hipòtesi queda bloquejada en 0 o 1 sempre que la seva probabilitat inicial sigui estrictament positiva. Per això convé assignar probabilitats inicials estrictament positives a totes les hipòtesis plausibles.</li>
+</ul>
+<p>Alternatives com les xarxes de regles o els sistemes experts clàssics no tenen aquestes propietats i poden quedar bloquejades en diagnòstics incorrectes quan l'alumne respon de manera inesperada.</p>
+</section>
+<section id="s4">
+<h2>4. Model IRT de tres paràmetres</h2>
+<h3>4.1. El problema de les versemblances</h3>
+<p>Per aplicar Bayes necessitem \(P(A \mid H_i, q)\): la probabilitat que un alumne a l'estat \(H_i\) encerti la pregunta \(q\). Aquesta probabilitat és la versemblança.</p>
+<p>El sistema necessita generar-les automàticament a partir dels paràmetres de cada pregunta, sense que el docent empleni taules de probabilitats.</p>
+<h3>4.2. La corba característica de l'ítem (ICC)</h3>
+<p>El model IRT (Item Response Theory) proporciona una família de funcions per modelar \(P(A \mid \theta, q)\). El model de tres paràmetres (3PL) és:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{1 + e^{-a(\theta_i - b_q)}}\]</div>
+<p>Els tres paràmetres són:</p>
+<table>
+<thead>
+<tr><th>Paràmetre</th><th>Nom</th><th>Significat</th></tr>
+</thead>
+<tbody>
+<tr><td>\(a\)</td><td>Discriminació</td><td>Pendent de la corba; controla quant separa la pregunta entre nivells diferents</td></tr>
+<tr><td>\(b_q\)</td><td>Dificultat</td><td>Valor de \(\theta\) en què la probabilitat d'encert (sense atzar) arriba al 50%</td></tr>
+<tr><td>\(c_q\)</td><td>Pseudo-atzar</td><td>Probabilitat mínima d'encert; en absència de dades empíriques, s'aproxima com a \(c_q \approx 1/m\)</td></tr>
+</tbody>
+</table>
+<h3>4.3. Comportament de la corba</h3>
+<p>Quan \(\theta_i \gg b_q\) (l'alumne està molt per sobre de la dificultat), l'exponent \(e^{-a(\theta_i - b_q)} \to 0\) i:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
+<p>Quan \(\theta_i \ll b_q\) (l'alumne està molt per sota de la dificultat), l'exponent \(\to +\infty\) i:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 0 = c_q\]</div>
+<p>Quan \(\theta_i = b_q\), l'argument de l'exponent és zero i:</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{2} = \frac{1 + c_q}{2}\]</div>
+<p>Aquest és el <strong>punt d'inflexió</strong> de la corba: on el pendent és màxim i, per tant, on la pregunta és més discriminant.</p>
+<h3>4.4. El paràmetre de discriminació \(a\)</h3>
+<p>El paràmetre \(a\) controla el pendent de la corba logística. El seu efecte es pot veure derivant la ICC respecte a \(\theta\):</p>
+<div class="math-block">\[\frac{d}{d\theta} P(A \mid \theta, q) = a \cdot (1 - c_q) \cdot \frac{e^{-a(\theta - b_q)}}{\left(1 + e^{-a(\theta - b_q)}\right)^2}\]</div>
+<p>El pendent màxim (en \(\theta = b_q\)) val:</p>
+<div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
+<p>Un valor alt de \(a\) produeix una corba més escarpada: la pregunta discrimina millor entre alumnes a prop de la dificultat, però aporta poca informació a alumnes clarament per sobre o per sota. Un valor baix produeix una corba més suau: la pregunta és útil en un rang més ampli de nivells, però discrimina menys.</p>
+<p>Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, <strong>\(a = 1.5\) és un punt de partida raonable</strong>.</p>
+<h3>4.5. La probabilitat de fallada</h3>
+<div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
+<p>Aquesta és la versemblança que entra a l'actualització bayesiana quan l'alumne falla.</p>
+<h3>4.6. Probabilitat mínima d'encert per atzar</h3>
+<p>En preguntes d'opció múltiple amb \(m_q\) opcions, es pot utilitzar \(c_q = 1/m_q\) com a aproximació inicial en absència de dades empíriques:</p>
+<div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
+<p>En un model IRT calibrat, \(c_q\) s'hauria d'estimar a partir de dades reals, perquè el pseudoatzar no sempre coincideix amb l'atzar pur: els distractors no són igualment atractius i alguns alumnes eliminen opcions abans de respondre. Aquesta probabilitat pertany a <strong>cada pregunta</strong>, no al test en conjunt. En respostes numèriques o de text exacte on l'atzar és irrellevant, es fa servir \(c_q = 0\).</p>
+<h3>4.7. Ítems compostos: terra d'atzar agregat</h3>
+<p>Una pregunta no sempre es corregeix com un únic encert o error. Si la tasca s'avalua per diversos <strong>components</strong> \(j\) (passos, decisions o subrespostes), cadascun amb el seu propi nombre d'opcions \(m_j\) i el pes \(w_j\), la probabilitat d'encertar l'ítem complet per pur atzar no és \(1/m\), sinó la <strong>mitjana ponderada</strong> dels atzars de cada component:</p>
+<div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
+<p>Per exemple, un ítem amb tres components de pesos \((0.5,\,0.3,\,0.2)\) i opcions \((2,\,4,\,6)\) té un terra agregat:</p>
+<div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
+<p>Aquest agregat \(c_q\) és el que entra a la ICC (§4.2) en generar les versemblances de l'ítem complet. Els pesos \(w_j\) han de ser els mateixos que es fan servir per puntuar el crèdit parcial (§4.8).</p>
+<h3>4.8. Crèdit parcial: versemblança suau</h3>
+<p>Quan la resposta admet graus —no només encert o error, sinó una puntuació \(s \in [0, 1]\) obtinguda dels components ponderats— la versemblança no ha de triar entre \(P(A)\) i \(P(F)\), sinó <strong>interpolar</strong> entre ambdues:</p>
+<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>Com \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escrivint \(p_i = P(A \mid H_i, q)\):</p>
+<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<p>Aquesta \(L(H_i)\) substitueix la versemblança en l'actualització bayesiana de §3.2; la resta del procés (normalització inclosa) no canvia. Casos límit:</p>
+<ul>
+<li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), encert ple.</li>
+<li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), fallada plena.</li>
+<li>\(s = 0.5\): \(L(H_i) = 0.5\) per a tota hipòtesi, una versemblança plana que no modifica el posterior.</li>
+</ul>
+<p>La puntuació \(s\) s'ha de calcular de manera explícita i autocorregible, normalment com a suma ponderada de subcriteris amb \(\sum_j w_j = 1\).</p>
+<h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Exemple numèric</h4>
+<p>Tres hipòtesis \(\theta \in \{-2, 0, 2\}\), ítem de dificultat mitjana (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), prior uniforme \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). Les versemblances d'encert ple són aproximadament \(p = (0.40,\, 0.68,\, 0.97)\). Amb una resposta parcial \(s = 0.75\):</p>
+<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
+<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
+<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
+<p>Aplicant Bayes i normalitzant (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)):</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
+<p>El posterior es desplaça cap al domini, però de manera més moderada que amb un encert ple (\(s = 1\) donaria \(\approx (0.20,\, 0.33,\, 0.47)\)). El crèdit parcial gradua així la força de l'evidència segons la qualitat de la resposta.</p>
+</section>
+<section id="s5">
+<h2>5. Entropia de Shannon com a mesura d'incertesa</h2>
+<h3>5.1. Definició</h3>
+<p>L'entropia de Shannon mesura la incertesa d'una distribució de probabilitats:</p>
+<div class="math-block">\[H(\mathbf{p}) = -\sum_{i=1}^{n} p_i \log_2 p_i\]</div>
+<p>Es mesura a <strong>bits</strong>. Per conveni, \(0 \cdot \log_2 0 = 0\).</p>
+<h3>5.2. Propietats rellevants</h3>
+<p><strong>Entropia mínima.</strong> Si una hipòtesi concentra tota la probabilitat (\(p_k = 1\), \(p_{i \neq k} = 0\)), l'entropia és zero: no hi ha incertesa.</p>
+<p><strong>Entropia màxima.</strong> Si totes les hipòtesis són equiprobables (\(p_i = 1/n\)), l'entropia és màxima:</p>
+<div class="math-block">\[H_{\max} = \log_2 n\]</div>
+<p>Això correspon a la total ignorància sobre l'estat de l'alumne.</p>
+<p><strong>Entropia esperada no creixent.</strong> L'entropia posterior pot augmentar o disminuir després d'una resposta concreta, segons l'evidència observada (com il·lustra l'exemple de §9, on l'encert a Q2 fa pujar l'entropia respecte al pas anterior). El que garanteix la selecció per màxim guany d'informació és que l'entropia posterior <em>esperada</em> -abans de conèixer la resposta- no supera l'entropia actual.</p>
+<h3>5.3. Exemples numèrics</h3>
+<p>Amb \(n = 3\) hipòtesis:</p>
+<table>
+<thead>
+<tr><th>Distribució \(\mathbf{p}\)</th><th>Entropia \(H\) (bits)</th><th>Interpretació</th></tr>
+</thead>
+<tbody>
+<tr><td>\((0.33,\; 0.33,\; 0.33)\)</td><td>\(1.58\)</td><td>Ignorància total</td></tr>
+<tr><td>\((0.60,\; 0.30,\; 0.10)\)</td><td>\(1.30\)</td><td>Incertesa alta</td></tr>
+<tr><td>\((0.80,\; 0.15,\; 0.05)\)</td><td>\(0.88\)</td><td>Diagnòstic probable</td></tr>
+<tr><td>\((0.95,\; 0.04,\; 0.01)\)</td><td>\(0.32\)</td><td>Diagnòstic gairebé segur</td></tr>
+<tr><td>\((1.00,\; 0.00,\; 0.00)\)</td><td>\(0.00\)</td><td>Certesa absoluta</td></tr>
+</tbody>
+</table>
+<h3>5.4. Per què l'entropia i no la màxima probabilitat</h3>
+<p>La probabilitat de la hipòtesi més probable (\(\max_i p_i\)) és un indicador intuïtiu, però l'entropia en captura més informació: distingeix entre \((0.80, 0.15, 0.05)\) i \((0.80, 0.19, 0.01)\), que tenen el mateix màxim però diferent distribució de la resta. L'entropia és, a més, la quantitat natural que apareix en el guany d'informació (§6), cosa que fa el sistema matemàticament coherent.</p>
+</section>
+<section id="s6">
+<h2>6. Guany esperat d'informació</h2>
+<h3>6.1. El criteri de selecció</h3>
+<p>El sistema tria la següent pregunta buscant <strong>maximitzar la reducció esperada d'entropia</strong>. Per a cada pregunta candidata \(q\), es calcula el <strong>guany esperat d'informació</strong>:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \mathbb{E}\!\left[H(\mathbf{p}' \mid q)\right]\]</div>
+<p>on \(\mathbf{p}'\) és la distribució posterior després de respondre \(q\), i l'esperança és sobre els dos possibles resultats (encert o error).</p>
+<h3>6.2. Desenvolupament complet</h3>
+<p>Definim primer la probabilitat marginal d'encert a la pregunta \(q\), usant la <strong>llei de la probabilitat total</strong>:</p>
+<div class="math-block">\[P(A \mid q) = \sum_{i=1}^{n} P(H_i) \cdot P(A \mid H_i, q)\]</div>
+<p>I la probabilitat marginal de fallada:</p>
+<div class="math-block">\[P(F \mid q) = 1 - P(A \mid q)\]</div>
+<p>A continuació calculem els <strong>posteriors condicionals</strong>, aplicant Bayes <em>abans de conèixer la resposta real</em>:</p>
+<div class="math-block">\[P(H_i \mid A, q) = \frac{P(A \mid H_i, q)\, P(H_i)}{P(A \mid q)}\]</div>
+<div class="math-block">\[P(H_i \mid F, q) = \frac{P(F \mid H_i, q)\, P(H_i)}{P(F \mid q)}\]</div>
+<p>Amb aquests posteriors calculem l'entropia a cada escenari:</p>
+<div class="math-block">\[H_A(q) = -\sum_{i} P(H_i \mid A, q) \log_2 P(H_i \mid A, q)\]</div>
+<div class="math-block">\[H_F(q) = -\sum_{i} P(H_i \mid F, q) \log_2 P(H_i \mid F, q)\]</div>
+<p>L'entropia esperada després de formular la pregunta \(q\) és:</p>
+<div class="math-block">\[\mathbb{E}\!\left[H(\mathbf{p}' \mid q)\right] = P(A \mid q) \cdot H_A(q) + P(F \mid q) \cdot H_F(q)\]</div>
+<p>I el guany d'informació és:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \left[P(A \mid q) \cdot H_A(q) + P(F \mid q) \cdot H_F(q)\right]\]</div>
+<p>El sistema selecciona la pregunta \(q^*\) amb més \(IG\):</p>
+<div class="math-block">\[q^* = \arg\max_{q \in \mathcal{Q}} IG(q)\]</div>
+<p>on \(\mathcal{Q}\) és el conjunt de preguntes disponibles.</p>
+<h3>6.3. Connexió amb la informació mútua</h3>
+<p>El guany esperat d'informació de la pregunta \(q\) és exactament la <strong>informació mútua</strong> entre la resposta \(R_q\) i l'estat de l'alumne \(H\):</p>
+<div class="math-block">\[IG(q) = I(H;\, R_q \mid \mathbf{p}) = \sum_{r \in \{A,F\}} P(r \mid q) \cdot KL\!\left(P(H \mid r, q) \;\|\; P(H)\right)\]</div>
+<p>on \(KL\) és la divergència de Kullback-Leibler. Maximitzar \(IG\) equival a seleccionar la pregunta la resposta de la qual, de mitjana, separa més el posterior del prior.</p>
+<h3>6.4. Empats i diversitat de continguts</h3>
+<p>A la pràctica, diverses preguntes poden tenir guanys d'informació idèntics o molt propers, especialment si comparteixen els mateixos paràmetres \(a\), \(b_q\) i \(c_q\). Una selecció determinista entre empats produeix tests sistemàticament repetitius entre sessions diferents.</p>
+<p>La solució recomanada és una <strong>selecció aleatòria ponderada</strong>:</p>
+<ol>
+<li>Calcular \(IG(q)\) per a totes les candidates disponibles.</li>
+<li>Reunir les candidates amb \(IG \geq IG_{\max} - \varepsilon\) (per exemple \(\varepsilon = 10^{-9}\)).</li>
+<li>Assignar a cada candidata un pes inversament proporcional al nombre de vegades que la seva categoria o concepte ha aparegut ja a la sessió.</li>
+<li>Escollir amb probabilitat proporcional a aquests pesos.</li>
+</ol>
+<p>Això combina màxima utilitat informativa amb diversitat temàtica.</p>
+</section>
+<section id="s7">
+<h2>7. Criteri de parada</h2>
+<h3>7.1. Objectiu del llindar</h3>
+<p>El sistema s'ha d'aturar quan tingui confiança en l'estat de l'alumne. El criteri natural és: aturar quan la hipòtesi més probable superi un nivell de confiança \(p_{\min}\) (per exemple, 0,80).</p>
+<p>Tot i això, comprovar directament \(\max_i P(H_i) \geq p_{\min}\) pot no ser suficient, perquè no té en compte com es reparteix la probabilitat restant. L'entropia és un indicador més complet.</p>
+<h3>7.2. Derivació del llindar \(H_{\text{stop}}\)</h3>
+<p>Busquem l'entropia d'una distribució on la hipòtesi més probable té probabilitat \(p_{\min}\) i la resta de probabilitat \(1 - p_{\min}\) es reparteix <strong>uniformement</strong> entre les altres \(n - 1\) hipòtesis:</p>
+<div class="math-block">\[p_k = p_{\min}, \quad p_{i \neq k} = \frac{1 - p_{\min}}{n - 1}\]</div>
+<p>L'entropia d'aquesta distribució és:</p>
+<div class="math-block">\[H_{\text{stop}} = -p_{\min} \log_2 p_{\min} - (n-1) \cdot \frac{1 - p_{\min}}{n-1} \log_2\!\left(\frac{1 - p_{\min}}{n-1}\right)\]</div>
+<div class="math-block">\[H_{\text{stop}} = -p_{\min} \log_2 p_{\min} - (1 - p_{\min}) \log_2\!\left(\frac{1 - p_{\min}}{n-1}\right)\]</div>
+<h3>7.3. Valors orientatius</h3>
+<p>Amb \(p_{\min} = 0.80\):</p>
+<table>
+<thead>
+<tr><th>\(n\) hipòtesis</th><th>\(H_{\max} = \log_2 n\) (bits)</th><th>\(H_{\text{stop}}\) (bits)</th><th>Fracció d'incertesa restant</th></tr>
+</thead>
+<tbody>
+<tr><td>2</td><td>1.00</td><td>0.72</td><td>72%</td></tr>
+<tr><td>3</td><td>1.58</td><td>0.92</td><td>58%</td></tr>
+<tr><td>4</td><td>2.00</td><td>1.04</td><td>52%</td></tr>
+<tr><td>5</td><td>2.32</td><td>1.12</td><td>48%</td></tr>
+</tbody>
+</table>
+<h3>7.4. Aproximació i criteri complementari</h3>
+<p>La fórmula de \(H_{\text{stop}}\) assumeix que la probabilitat restant es distribueix uniformement, cosa que és una aproximació. Dues distribucions amb el mateix màxim poden tenir entropies diferents:</p>
+<ul>
+<li>\((0.80,\; 0.10,\; 0.10)\): \(H = 0.92\) bits</li>
+<li>\((0.80,\; 0.19,\; 0.01)\): \(H = 0.78\) bits</li>
+</ul>
+<p>La segona té entropia menor, encara que el màxim sigui el mateix, perquè la probabilitat està més concentrada. Per tant, <strong>convé comprovar ambdós criteris de forma complementària</strong>:</p>
+<div class="math-block">\[\text{aturar si } H(\mathbf{p}) &lt; H_{\text{stop}} \text{ i } \max_i P(H_i) \geq p_{\min}\]</div>
+<p>Ambdós criteris no són completament independents: quan \(H_{\text{stop}}\) se'n deriva \(p_{\min}\), el criteri d'entropia no afegeix una exigència diferent del de probabilitat màxima. El criteri de probabilitat màxima garanteix el nivell mínim de confiança a la hipòtesi guanyadora; l'entropia actua com a control complementari de la incertesa global. Com a alternativa, es pot afegir un criteri de separació:</p>
+<div class="math-block">\[P(H_{\text{guanyadora}}) - P(H_{\text{segona}}) \geq \Delta_{\min}\]</div>
+<p>que exigeix no només que la hipòtesi més probable superi \(p_{\min}\), sinó que estigui prou separada de la segona candidata.</p>
+<h3>7.5. Criteris addicionals de parada</h3>
+<p>A més del criteri d'entropia, el sistema ha de contemplar:</p>
+<ul>
+<li><strong>Límit màxim de preguntes</strong>: evita sessions infinites quan la convergència és lenta.</li>
+<li><strong>Guany mínim útil</strong>: si la millor pregunta disponible té \(IG &lt; \varepsilon_{\min}\), el banc de preguntes s'ha esgotat informativament i continuar no millora el diagnòstic.</li>
+<li><strong>Cobertura mínima de conceptes</strong>: assegurar que certs conceptes obligatoris hagin estat avaluats.</li>
+</ul>
+<h3>7.6. Reforç continu sense parada</h3>
+<p>Tot això assumeix un objectiu de <strong>diagnòstic</strong>: estimar l'estat de l'alumne i tancar-lo. En recursos de <strong>pràctica o reforç obert</strong> aquest objectiu canvia: la finalitat no és convergir i aturar-se, sinó sostenir la pràctica. En aquesta manera:</p>
+<ul>
+<li>Pot <strong>no haver-hi criteri de parada</strong>: la sessió continua mentre l'alumne practiqui.</li>
+<li>El posterior no s'interpreta com un diagnòstic tancat, sinó com una <strong>estimació viva</strong> que s'actualitza amb cada resposta i pot reflectir l'aprenentatge ocorregut durant la sessió.</li>
+<li>\(H_{\text{stop}}\) i \(p_{\min}\) no es fan servir per tancar; com a màxim, per <strong>informar</strong> del grau de confiança assolit.</li>
+<li>La selecció en dues fases (§6.4 del protocol) es manté durant tota la sessió: diagnòstic mínim per categoria i, després, reforç del menys dominat.</li>
+</ul>
+<p><strong>Cautela per mida de mostra.</strong> Amb pocs intents, el posterior es pot desplaçar molt per una sola resposta. Per no comunicar un domini infundat, convé exigir-ne una <strong>mostra mínima</strong> per categoria o dimensió (per exemple, 2-4 intents) abans de mostrar nivells alts de domini, i marcar com a provisional l'estimació mentre l'evidència sigui escassa. Aquesta cautela és una decisió de presentació: no altera el posterior bayesià, només com es tradueix a la interfície.</p>
+</section>
+<section id="s8">
+<h2>8. Convenció d'escala entre θ i b</h2>
+<h3>8.1. El problema del punt d'inflexió</h3>
+<p>La corba logística de l'IRT 3PL té el pendent màxim a \(\theta_i = b_q\). Això significa que la pregunta \(q\) és <strong>més discriminant</strong> per a alumnes el nivell dels quals és proper a la dificultat \(b_q\).</p>
+<p>Si el nivell extrem \(\theta_{\max}\) coincideix amb la dificultat extrema \(b_{\max}\), la pregunta més difícil situa el nivell avançat just al punt d'inflexió. En aquest punt, la probabilitat d'encert encara no és alta: amb 4 opcions i \(c_q = 0.25\), val \((1+c_q)/2 = 0.625\). Per tant, encertar aquesta pregunta confirma feblement el nivell avançat.</p>
+<p>Això pot fer que el sistema infrautilitzi les preguntes extremes: no perquè siguin inútils, sinó perquè altres preguntes poden produir una reducció esperada d'incertesa més gran.</p>
+<h3>8.2. La regla del factor 2</h3>
+<p>Per evitar aquest problema, el rang de \(\theta\) ha de ser <strong>estrictament més gran</strong> que el rang de \(b\). En aquest sistema discret, s'adopta com a convenció pràctica:</p>
+<div class="math-block">\[|\theta_{\max}| = 2 \cdot \max_q |b_q|\]</div>
+<p>El factor 2 és una heurística útil, no una regla universal d'IRT estàndard. Es pot ajustar segons el valor de \(a\), de \(c_q\) i de la probabilitat objectiu d'encert per als nivells extrems. Si es vol que un alumne de nivell extrem tingui una probabilitat objectiu \(P^*\) d'encertar una pregunta extrema, es pot aïllar:</p>
+<div class="math-block">\[\theta_{\max} - b_{\max} = \frac{1}{a}\operatorname{logit}\!\left(\frac{P^* - c}{1 - c}\right), \qquad \operatorname{logit}(x) = \ln\frac{x}{1-x}\]</div>
+<p>Així, la separació entre escales queda justificada per una probabilitat desitjada, no per un factor fix.</p>
+<p><strong>Exemple.</strong> Amb 3 nivells de dificultat \(b \in \{-1,\; 0,\; +1\}\):</p>
+<ul>
+<li>Escala incorrecta: \(\theta \in \{-1,\; 0,\; +1\}\) → el nivell avançat i la pregunta difícil tenen el mateix valor; la corba logística dóna \(P(A) = (1 + c_q)/2 \approx 0.625\) per a 4 opcions, un valor mediocre per confirmar el nivell avançat.</li>
+<li>Escala correcta: \(\theta \in \{-2,\; 0,\; +2\}\) → el nivell avançat supera amb comoditat la dificultat extrema; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.82\), un valor prou alt perquè la pregunta sigui informativa.</li>
+</ul>
+<p>on \(\sigma(x) = 1/(1 + e^{-x})\) és la funció sigmoide estàndard.</p>
+<h3>8.3. Càlcul automàtic des del banc de preguntes</h3>
+<p>La forma més robusta és calcular \(\theta_{\max}\) directament a partir de les dificultats del banc:</p>
+<div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
+<p>i distribuir els valors \(\theta_i\) uniformement a \([-\theta_{\max},\; +\theta_{\max}]\). Així, l'escala s'adapta automàticament al banc de preguntes, sense necessitat d'ajust manual.</p>
+</section>
+<section id="s9">
+<h2>9. Exemple numèric complet</h2>
+<h3>9.1. Configuració</h3>
+<ul>
+<li><strong>Hipòtesis</strong>: \(H_1\) (bàsic), \(H_2\) (mitjà), \(H_3\) (avançat)</li>
+<li><strong>Valors</strong>: \(\theta_1 = -2\), \(\theta_2 = 0\), \(\theta_3 = +2\)</li>
+<li><strong>Prior inicial</strong>: \(\mathbf{p}^{(0)} = (0.333,\; 0.333,\; 0.333)\)</li>
+<li><strong>Paràmetre de discriminació</strong>: \(a = 1.5\)</li>
+<li><strong>Criteri de parada</strong>: \(p_{\min} = 0.80\), amb un mínim de 2 preguntes abans de poder finalitzar</li>
+<li><strong>Banc de preguntes</strong> (simplificat):</li>
+</ul>
+<table>
+<thead>
+<tr><th>ID</th><th>Dificultat \(b_q\)</th><th>Opcions \(m_q\)</th><th>\(c_q\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Q1</td><td>\(-1\) (fàcil)</td><td>4</td><td>0.25</td></tr>
+<tr><td>Q2</td><td>\(0\) (mitjana)</td><td>4</td><td>0.25</td></tr>
+<tr><td>Q3</td><td>\(+1\) (difícil)</td><td>4</td><td>0.25</td></tr>
+</tbody>
+</table>
+<h3>9.2. Càlcul de versemblances</h3>
+<p>Per a cada parell \((\theta_i, b_q)\) calculem \(P(A \mid \theta_i, q)\) amb la fórmula IRT 3PL, \(a = 1.5\), \(c = 0.25\):</p>
+<div class="math-block">\[P(A \mid \theta_i, q) = 0.25 + 0.75 \cdot \frac{1}{1 + e^{-1.5(\theta_i - b_q)}}\]</div>
+<p><strong>Per Q1</strong> (\(b_1 = -1\)):</p>
+<table>
+<thead>
+<tr><th>Hipòtesi</th><th>\(\theta_i - b_q\)</th><th>\(e^{-1.5 \cdot x}\)</th><th>\(\sigma\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-2 - (-1) = -1\)</td><td>\(e^{1.5} = 4.48\)</td><td>\(0.182\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(2 - (-1) = +3\)</td><td>\(e^{-4.5} = 0.011\)</td><td>\(0.989\)</td><td>\(0.992\)</td><td>\(0.008\)</td></tr>
+</tbody>
+</table>
+<p><strong>Per Q2</strong> (\(b_2 = 0\)):</p>
+<table>
+<thead>
+<tr><th>Hipòtesi</th><th>\(\theta_i - b_q\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-2\)</td><td>\(0.286\)</td><td>\(0.714\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0\)</td><td>\(0.625\)</td><td>\(0.375\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+2\)</td><td>\(0.964\)</td><td>\(0.036\)</td></tr>
+</tbody>
+</table>
+<p><strong>Per Q3</strong> (\(b_3 = +1\)):</p>
+<table>
+<thead>
+<tr><th>Hipòtesi</th><th>\(\theta_i - b_q\)</th><th>\(P(A)\)</th><th>\(P(F)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>\(H_1\)</td><td>\(-3\)</td><td>\(0.258\)</td><td>\(0.742\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(-1\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+</tbody>
+</table>
+<h3>9.3. Selecció de la primera pregunta</h3>
+<p>Amb prior uniforme \(\mathbf{p} = (0.333, 0.333, 0.333)\), calculem el guany d'informació per a cada pregunta.</p>
+<p><strong>Entropia inicial:</strong></p>
+<div class="math-block">\[H^{(0)} = -3 \cdot 0.333 \cdot \log_2(0.333) = \log_2 3 = 1.585 \text{ bits}\]</div>
+<p><strong>Per Q1</strong> (\(b = -1\)):</p>
+<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.864 + 0.333 \cdot 0.992 = 0.748\]</div>
+<div class="math-block">\[P(F \mid Q1) = 0.252\]</div>
+<p>Posteriors després d'encert:</p>
+<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.748} = 0.172, \quad P(H_2 \mid A) = \frac{0.864 \cdot 0.333}{0.748} = 0.385, \quad P(H_3 \mid A) = 0.443\]</div>
+<p>Entropia posterior si encerta:</p>
+<div class="math-block">\[H_A(Q1) = -(0.172 \log_2 0.172 + 0.385 \log_2 0.385 + 0.443 \log_2 0.443) = 1.488 \text{ bits}\]</div>
+<p>Posteriors després de la fallada:</p>
+<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.252} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
+<p>Entropia posterior si falla:</p>
+<div class="math-block">\[H_F(Q1) = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
+<p>Guany d'informació:</p>
+<div class="math-block">\[IG(Q1) = 1.585 - (0.748 \cdot 1.488 + 0.252 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
+<p><strong>Resum de guanys</strong> (seguint el mateix procediment per a Q2 i Q3):</p>
+<table>
+<thead>
+<tr><th>Pregunta</th><th>\(IG\) (bits)</th></tr>
+</thead>
+<tbody>
+<tr><td>Q1 (\(b = -1\))</td><td><strong>0.280</strong></td></tr>
+<tr><td>Q2 (\(b = 0\))</td><td>\(0.275\)</td></tr>
+<tr><td>Q3 (\(b = +1\))</td><td>\(0.212\)</td></tr>
+</tbody>
+</table>
+<p>Amb \(c_q = 0.25\), la probabilitat d'encert per atzar trenca la simetria entre preguntes fàcils i difícils: una fallada en una pregunta fàcil és molt diagnòstica, mentre que un encert en una pregunta difícil encara es pot explicar parcialment per atzar. En aquesta configuració, <strong>el sistema selecciona Q1</strong>, encara que Q2 queda pràcticament empatada.</p>
+<h3>9.4. Primera resposta: fallada en Q1</h3>
+<p>L'alumne falla Q1. Actualitzem:</p>
+<div class="math-block">\[P(H_1 \mid F, Q1) = \frac{0.613 \cdot 0.333}{0.613 \cdot 0.333 + 0.137 \cdot 0.333 + 0.008 \cdot 0.333} = \frac{0.204}{0.253} = 0.809\]</div>
+<div class="math-block">\[P(H_2 \mid F, Q1) = \frac{0.137 \cdot 0.333}{0.253} = 0.180, \quad P(H_3 \mid F, Q1) = \frac{0.008 \cdot 0.333}{0.253} = 0.011\]</div>
+<div class="math-block">\[\mathbf{p}^{(1)} = (0.809,\; 0.180,\; 0.011)\]</div>
+<p>Entropia després de la fallada:</p>
+<div class="math-block">\[H^{(1)} = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
+<p>L'entropia ha baixat de 1.585 a 0.764 bits. El sistema sospita amb força que l'alumne és de nivell bàsic.</p>
+<h3>9.5. Segona pregunta i encert en Q2</h3>
+<p>Amb \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), el sistema torna a calcular els guanys per a Q2 i Q3 (Q1 ja s'ha fet servir). En aquest estat asimètric, Q2 resulta més informativa perquè ajuda a revisar si la fallada anterior va poder ser accidental.</p>
+<p>L'alumne <strong>encerta Q2</strong> (de dificultat mitjana). Actualitzem amb \(P(A \mid H_i, Q2) = (0.286, 0.625, 0.964)\):</p>
+<div class="math-block">\[P(A \mid Q2, \mathbf{p}^{(1)}) = 0.809 \cdot 0.286 + 0.180 \cdot 0.625 + 0.011 \cdot 0.964 = 0.231 + 0.113 + 0.011 = 0.354\]</div>
+<div class="math-block">\[P(H_1 \mid A, Q2) = \frac{0.286 \cdot 0.809}{0.354} = 0.652, \quad P(H_2 \mid A, Q2) = \frac{0.625 \cdot 0.180}{0.354} = 0.318, \quad P(H_3 \mid A, Q2) = 0.030\]</div>
+<div class="math-block">\[\mathbf{p}^{(2)} = (0.652,\; 0.318,\; 0.030)\]</div>
+<div class="math-block">\[H^{(2)} = -(0.652 \log_2 0.652 + 0.318 \log_2 0.318 + 0.030 \log_2 0.030) = 1.080 \text{ bits}\]</div>
+<p>L'encert en la pregunta mitjana desplaça part de la probabilitat cap a \(H_2\), però la fallada inicial en una pregunta fàcil segueix pesant molt. El diagnòstic queda entre bàsic i mitjà-baix.</p>
+<h3>9.6. Evolució de la sessió</h3>
+<table>
+<thead>
+<tr><th>Pas</th><th>Acció</th><th>\(P(H_1)\)</th><th>\(P(H_2)\)</th><th>\(P(H_3)\)</th><th>\(H\) (bits)</th></tr>
+</thead>
+<tbody>
+<tr><td>0</td><td>Prior inicial</td><td>0.333</td><td>0.333</td><td>0.333</td><td>1.585</td></tr>
+<tr><td>1</td><td>Falla Q1 (fàcil)</td><td>0.809</td><td>0.180</td><td>0.011</td><td>0.764</td></tr>
+<tr><td>2</td><td>Encerta Q2 (mitjana)</td><td>0.652</td><td>0.318</td><td>0.030</td><td>1.080</td></tr>
+</tbody>
+</table>
+<p>Noteu que l'encert a la pregunta mitjana ha pujat l'entropia respecte al pas 1: l'evidència ha repartit més la probabilitat entre \(H_1\) i \(H_2\), augmentant la incertesa. Això és correcte: el sistema segueix descartant gairebé del tot el nivell avançat, però ara dubta més entre bàsic i mitjà.</p>
+<p>Amb \(p_{\min} = 0.80\) i \(n = 3\), el llindar és \(H_{\text{stop}} = 0.92\) bits. L'entropia actual (1.080 bits) és per sobre del llindar, així que el test continua.</p>
+</section>
+<section id="s10">
+<h2>10. Hipòtesis no jeràrquiques</h2>
+<p>La funció logística IRT 3PL assumeix que les hipòtesis tenen un ordre: més θ significa més nivell. Això és adequat per avaluar domini, però no quan les hipòtesis són errors conceptuals alternatius sense relació dordre.</p>
+<p><strong>Exemple.</strong> Suposem tres hipòtesis:</p>
+<ul>
+<li>\(H_A\): confon massa amb pes</li>
+<li>\(H_B\): confon velocitat amb acceleració</li>
+<li>\(H_C\): domini correcte</li>
+</ul>
+<p>En aquest cas no hi ha una escala única de «més o menys nivell». La funció logística no és pas el model apropiat.</p>
+<p><strong>Alternativa.</strong> Definir les versemblances directament segons el diagnòstic esperat de cada pregunta:</p>
+<table>
+<thead>
+<tr><th>Pregunta</th><th>\(P(A \mid H_A)\)</th><th>\(P(A \mid H_B)\)</th><th>\(P(A \mid H_C)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>La massa d'un objecte canvia a la Lluna?</td><td>0.20</td><td>0.80</td><td>0.95</td></tr>
+<tr><td>Un cotxe frenant té acceleració?</td><td>0.75</td><td>0.15</td><td>0.95</td></tr>
+<tr><td>La força és proporcional a la massa?</td><td>0.50</td><td>0.50</td><td>0.90</td></tr>
+</tbody>
+</table>
+<p>Aquestes versemblances les defineix el docent o la IA a partir del coneixement sobre quins errors produeix cada confusió. La <strong>actualització bayesiana és idèntica</strong>; només canvia la font de les versemblances.</p>
+</section>
+<section id="s11">
+<h2>11. Límits del model</h2>
+<h3>11.1. Calibratge inicial</h3>
+<p>Les versemblances generades per la funció logística amb paràmetres assignats per un expert són <strong>estimacions a priori</strong>, no mesures empíriques. Un alumne real pot comportar-se de manera diferent del que prediu el model.</p>
+<p>Si s'acumulen dades reals (respostes de molts alumnes), els paràmetres \(a\), \(b_q\) i \(c_q\) es poden recalibrar mitjançant mètodes d'estimació IRT (màxima versemblança marginal, estimació bayesiana de paràmetres). Sense dades suficients, el model és una aproximació raonable però no una mesura precisa.</p>
+<h3>11.2. Independència condicional</h3>
+<p>L'actualització bayesiana seqüencial assumeix que les respostes són <strong>condicionalment independents</strong> donada la hipòtesi veritable: conèixer \(H_i\) fa irrellevant la correlació entre respostes. Aquesta assumpció es viola quan:</p>
+<ul>
+<li>Les preguntes tracten el mateix concepte molt específic i la resposta a una dona pistes sobre la següent.</li>
+<li>L'alumne aprèn durant el test (la hipòtesi veritable canvia).</li>
+<li>L'alumne respon a l'atzar en preguntes que no ho sap, amb patrons que depenen de la fatiga o del temps.</li>
+</ul>
+<h3>11.3. Estabilitat de les hipòtesis</h3>
+<p>El model assumeix que l'estat de l'alumne no canvia durant la sessió. En sessions curtes d'avaluació diagnòstica això és raonable. En sessions llargues d'aprenentatge adaptatiu, l'alumne pot millorar durant la mateixa interacció, cosa que faria que el posterior convergís cap a una hipòtesi que ja no reflecteix l'estat actual.</p>
+<h3>11.4. Respostes a l'atzar</h3>
+<p>Si l'alumne respon a l'atzar sistemàticament, el paràmetre \(c_q\) només protegeix parcialment: redueix el biaix upward a les versemblances d'encert, però no elimina el soroll. Amb prou respostes aleatòries, el posterior pot convergir cap a hipòtesis incorrectes.</p>
+<h3>11.5. Nombre mínim de preguntes</h3>
+<p>Amb poques preguntes, el posterior pot quedar esbiaixat per coincidències (una ratxa d'encerts o errors no representatius). Imposar un <strong>nombre mínim de preguntes</strong> abans d'activar el criteri de parada, redueix aquest risc, a costa d'allargar la sessió.</p>
+<h3>11.6. El model no substitueix el criteri docent</h3>
+<p>El sistema produeix una <strong>estimació probabilística</strong>, no una veritat absoluta. Els resultats han d'interpretar-se com una ajuda a la decisió educativa, especialment quan:</p>
+<ul>
+<li>La sessió va ser curta o el banc de preguntes era petit.</li>
+<li>L'entropia final supera el llindar \(H_{\text{stop}}\) (diagnòstic provisional).</li>
+<li>L'alumne va mostrar un patró de resposta inusual.</li>
+<li>Les preguntes no havien estat calibrades amb dades reals.</li>
+</ul>
+</section>
+<section id="s12">
+<h2>Referències i lectures addicionals</h2>
+<ul>
+<li><strong>Birnbaum, A.</strong> (1968). Som latent traït models i s'utilitza en inferring an examinee's ability. A Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2a ed.). Wiley. [Entropia de Shannon i informació mútua.]</li>
+<li><strong>van der Linden, WJ &amp; Hambleton, RK.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
+<li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
+</ul>
+<p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José d'Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
+</section>
+</div>
+<footer class="site-footer">
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José d'Haro</a>
+<span class="sep">·</span>
+  Contingut: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+<a href="documentacion_ca.html">← Protocol</a>
+<span class="sep">·</span>
+<a href="index.html">← Inici</a>
+</footer>
+<script>
+(function () {
+  const currentLang = 'ca';
+  const pageMap = {"es": "matematicas.html", "en": "matematicas_en.html", "ca": "matematicas_ca.html"};
+  const labels = {"es": {"copy": "Copiar", "copied": "¡Copiado!"}, "en": {"copy": "Copy", "copied": "Copied!"}, "ca": {"copy": "Copiar", "copied": "Copiat!"}};
+  localStorage.setItem('lang', currentLang);
+
+  function copyTextFrom(elId, btnId) {
+    const el = document.getElementById(elId);
+    const btn = document.getElementById(btnId);
+    if (!el || !btn) return;
+    const text = el.innerText;
+    const copyLabel = labels[currentLang].copy;
+    const copiedLabel = labels[currentLang].copied;
+    function markCopied() {
+      btn.textContent = copiedLabel;
+      btn.classList.add('copied');
+      setTimeout(function() {
+        btn.textContent = copyLabel;
+        btn.classList.remove('copied');
+      }, 2000);
+    }
+    navigator.clipboard.writeText(text).then(markCopied).catch(function() {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      markCopied();
+    });
+  }
+
+  window.copySimplePrompt = function () { copyTextFrom('simple-prompt-text', 'copy-simple-btn'); };
+  window.copyPrompt = function () { copyTextFrom('master-prompt-text', 'copy-prompt-btn'); };
+  window.switchDocLang = function (lang) {
+    localStorage.setItem('lang', lang);
+    window.location.href = pageMap[lang] || pageMap.es;
+  };
+})();
+</script>
+</body>
+</html>
