@@ -1,5 +1,7 @@
 # Especificación operativa para IA
 
+**Versión 1.0**
+
 ## Propósito
 
 Este documento sirve para que una IA implemente recursos educativos adaptativos bayesianos de forma fiable.  
