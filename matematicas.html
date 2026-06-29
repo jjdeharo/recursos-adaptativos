@@ -658,8 +658,7 @@
 <section id="s11">
 <h2>11. Límites del modelo</h2>
 <h3>11.1. Calibración inicial</h3>
-<p>Las verosimilitudes generadas por la función logística con parámetros asignados por un experto son <strong>estimaciones a priori</strong>, no medidas empíricas. Un alumno real puede comportarse de forma diferente a lo que predice el modelo.</p>
-<p>Si se acumulan datos reales (respuestas de muchos alumnos), los parámetros \(a\), \(b_q\) y \(c_q\) pueden recalibrarse mediante métodos de estimación IRT (máxima verosimilitud marginal, estimación bayesiana de parámetros). Sin datos suficientes, el modelo es una aproximación razonable pero no una medida precisa.</p>
+<p>Los parámetros \(a\), \(b_q\) y \(c_q\) se generan automáticamente a partir de valores por defecto y de la estructura de cada pregunta (§4). Son <strong>estimaciones a priori</strong>, no medidas empíricamente calibradas: un alumno real puede responder de forma diferente a lo que predice el modelo. Si se dispusiera de datos de respuesta de una muestra amplia de alumnos, los parámetros podrían refinarse mediante métodos de estimación IRT, pero eso no forma parte de esta metodología.</p>
 <h3>11.2. Independencia condicional</h3>
 <p>La actualización bayesiana secuencial asume que las respuestas son <strong>condicionalmente independientes</strong> dada la hipótesis verdadera: conocer \(H_i\) hace irrelevante la correlación entre respuestas. Esta asunción se viola cuando:</p>
 <ul>
