@@ -184,7 +184,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -256,6 +256,7 @@
 </ul>
 <p>Each distribution \(\mathbf{p}^{(d)}\) over the hypotheses of dimension \(d\) is updated independently using the machinery of §3–§4, but all of them are fed by the <strong>same response</strong>: the overall result updates the belief about level and each subcriterion updates the belief about its corresponding dimension. This makes it possible to distinguish <em>what to practise</em> (level by category) from <em>what to reinforce</em> (diagnosis by dimension).</p>
 <p>Each dimension can have its own random floor \(c^{(d)}\) (see §4.6–4.7), so the same latent value \(\theta\) produces different visible percentages depending on the dimension. The percentages between dimensions <strong>are not directly comparable</strong>; the common reference is \(\theta\). Dimensions that can coexist should not be forced within a single distribution: they are modeled separately (see §9 of the protocol).</p>
+<p>It is worth situating this against the classic model. IRT and Rasch models assume <strong>unidimensionality</strong> (all items measure a single latent attribute) and <strong>local independence</strong> (at a given ability level, the response to one item does not depend on the responses to the others). Under those assumptions, a single distribution over \(\theta\) fully describes the student. The multidimensional state described here <strong>extends</strong> that framework: instead of forcing several attributes within a single dimension —which would violate local independence— it maintains a separate distribution for each dimension and preserves local independence <em>within</em> each one. It is a deliberate generalization, not a breach of the model.</p>
 </section>
 <section id="s3">
 <h2>3. Bayesian inference</h2>
@@ -308,6 +309,7 @@
 <tr><td>\(c_q\)</td><td>Pseudo-chance</td><td>Minimum probability of success; in the absence of empirical data, it can be approximated as \(c_q \approx 1/m\)</td></tr>
 </tbody>
 </table>
+<p>The logistic form is not merely a computational convenience. Its root lies in the family of Rasch models, where taking the logarithm of the odds \(P/(1-P)\) yields an additive scale (<em>logit</em>) on which the probability of success depends only on the difference \(\theta_i - b_q\). That structure is what makes it meaningful to place the student's level and the item's difficulty on the same scale and compare them. In the strict Rasch case (common discrimination \(a\) and \(c = 0\)), this property is known as <strong>specific objectivity</strong>: the comparison between two students does not depend on which items are used, nor the comparison between two items on which students answer them. The three-parameter model generalizes the curve (allowing variable \(a\) and \(c > 0\)) and relaxes that strict objectivity, but keeps the same underlying justification for using the logistic function.</p>
 <h3>4.3. Curve behavior</h3>
 <p>When \(\theta_i \gg b_q\) (the student is well above the difficulty), the exponent \(e^{-a(\theta_i - b_q)} \to 0\) and:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
@@ -424,6 +426,17 @@
 <li>Choose with probability proportional to those weights.</li>
 </ol>
 <p>This combines maximum informative usefulness with thematic diversity.</p>
+<h3>6.5. Comparison with the Item Information Function</h3>
+<p>The dominant criterion in classic adaptive tests (CAT) is not entropy reduction but the <strong>Item Information Function</strong> (IIF), based on Fisher information:</p>
+<div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
+<p>where \(P(\theta)\) is the item's ICC (§4.2) and \(P'(\theta)\) its derivative. The IIF measures how much information the item provides <strong>at a specific point</strong> \(\theta\) on the continuum, and the classic system selects the item that maximizes \(I_q(\hat\theta)\) at the current point estimate of ability.</p>
+<p>This system's criterion —maximum expected entropy reduction (§6.1)— is preferable when the state is represented as a full distribution rather than as a single value \(\hat\theta\), for two reasons:</p>
+<ul>
+<li><strong>It uses the whole distribution, not a point.</strong> The IIF forces the belief to be collapsed into a point estimate \(\hat\theta\) before selecting; if the distribution is wide or multimodal, that point does not represent it well and the IIF may choose an item that is informative only around a value that might not be the true one. Information gain weights <em>all</em> hypotheses by their current probability.</li>
+<li><strong>It is coherent with Bayesian updating.</strong> The system already maintains and updates a distribution via Bayes (§3); measuring an item's usefulness by how much it reduces the entropy of that same distribution uses one framework from start to finish. Introducing the IIF would require mixing a frequentist point estimate with a Bayesian belief.</li>
+</ul>
+<p>Both criteria converge in the limiting case of a highly concentrated distribution: when the belief is almost point-like, maximizing information gain and maximizing the IIF at \(\hat\theta\) select practically the same item. The difference matters above all in the first questions, when uncertainty is high.</p>
+<p>The use of mutual information and KL divergence (§6.3) to select items is well established in Bayesian psychometric research, but its application in <strong>real educational tools</strong> is uncommon: what is usual in the classroom is the IIF or simpler rules (next item of the estimated level, selection by difficulty). The combination this system uses —a distribution of hypotheses, Bayesian updating and selection by Shannon entropy reduction, integrated into a tool for teachers— is, in that sense, infrequent in the educational field.</p>
 </section>
 <section id="s7">
 <h2>7. Stopping criterion</h2>
@@ -669,9 +682,12 @@
 <section id="s12">
 <h2>References and further reading</h2>
 <ul>
-<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. At Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. In Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reprinted by University of Chicago Press, 1980; item difficulty model.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2nd ed.). Wiley. [Shannon entropy and mutual information.]</li>
 <li><strong>van der Linden, W.J. &amp; Hambleton, R.K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Adaptive item selection and information.]</li>
+<li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [In Spanish; open access. IRT: foundations and models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>

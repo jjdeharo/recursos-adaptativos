@@ -184,7 +184,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -256,6 +256,7 @@
 </ul>
 <p>Cada distribució \(\mathbf{p}^{(d)}\) sobre les hipòtesis de la dimensió \(d\) s'actualitza de forma independent amb la maquinària de §3–§4, però totes s'alimenten de la <strong>mateixa resposta</strong>: el resultat global actualitza la creença de nivell i cada subcriteri actualitza la creença de la seva dimensió. Això permet distingir <em>què practicar</em> (nivell per categoria) de <em>què reforçar</em> (diagnòstic per dimensió).</p>
 <p>Cada dimensió pot tenir el seu propi sòl d'atzar \(c^{(d)}\) (vegeu §4.6–4.7), per la qual cosa un mateix valor latent \(\theta\) produeix percentatges visibles diferents segons la dimensió. Els percentatges entre dimensions <strong>no són directament comparables</strong>; la referència comuna és \(\theta\). Les dimensions que poden coexistir no s'han de forçar dins d'una sola distribució: es modelen per separat (vegeu §9 del protocol).</p>
+<p>Convé situar això davant del model clàssic. La TRI i els models de Rasch assumeixen <strong>unidimensionalitat</strong> (tots els ítems mesuren un únic atribut latent) i <strong>independència local</strong> (a un nivell d'habilitat donat, la resposta a un ítem no depèn de les respostes als altres). Sota aquests supòsits, una sola distribució sobre \(\theta\) descriu completament l'alumne. L'estat multidimensional descrit aquí <strong>estén</strong> aquest marc: en lloc de forçar diversos atributs dins d'una única dimensió —cosa que violaria la independència local—, manté una distribució separada per cada dimensió i conserva la independència local <em>dins</em> de cadascuna. És una generalització deliberada, no un incompliment del model.</p>
 </section>
 <section id="s3">
 <h2>3. Inferència bayesiana</h2>
@@ -308,6 +309,7 @@
 <tr><td>\(c_q\)</td><td>Pseudo-atzar</td><td>Probabilitat mínima d'encert; en absència de dades empíriques, s'aproxima com a \(c_q \approx 1/m\)</td></tr>
 </tbody>
 </table>
+<p>La forma logística no és només una conveniència de càlcul. La seva arrel és a la família de models de Rasch, on prendre el logaritme de la raó de probabilitats \(P/(1-P)\) produeix una escala additiva (<em>logit</em>) en què la probabilitat d'encert depèn únicament de la diferència \(\theta_i - b_q\). Aquesta estructura és la que dona sentit a situar el nivell de l'alumne i la dificultat de l'ítem en una mateixa escala i comparar-los. En el cas estricte de Rasch (discriminació comuna \(a\) i \(c = 0\)), aquesta propietat es coneix com a <strong>objectivitat específica</strong>: la comparació entre dos alumnes no depèn de quins ítems es facin servir, ni la comparació entre dos ítems de quins alumnes els responguin. El model de tres paràmetres generalitza la corba (permet \(a\) variable i \(c > 0\)) i relaxa aquesta objectivitat estricta, però conserva la mateixa justificació de fons per emprar la funció logística.</p>
 <h3>4.3. Comportament de la corba</h3>
 <p>Quan \(\theta_i \gg b_q\) (l'alumne està molt per sobre de la dificultat), l'exponent \(e^{-a(\theta_i - b_q)} \to 0\) i:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
@@ -424,6 +426,17 @@
 <li>Escollir amb probabilitat proporcional a aquests pesos.</li>
 </ol>
 <p>Això combina màxima utilitat informativa amb diversitat temàtica.</p>
+<h3>6.5. Comparació amb la Funció d'Informació de l'Ítem</h3>
+<p>El criteri dominant en els tests adaptatius clàssics (CAT) no és la reducció d'entropia, sinó la <strong>Funció d'Informació de l'Ítem</strong> (FII), basada en la informació de Fisher:</p>
+<div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
+<p>on \(P(\theta)\) és la ICC de l'ítem (§4.2) i \(P'(\theta)\) la seva derivada. La FII mesura quanta informació aporta l'ítem <strong>en un punt concret</strong> \(\theta\) del continu, i el sistema clàssic selecciona l'ítem que maximitza \(I_q(\hat\theta)\) en l'estimació puntual actual de l'habilitat.</p>
+<p>El criteri d'aquest sistema —màxima reducció esperada d'entropia (§6.1)— és preferible quan l'estat es representa com una distribució completa, i no com un únic valor \(\hat\theta\), per dues raons:</p>
+<ul>
+<li><strong>Usa tota la distribució, no un punt.</strong> La FII obliga a col·lapsar la creença a una estimació puntual \(\hat\theta\) abans de seleccionar; si la distribució és ampla o multimodal, aquest punt no la representa bé i la FII pot triar un ítem informatiu només al voltant d'un valor que potser no és el veritable. El guany d'informació pondera <em>totes</em> les hipòtesis per la seva probabilitat actual.</li>
+<li><strong>És coherent amb l'actualització bayesiana.</strong> El sistema ja manté i actualitza una distribució per Bayes (§3); mesurar la utilitat d'un ítem per quant redueix l'entropia d'aquesta mateixa distribució fa servir el mateix marc de principi a fi. Introduir la FII obligaria a barrejar una estimació puntual frequentista amb una creença bayesiana.</li>
+</ul>
+<p>Tots dos criteris convergeixen en el cas límit d'una distribució molt concentrada: quan la creença és gairebé puntual, maximitzar el guany d'informació i maximitzar la FII en \(\hat\theta\) seleccionen pràcticament el mateix ítem. La diferència importa sobretot en les primeres preguntes, quan la incertesa és alta.</p>
+<p>L'ús de la informació mútua i la divergència KL (§6.3) per seleccionar ítems està ben establert en la recerca psicomètrica bayesiana, però la seva aplicació en <strong>eines educatives reals</strong> és poc habitual: el que és comú a l'aula és la FII o regles més simples (següent ítem del nivell estimat, selecció per dificultat). La combinació que fa servir aquest sistema —distribució d'hipòtesis, actualització bayesiana i selecció per reducció d'entropia de Shannon, integrada en una eina per a docents— és, en aquest sentit, infreqüent en l'àmbit educatiu.</p>
 </section>
 <section id="s7">
 <h2>7. Criteri de parada</h2>
@@ -669,17 +682,20 @@
 <section id="s12">
 <h2>Referències i lectures addicionals</h2>
 <ul>
-<li><strong>Birnbaum, A.</strong> (1968). Som latent traït models i s'utilitza en inferring an examinee's ability. A Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. A Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reeditat per University of Chicago Press, 1980; model de dificultat dels ítems.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2a ed.). Wiley. [Entropia de Shannon i informació mútua.]</li>
-<li><strong>van der Linden, WJ &amp; Hambleton, RK.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selecció adaptativa d'ítems i informació.]</li>
+<li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En castellà; accés obert. TRI: fonaments i models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José d'Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
+<p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>
 <footer class="site-footer">
-  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José d'Haro</a>
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José de Haro</a>
 <span class="sep">·</span>
   Contingut: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
 <span class="sep">·</span>

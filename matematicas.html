@@ -186,7 +186,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -258,6 +258,7 @@
 </ul>
 <p>Cada distribución \(\mathbf{p}^{(d)}\) sobre las hipótesis de la dimensión \(d\) se actualiza de forma independiente con la maquinaria de §3–§4, pero todas se alimentan de la <strong>misma respuesta</strong>: el resultado global actualiza la creencia de nivel y cada subcriterio actualiza la creencia de su dimensión. Esto permite distinguir <em>qué practicar</em> (nivel por categoría) de <em>qué reforzar</em> (diagnóstico por dimensión).</p>
 <p>Cada dimensión puede tener su propio suelo de azar \(c^{(d)}\) (véase §4.6–4.7), por lo que un mismo valor latente \(\theta\) produce porcentajes visibles distintos según la dimensión. Los porcentajes entre dimensiones <strong>no son directamente comparables</strong>; la referencia común es \(\theta\). Las dimensiones que pueden coexistir no deben forzarse dentro de una sola distribución: se modelan por separado (véase §9 del protocolo).</p>
+<p>Conviene situar esto frente al modelo clásico. La TRI y los modelos de Rasch asumen <strong>unidimensionalidad</strong> (todos los ítems miden un único atributo latente) e <strong>independencia local</strong> (a un nivel de habilidad dado, la respuesta a un ítem no depende de las respuestas a los demás). Bajo esos supuestos, una sola distribución sobre \(\theta\) describe por completo al alumno. El estado multidimensional descrito aquí <strong>extiende</strong> ese marco: en lugar de forzar varios atributos dentro de una única dimensión —lo que violaría la independencia local—, mantiene una distribución separada por cada dimensión y conserva la independencia local <em>dentro</em> de cada una. Es una generalización deliberada, no un incumplimiento del modelo.</p>
 </section>
 <section id="s3">
 <h2>3. Inferencia bayesiana</h2>
@@ -310,6 +311,7 @@
 <tr><td>\(c_q\)</td><td>Pseudo-azar</td><td>Probabilidad mínima de acierto; en ausencia de datos empíricos, se aproxima como \(c_q \approx 1/m\)</td></tr>
 </tbody>
 </table>
+<p>La forma logística no es solo una conveniencia de cálculo. Su raíz está en la familia de modelos de Rasch, donde tomar el logaritmo de la razón de probabilidades \(P/(1-P)\) produce una escala aditiva (<em>logit</em>) en la que la probabilidad de acierto depende únicamente de la diferencia \(\theta_i - b_q\). Esa estructura es la que da sentido a situar el nivel del alumno y la dificultad del ítem en una misma escala y compararlos. En el caso estricto de Rasch (discriminación común \(a\) y \(c = 0\)), esta propiedad se conoce como <strong>objetividad específica</strong>: la comparación entre dos alumnos no depende de qué ítems se usen, ni la comparación entre dos ítems de qué alumnos respondan. El modelo de tres parámetros generaliza la curva (permite \(a\) variable y \(c > 0\)) y relaja esa objetividad estricta, pero conserva la misma justificación de fondo para emplear la función logística.</p>
 <h3>4.3. Comportamiento de la curva</h3>
 <p>Cuando \(\theta_i \gg b_q\) (el alumno está muy por encima de la dificultad), el exponente \(e^{-a(\theta_i - b_q)} \to 0\) y:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
@@ -426,6 +428,17 @@
 <li>Elegir con probabilidad proporcional a esos pesos.</li>
 </ol>
 <p>Esto combina máxima utilidad informativa con diversidad temática.</p>
+<h3>6.5. Comparación con la Función de Información del Ítem</h3>
+<p>El criterio dominante en los tests adaptativos clásicos (CAT) no es la reducción de entropía, sino la <strong>Función de Información del Ítem</strong> (FII), basada en la información de Fisher:</p>
+<div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
+<p>donde \(P(\theta)\) es la ICC del ítem (§4.2) y \(P'(\theta)\) su derivada. La FII mide cuánta información aporta el ítem <strong>en un punto concreto</strong> \(\theta\) del continuo, y el sistema clásico selecciona el ítem que maximiza \(I_q(\hat\theta)\) en la estimación puntual actual de la habilidad.</p>
+<p>El criterio de este sistema —máxima reducción esperada de entropía (§6.1)— es preferible cuando el estado se representa como una distribución completa, y no como un único valor \(\hat\theta\), por dos razones:</p>
+<ul>
+<li><strong>Usa toda la distribución, no un punto.</strong> La FII obliga a colapsar la creencia a una estimación puntual \(\hat\theta\) antes de seleccionar; si la distribución es ancha o multimodal, ese punto no la representa bien y la FII puede elegir un ítem informativo solo alrededor de un valor que quizá no sea el verdadero. La ganancia de información pondera <em>todas</em> las hipótesis por su probabilidad actual.</li>
+<li><strong>Es coherente con la actualización bayesiana.</strong> El sistema ya mantiene y actualiza una distribución por Bayes (§3); medir la utilidad de un ítem por cuánto reduce la entropía de esa misma distribución usa el mismo marco de principio a fin. Introducir la FII obligaría a mezclar una estimación puntual frecuentista con una creencia bayesiana.</li>
+</ul>
+<p>Ambos criterios convergen en el caso límite de una distribución muy concentrada: cuando la creencia es casi puntual, maximizar la ganancia de información y maximizar la FII en \(\hat\theta\) seleccionan prácticamente el mismo ítem. La diferencia importa sobre todo en las primeras preguntas, cuando la incertidumbre es alta.</p>
+<p>El uso de la información mutua y la divergencia KL (§6.3) para seleccionar ítems está bien establecido en la investigación psicométrica bayesiana, pero su aplicación en <strong>herramientas educativas reales</strong> es poco habitual: lo común en el aula es la FII o reglas más simples (siguiente ítem del nivel estimado, selección por dificultad). La combinación que usa este sistema —distribución de hipótesis, actualización bayesiana y selección por reducción de entropía de Shannon, integrada en una herramienta para docentes— es, en ese sentido, infrecuente en el ámbito educativo.</p>
 </section>
 <section id="s7">
 <h2>7. Criterio de parada</h2>
@@ -672,8 +685,11 @@
 <h2>Referencias y lecturas adicionales</h2>
 <ul>
 <li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. En Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reeditado por University of Chicago Press, 1980; modelo de dificultad de ítems.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2.ª ed.). Wiley. [Entropía de Shannon e información mutua.]</li>
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selección adaptativa de ítems e información.]</li>
+<li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En español; acceso abierto. TRI: fundamentos y modelos.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
