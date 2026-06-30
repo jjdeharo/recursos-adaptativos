@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.0**
+**Versión 1.2**
 
 ## Propósito
 
@@ -13,7 +13,7 @@ Si hubiera conflicto entre ambos documentos, prevalece este.
 
 Adjunta este documento a la IA y usa este prompt:
 
-> Lee el documento adjunto e implementa el recurso siguiendo exactamente sus reglas operativas.
+> Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables al tipo de recurso solicitado.
 
 ## Flujo obligatorio
 
@@ -29,7 +29,7 @@ Adjunta este documento a la IA y usa este prompt:
    - salida final esperada.
 2. Si falta información esencial, pregunta solo por lo imprescindible.
 3. Si la información ya está dada, no repitas preguntas y pasa a implementar.
-4. El resultado debe ser una página web estática autocontenida en un único archivo `HTML + CSS + JavaScript`, salvo que se pida explícitamente otro formato.
+4. El resultado debe ser un recurso web estático en `HTML + CSS + JavaScript`, preferentemente sin backend, salvo que se pida explícitamente otro formato. Puede organizarse en uno o varios archivos si eso mejora la claridad, el mantenimiento o la reutilización.
 
 ## Reglas de diseño
 
@@ -122,7 +122,8 @@ Cada pregunta o interacción autocorregible debe tener, cuando proceda:
 - categoría o concepto;
 - criterio de corrección;
 - ayuda o pista opcional;
-- explicación o retroalimentación.
+- retroalimentación mínima tras la respuesta;
+- explicación específica, especialmente si la finalidad principal es aprendizaje, práctica o refuerzo.
 
 Si el recurso es procedural o tutorial, las interacciones pueden no ser preguntas clásicas, pero deben seguir siendo autocorregibles o evaluables de forma explícita.
 
@@ -136,7 +137,7 @@ Para cada candidata disponible:
 4. calcula la entropía esperada posterior;
 5. calcula la ganancia esperada de información.
 
-Selecciona la candidata con mayor ganancia esperada de información.
+Selecciona la candidata con mayor ganancia esperada de información cuando la finalidad principal sea diagnóstica y el objetivo sea estimar un nivel global.
 
 En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
 
@@ -144,6 +145,8 @@ En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de 
 2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es combinar ganancia de información con adecuación de dificultad, penalizando preguntas demasiado alejadas de la zona de trabajo.
 
 No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
+
+En tests adaptativos de diagnóstico global con criterio de parada, no es obligatorio aplicar la fase de refuerzo. En ese caso basta con maximizar la información esperada, diversificando categorías en empates o cuando varias candidatas tengan utilidad equivalente.
 
 Si varias son prácticamente equivalentes:
 
@@ -240,7 +243,7 @@ Si es un itinerario o actividad de aprendizaje, añade además:
 - ayudas usadas;
 - áreas a reforzar.
 
-No declares un dominio alto basándote en muy pocos intentos. Exige una muestra mínima por categoría o dimensión antes de mostrar niveles altos de dominio, y limita o marca como provisional la estimación cuando la evidencia sea escasa.
+No declares un dominio alto basándote en muy pocos intentos. Si el resultado hace afirmaciones por categoría o dimensión, exige una muestra mínima en esas categorías o dimensiones antes de presentarlas como firmes. Si la estimación es global, la muestra mínima puede referirse al conjunto de la sesión; limita o marca como provisional la estimación cuando la evidencia sea escasa.
 
 No devuelvas solo una nota o etiqueta.
 
