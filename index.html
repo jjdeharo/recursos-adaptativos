@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Recursos educativos adaptativos bayesianos</title>
+  <script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}());</script>
   <style>
     :root {
       --primary: #4f46e5;
@@ -234,6 +235,35 @@
     }
     .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
     .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+    .theme-toggle {
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-left: 0.4rem;
+      line-height: 1;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+    }
+    [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
+    [data-theme="dark"] .doc-item,
+    [data-theme="dark"] .example-card,
+    [data-theme="dark"] .protocol-link { background: #162032; border-color: #334155; }
+    [data-theme="dark"] .dl-btn { background: #2d2060; color: #c4b5fd; }
+    [data-theme="dark"] .dl-btn:hover { background: #3d2b80; }
   </style>
 </head>
 <body>
@@ -243,6 +273,7 @@
     <button class="lang-btn" data-lang="es" onclick="setLang('es')">ES</button>
     <button class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
     <button class="lang-btn" data-lang="ca" onclick="setLang('ca')">CA</button>
+    <button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button>
   </div>
   <h1 data-i18n="h1">Recursos educativos adaptativos bayesianos</h1>
   <p data-i18n="header_sub">Protocolo para crear recursos educativos que se adaptan al alumno usando inferencia bayesiana y entropía de Shannon</p>
@@ -482,6 +513,23 @@
   };
 
   applyLang(getLang());
+
+  var themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(stored) {
+    var dark = stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (themeBtn) themeBtn.textContent = stored === null ? '💻' : stored === 'dark' ? '🌙' : '☀️';
+  }
+  window.toggleTheme = function () {
+    var stored = localStorage.getItem('theme');
+    var next = stored === null ? 'dark' : stored === 'dark' ? 'light' : null;
+    if (next === null) { localStorage.removeItem('theme'); } else { localStorage.setItem('theme', next); }
+    applyTheme(next);
+  };
+  applyTheme(localStorage.getItem('theme'));
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) applyTheme(null);
+  });
 })();
 </script>
 

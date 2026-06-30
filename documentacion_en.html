@@ -5,6 +5,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Protocol for Bayesian adaptive educational systems</title>
+<script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}());</script>
 <script>
     MathJax = {
       tex: {
@@ -235,10 +236,39 @@
     }
     .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
     .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+    .theme-toggle {
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-left: 0.4rem;
+      line-height: 1;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #162032;
+    }
+    [data-theme="dark"] tbody tr:nth-child(even) { background: #243044; }
+    [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
+    [data-theme="dark"] thead tr { background: #4338ca; }
+    [data-theme="dark"] blockquote { background: #1e1a40; color: #a5b4fc; }
+    [data-theme="dark"] blockquote strong { color: #a5b4fc; }
 </style>
 </head>
 <body>
-<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn active" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn active" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Toggle dark/light theme" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
 <a class="back-link" href="index.html">← Home</a>
 <h1>Protocol for Bayesian adaptive educational systems</h1>
 <p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
@@ -752,6 +782,23 @@ The formal development of the mechanisms described in this protocol —Bayesian 
     localStorage.setItem('lang', lang);
     window.location.href = pageMap[lang] || pageMap.es;
   };
+
+  var themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(stored) {
+    var dark = stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (themeBtn) themeBtn.textContent = stored === null ? '💻' : stored === 'dark' ? '🌙' : '☀️';
+  }
+  window.toggleTheme = function () {
+    var stored = localStorage.getItem('theme');
+    var next = stored === null ? 'dark' : stored === 'dark' ? 'light' : null;
+    if (next === null) { localStorage.removeItem('theme'); } else { localStorage.setItem('theme', next); }
+    applyTheme(next);
+  };
+  applyTheme(localStorage.getItem('theme'));
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) applyTheme(null);
+  });
 })();
 </script>
 </body>

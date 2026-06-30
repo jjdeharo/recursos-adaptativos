@@ -7,6 +7,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</title>
+<script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}());</script>
 <script>
     MathJax = {
       tex: {
@@ -179,10 +180,37 @@
     }
     .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
     .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+    .theme-toggle {
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-left: 0.4rem;
+      line-height: 1;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #162032;
+    }
+    [data-theme="dark"] tbody tr:nth-child(even) { background: #243044; }
+    [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
+    [data-theme="dark"] thead tr { background: #4338ca; }
 </style>
 </head>
 <body>
-<div class="header"><div class="lang-switcher"><button class="lang-btn active" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button></div>
+<div class="header"><div class="lang-switcher"><button class="lang-btn active" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
@@ -684,10 +712,10 @@
 <section id="s12">
 <h2>Referencias y lecturas adicionales</h2>
 <ul>
-<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. En Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley.</li>
+<li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. En Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley. [Modelo logístico de tres parámetros; referencia fundacional de la TRI.]</li>
 <li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reeditado por University of Chicago Press, 1980; modelo de dificultad de ítems.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2.ª ed.). Wiley. [Entropía de Shannon e información mutua.]</li>
-<li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer.</li>
+<li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referencia enciclopédica de modelos y aplicaciones de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selección adaptativa de ítems e información.]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En español; acceso abierto. TRI: fundamentos y modelos.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
@@ -746,6 +774,23 @@
     localStorage.setItem('lang', lang);
     window.location.href = pageMap[lang] || pageMap.es;
   };
+
+  var themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(stored) {
+    var dark = stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (themeBtn) themeBtn.textContent = stored === null ? '💻' : stored === 'dark' ? '🌙' : '☀️';
+  }
+  window.toggleTheme = function () {
+    var stored = localStorage.getItem('theme');
+    var next = stored === null ? 'dark' : stored === 'dark' ? 'light' : null;
+    if (next === null) { localStorage.removeItem('theme'); } else { localStorage.setItem('theme', next); }
+    applyTheme(next);
+  };
+  applyTheme(localStorage.getItem('theme'));
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) applyTheme(null);
+  });
 })();
 </script>
 </body>
