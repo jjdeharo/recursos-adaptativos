@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.2**
+**Version 1.3**
 
 ## Purpose
 
@@ -278,6 +278,15 @@ If the teacher does not specify parameters:
 - Do not limit the output to a bare score.
 - Do not treat as binary a response that admits degrees: use partial credit.
 - Do not declare high mastery with an insufficient sample.
+
+## Validation and reliability (optional)
+
+These checks are not part of the mandatory flow: they are an optional layer that increases the honesty of the diagnosis without requiring empirical data. Apply them when the purpose is diagnostic and the result will be used to make decisions.
+
+- **Individual pattern fit (person-fit).** When closing a session, assess whether the response pattern is coherent with the estimated level. Compute the standardized index `l_z` from the probabilities of a correct answer that the model assigns to the answered questions under the most probable hypothesis. If `l_z` is strongly negative (as a rough guide, `< -2`), flag the diagnosis as unreliable even if the posterior is high: it usually indicates responses inconsistent with difficulty, slips, or guessing. It is a caution signal, not a formal test; with few questions it is only indicative.
+- **Design separability (Monte Carlo).** As a property of the test (not of the student), estimate how reliably the bank distinguishes the levels: generate synthetic respondents located at the `theta` of each hypothesis, run the test on them reusing the same adaptive selection and the same stopping criterion, and build the confusion matrix (true level versus diagnosed). Present it as reliability under the model, never as empirical validity: the respondents come from the model itself, so it measures whether the design discriminates the levels, not whether the parameters reflect reality. **This validation is a tool for the resource's author, not for students: it must not be shown in the student interface.** Implement it in a separate file or utility that the author can run when designing or reviewing the test, not in the material the student receives.
+
+See `matematicas.html §11.7–§11.8` for the formulas and the full framing.
 
 ## Note on the Model
 

@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.2**
+**Versión 1.3**
 
 ## Propósito
 
@@ -278,6 +278,15 @@ Si el docente no especifica parámetros:
 - No limitar la salida a una puntuación desnuda.
 - No tratar como binaria una respuesta que admite grados: usa crédito parcial.
 - No declarar dominio alto con muestra insuficiente.
+
+## Validación y fiabilidad (opcional)
+
+Estas comprobaciones no forman parte del flujo obligatorio: son una capa opcional que aumenta la honestidad del diagnóstico sin requerir datos empíricos. Aplícalas cuando la finalidad sea diagnóstica y el resultado vaya a usarse para decidir.
+
+- **Ajuste del patrón individual (person-fit).** Al cerrar una sesión, evalúa si el patrón de respuestas es coherente con el nivel estimado. Calcula el índice estandarizado `l_z` a partir de las probabilidades de acierto que el modelo asigna a las preguntas respondidas bajo la hipótesis más probable. Si `l_z` es muy negativo (orientativamente `< -2`), marca el diagnóstico como poco fiable aunque el posterior sea alto: suele indicar respuestas incoherentes con la dificultad, descuidos o azar. Es señal de cautela, no prueba formal; con pocas preguntas es solo orientativo.
+- **Separabilidad del diseño (Monte Carlo).** Como propiedad del test (no del alumno), estima con qué fiabilidad el banco distingue los niveles: genera respondentes sintéticos situados en el `theta` de cada hipótesis, hazles el test reutilizando la misma selección adaptativa y el mismo criterio de parada, y construye la matriz de confusión (nivel real frente a diagnosticado). Preséntala como fiabilidad bajo el modelo, nunca como validez empírica: los respondentes salen del propio modelo, así que mide si el diseño discrimina los niveles, no si los parámetros reflejan la realidad. **Esta validación es una herramienta del creador del recurso, no del alumnado: no debe mostrarse en la interfaz del alumno.** Impleméntala en un archivo o utilidad aparte que el autor pueda ejecutar al diseñar o revisar el test, no en el material que recibe el alumno.
+
+Consulta `matematicas.html §11.7–§11.8` para las fórmulas y el encuadre completo.
 
 ## Nota sobre el modelo
 

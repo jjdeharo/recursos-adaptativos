@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.2**
+**Versió 1.3**
 
 ## Propòsit
 
@@ -278,6 +278,15 @@ Si el docent no especifica paràmetres:
 - No limitar la sortida a una puntuació nua.
 - No tractar com a binària una resposta que admet graus: utilitza crèdit parcial.
 - No declarar domini alt amb una mostra insuficient.
+
+## Validació i fiabilitat (opcional)
+
+Aquestes comprovacions no formen part del flux obligatori: són una capa opcional que augmenta l'honestedat del diagnòstic sense requerir dades empíriques. Aplica-les quan la finalitat sigui diagnòstica i el resultat s'hagi d'usar per decidir.
+
+- **Ajust del patró individual (person-fit).** En tancar una sessió, avalua si el patró de respostes és coherent amb el nivell estimat. Calcula l'índex estandarditzat `l_z` a partir de les probabilitats d'encert que el model assigna a les preguntes respostes sota la hipòtesi més probable. Si `l_z` és molt negatiu (orientativament `< -2`), marca el diagnòstic com a poc fiable encara que el posterior sigui alt: sol indicar respostes incoherents amb la dificultat, descuits o atzar. És un senyal de cautela, no una prova formal; amb poques preguntes és només orientatiu.
+- **Separabilitat del disseny (Monte Carlo).** Com a propietat del test (no de l'alumne), estima amb quina fiabilitat el banc distingeix els nivells: genera respondents sintètics situats en el `theta` de cada hipòtesi, fes-los el test reutilitzant la mateixa selecció adaptativa i el mateix criteri d'aturada, i construeix la matriu de confusió (nivell real enfront de diagnosticat). Presenta-la com a fiabilitat sota el model, mai com a validesa empírica: els respondents surten del propi model, així que mesura si el disseny discrimina els nivells, no si els paràmetres reflecteixen la realitat. **Aquesta validació és una eina del creador del recurs, no de l'alumnat: no s'ha de mostrar en la interfície de l'alumne.** Implementa-la en un fitxer o utilitat a part que l'autor pugui executar en dissenyar o revisar el test, no en el material que rep l'alumne.
+
+Consulta `matematicas.html §11.7–§11.8` per a les fórmules i l'enquadrament complet.
 
 ## Nota sobre el model
 

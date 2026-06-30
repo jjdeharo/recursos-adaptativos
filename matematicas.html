@@ -214,7 +214,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.1</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.2</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -230,7 +230,7 @@
 <li><a href="#s8">8. Convención de escala entre θ y b</a></li>
 <li><a href="#s9">9. Ejemplo numérico completo</a></li>
 <li><a href="#s10">10. Hipótesis no jerárquicas</a></li>
-<li><a href="#s11">11. Límites del modelo</a></li>
+<li><a href="#s11">11. Límites y validación del modelo</a></li>
 <li><a href="#s12">Referencias y lecturas adicionales</a></li>
 </ul>
 <p style="margin-top:0.9rem; font-size:0.88rem;">Fundamento matemático del <a href="documentacion.html">protocolo de evaluación adaptativa</a>. Las secciones 1–6 desarrollan la teoría completa; la sección 9 ofrece un ejemplo numérico paso a paso.</p>
@@ -684,7 +684,7 @@
 <p>Estas verosimilitudes las define el docente o la IA a partir del conocimiento sobre qué errores produce cada confusión. La <strong>actualización bayesiana es idéntica</strong>; solo cambia la fuente de las verosimilitudes.</p>
 </section>
 <section id="s11">
-<h2>11. Límites del modelo</h2>
+<h2>11. Límites y validación del modelo</h2>
 <h3>11.1. Calibración inicial</h3>
 <p>Los parámetros \(a\), \(b_q\) y \(c_q\) se generan automáticamente a partir de valores por defecto y de la estructura de cada pregunta (§4). Son <strong>estimaciones a priori</strong>, no medidas empíricamente calibradas: un alumno real puede responder de forma diferente a lo que predice el modelo. Si se dispusiera de datos de respuesta de una muestra amplia de alumnos, los parámetros podrían refinarse mediante métodos de estimación IRT, pero eso no forma parte de esta metodología. No obstante, el uso de valores por defecto contrastados (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) está respaldado por la literatura en TRI como punto de partida razonable en ausencia de datos empíricos (véase §4.2 y §12).</p>
 <h3>11.2. Independencia condicional</h3>
@@ -708,6 +708,23 @@
 <li>El alumno mostró un patrón de respuestas inusual.</li>
 <li>Las preguntas no habían sido calibradas con datos reales.</li>
 </ul>
+<h3>11.7. Validación del ajuste individual (person-fit)</h3>
+<p>Los límites §11.2–§11.5 describen situaciones en que un alumno concreto puede no ajustarse al modelo. Conviene detectarlas de forma cuantitativa, sin datos empíricos externos, a partir del propio patrón de respuestas de la sesión: esto es lo que mide un estadístico de ajuste de la persona (<em>person-fit</em>).</p>
+<p>Sea un alumno que ha respondido \(N\) preguntas, con resultado \(x_q \in \{0, 1\}\) (acierto/fallo) en la pregunta \(q\), y sea \(p_q = P(A \mid \hat\theta, q)\) la probabilidad de acierto que el modelo asigna a esa pregunta bajo el nivel estimado \(\hat\theta\) (la hipótesis más probable del posterior final). La log-verosimilitud observada del patrón es:</p>
+<div class="math-block">\[l_0 = \sum_q \left[ x_q \ln p_q + (1 - x_q) \ln(1 - p_q) \right]\]</div>
+<p>Si el alumno fuese realmente del nivel \(\hat\theta\), esta cantidad tendría valor esperado y varianza:</p>
+<div class="math-block">\[\mathbb{E}[l_0] = \sum_q \left[ p_q \ln p_q + (1 - p_q) \ln(1 - p_q) \right]\]</div>
+<div class="math-block">\[\mathrm{Var}[l_0] = \sum_q p_q (1 - p_q) \left[ \ln \frac{p_q}{1 - p_q} \right]^2\]</div>
+<p>El índice estandarizado \(l_z\) (Drasgow, Levine y Williams, 1985) es:</p>
+<div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
+<p>que, bajo el modelo, se distribuye aproximadamente como \(N(0, 1)\). Valores muy negativos (orientativamente \(l_z &lt; -2\)) señalan un patrón improbable bajo el nivel estimado —típicamente, acertar preguntas difíciles y fallar fáciles, descuidos o respuestas al azar—: el diagnóstico, aunque el posterior lo dé como seguro, puede no ser fiable para ese alumno. Valores cercanos a \(0\) indican coherencia.</p>
+<p>Esto cuantifica la señal cualitativa de §11.6: la entropía mide cuán concentrada está la creencia del modelo, pero no si el patrón observado es compatible con esa creencia; el person-fit cubre ese flanco. <strong>Limitación:</strong> \(l_z\) es una aproximación asintótica; con pocas preguntas su distribución se aleja de la normal y el umbral es orientativo, una señal de cautela, no una prueba formal.</p>
+<h3>11.8. Validación del diseño por simulación (Monte Carlo)</h3>
+<p>El person-fit valida el diagnóstico de un alumno concreto; cuestión distinta es si el test en su conjunto —banco y parámetros— separa bien los niveles. Como los parámetros son a priori y no calibrados (§11.1), no puede responderse con datos reales, pero sí examinarse el comportamiento del propio modelo mediante simulación de Monte Carlo.</p>
+<p>El procedimiento genera respondentes sintéticos situados en el \(\theta_i\) de cada hipótesis. Para un respondente de nivel \(\theta_i\), cada respuesta se simula como un ensayo de Bernoulli con probabilidad \(P(A \mid \theta_i, q)\) dada por la ICC (§4.2), aplicándole la misma selección adaptativa (§6) y el mismo criterio de parada (§7) que a un alumno real. Repitiendo muchas veces por nivel se estima la matriz de confusión:</p>
+<div class="math-block">\[C_{ij} = P(\text{diagnóstico} = H_j \mid \text{nivel verdadero} = H_i)\]</div>
+<p>La diagonal \(C_{ii}\) es la tasa de acierto por nivel; los elementos fuera de la diagonal, las confusiones. De ella se derivan la exactitud global y la longitud media del test.</p>
+<p><strong>Límite esencial:</strong> los respondentes se generan con el mismo modelo que luego los clasifica, de modo que <strong>no es una validación empírica</strong>. Mide la coherencia interna y la separabilidad del diseño —si ni siquiera respondentes ideales situados en el \(\theta\) de cada nivel se distinguen bien, el banco no discrimina esos niveles—, pero no garantiza que los \(\theta_i\) y las dificultades \(b_q\) correspondan a la realidad. Es, en términos bayesianos, una comprobación <em>pre-posterior</em> del procedimiento de decisión. Para validez real siguen haciendo falta datos de alumnado (§11.1). Aun así, es un diagnóstico del diseño valioso y barato, calculable antes de aplicar el test a nadie.</p>
 </section>
 <section id="s12">
 <h2>Referencias y lecturas adicionales</h2>
@@ -717,11 +734,12 @@
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2.ª ed.). Wiley. [Entropía de Shannon e información mutua.]</li>
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referencia enciclopédica de modelos y aplicaciones de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selección adaptativa de ítems e información.]</li>
+<li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Índices estandarizados de ajuste de la persona (person-fit), \(l_z\).]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En español; acceso abierto. TRI: fundamentos y modelos.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.1). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.2). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
 <p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.1</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.2</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -228,7 +228,7 @@
 <li><a href="#s8">8. Scaling convention between θ and b</a></li>
 <li><a href="#s9">9. Complete numerical example</a></li>
 <li><a href="#s10">10. Non-hierarchical hypotheses</a></li>
-<li><a href="#s11">11. Limits of the model</a></li>
+<li><a href="#s11">11. Limits and validation of the model</a></li>
 <li><a href="#s12">References and further reading</a></li>
 </ul>
 <p style="margin-top:0.9rem; font-size:0.88rem;">Mathematical foundation of the <a href="documentacion_en.html">adaptive assessment protocol</a>. Sections 1–6 develop the full theory; section 9 provides a step-by-step numerical example.</p>
@@ -682,7 +682,7 @@
 <p>These likelihoods are defined by the teacher or the AI based on knowledge of which errors each confusion produces. The <strong>Bayesian update is identical</strong>; only the source of the likelihoods changes.</p>
 </section>
 <section id="s11">
-<h2>11. Limits of the model</h2>
+<h2>11. Limits and validation of the model</h2>
 <h3>11.1. Initial calibration</h3>
 <p>The parameters \(a\), \(b_q\) and \(c_q\) are generated automatically from default values and the structure of each question (§4). They are <strong>a priori estimates</strong>, not empirically calibrated measures: a real student may respond differently from what the model predicts. If response data from a large sample of students were available, the parameters could be refined using IRT estimation methods, but that is not part of this methodology. Nevertheless, the use of well-established default values (\(a = 1.5\), \(c_q \approx 1/m_q\)) is supported by the IRT literature as a reasonable starting point in the absence of empirical data (see §4.2 and §12).</p>
 <h3>11.2. Conditional independence</h3>
@@ -706,6 +706,23 @@
 <li>The student showed an unusual pattern of responses.</li>
 <li>The questions had not been calibrated with real data.</li>
 </ul>
+<h3>11.7. Validating individual fit (person-fit)</h3>
+<p>Limits §11.2–§11.5 describe situations in which a particular student may not conform to the model. It is useful to detect them quantitatively, without external empirical data, from the student's own response pattern in the session: this is what a person-fit statistic measures.</p>
+<p>Consider a student who has answered \(N\) questions, with outcome \(x_q \in \{0, 1\}\) (correct/incorrect) on question \(q\), and let \(p_q = P(A \mid \hat\theta, q)\) be the probability of a correct answer that the model assigns to that question under the estimated level \(\hat\theta\) (the most probable hypothesis of the final posterior). The observed log-likelihood of the pattern is:</p>
+<div class="math-block">\[l_0 = \sum_q \left[ x_q \ln p_q + (1 - x_q) \ln(1 - p_q) \right]\]</div>
+<p>If the student were really at level \(\hat\theta\), this quantity would have expected value and variance:</p>
+<div class="math-block">\[\mathbb{E}[l_0] = \sum_q \left[ p_q \ln p_q + (1 - p_q) \ln(1 - p_q) \right]\]</div>
+<div class="math-block">\[\mathrm{Var}[l_0] = \sum_q p_q (1 - p_q) \left[ \ln \frac{p_q}{1 - p_q} \right]^2\]</div>
+<p>The standardized index \(l_z\) (Drasgow, Levine and Williams, 1985) is:</p>
+<div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
+<p>which, under the model, is approximately distributed as \(N(0, 1)\). Strongly negative values (as a rough guide, \(l_z &lt; -2\)) signal a pattern that is improbable under the estimated level —typically, getting hard questions right and easy ones wrong, slips, or random guessing—: the diagnosis, even if the posterior reports it as confident, may not be reliable for that student. Values close to \(0\) indicate coherence.</p>
+<p>This quantifies the qualitative signal of §11.6: entropy measures how concentrated the model's belief is, but not whether the observed pattern is compatible with that belief; person-fit covers that gap. <strong>Limitation:</strong> \(l_z\) is an asymptotic approximation; with few questions its distribution departs from the normal and the threshold is indicative, a caution signal, not a formal test.</p>
+<h3>11.8. Validating the design by simulation (Monte Carlo)</h3>
+<p>Person-fit validates the diagnosis of a particular student; a different question is whether the test as a whole —bank and parameters— separates the levels well. Since the parameters are a priori and not calibrated (§11.1), this cannot be answered with real data, but the model's own behaviour can be examined through Monte Carlo simulation.</p>
+<p>The procedure generates synthetic respondents located at the \(\theta_i\) of each hypothesis. For a respondent of level \(\theta_i\), each response is simulated as a Bernoulli trial with probability \(P(A \mid \theta_i, q)\) given by the ICC (§4.2), applying the same adaptive selection (§6) and the same stopping criterion (§7) as for a real student. Repeating this many times per level estimates the confusion matrix:</p>
+<div class="math-block">\[C_{ij} = P(\text{diagnosis} = H_j \mid \text{true level} = H_i)\]</div>
+<p>The diagonal \(C_{ii}\) is the hit rate per level; the off-diagonal elements, the confusions. From it follow the global accuracy and the average test length.</p>
+<p><strong>Essential limit:</strong> the respondents are generated with the same model that then classifies them, so <strong>this is not an empirical validation</strong>. It measures the internal coherence and separability of the design —if not even ideal respondents located exactly at the \(\theta\) of each level can be told apart, the bank does not discriminate those levels—, but it does not guarantee that the \(\theta_i\) and the difficulties \(b_q\) correspond to reality. It is, in Bayesian terms, a <em>pre-posterior</em> check of the decision procedure. Real validity still requires student data (§11.1). Even so, it is a valuable and cheap diagnostic of the design, computable before applying the test to anyone.</p>
 </section>
 <section id="s12">
 <h2>References and further reading</h2>
@@ -715,11 +732,12 @@
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2nd ed.). Wiley. [Shannon entropy and mutual information.]</li>
 <li><strong>van der Linden, W.J. &amp; Hambleton, R.K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Encyclopedic reference on IRT models and applications.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Adaptive item selection and information.]</li>
+<li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Standardized person-fit indices, \(l_z\).]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [In Spanish; open access. IRT: foundations and models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.1). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.2). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
 <p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

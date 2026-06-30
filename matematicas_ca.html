@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.1</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.2</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -228,7 +228,7 @@
 <li><a href="#s8">8. Convenció d'escala entre θ i b</a></li>
 <li><a href="#s9">9. Exemple numèric complet</a></li>
 <li><a href="#s10">10. Hipòtesis no jeràrquiques</a></li>
-<li><a href="#s11">11. Límits del model</a></li>
+<li><a href="#s11">11. Límits i validació del model</a></li>
 <li><a href="#s12">Referències i lectures addicionals</a></li>
 </ul>
 <p style="margin-top:0.9rem; font-size:0.88rem;">Fonament matemàtic del <a href="documentacion_ca.html">protocol d'avaluació adaptativa</a>. Les seccions 1–6 desenvolupen la teoria completa; la secció 9 ofereix un exemple numèric pas a pas.</p>
@@ -682,7 +682,7 @@
 <p>Aquestes versemblances les defineix el docent o la IA a partir del coneixement sobre quins errors produeix cada confusió. La <strong>actualització bayesiana és idèntica</strong>; només canvia la font de les versemblances.</p>
 </section>
 <section id="s11">
-<h2>11. Límits del model</h2>
+<h2>11. Límits i validació del model</h2>
 <h3>11.1. Calibratge inicial</h3>
 <p>Els paràmetres \(a\), \(b_q\) i \(c_q\) es generen automàticament a partir de valors per defecte i de l'estructura de cada pregunta (§4). Són <strong>estimacions a priori</strong>, no mesures empíricament calibrades: un alumne real pot respondre de manera diferent del que prediu el model. Si es disposés de dades de resposta d'una mostra àmplia d'alumnes, els paràmetres podrien refinar-se mitjançant mètodes d'estimació IRT, però això no forma part d'aquesta metodologia. No obstant això, l'ús de valors per defecte contrastats (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) està recolzat per la literatura en TRI com a punt de partida raonable en absència de dades empíriques (vegeu §4.2 i §12).</p>
 <h3>11.2. Independència condicional</h3>
@@ -706,6 +706,23 @@
 <li>L'alumne va mostrar un patró de resposta inusual.</li>
 <li>Les preguntes no havien estat calibrades amb dades reals.</li>
 </ul>
+<h3>11.7. Validació de l'ajust individual (person-fit)</h3>
+<p>Els límits §11.2–§11.5 descriuen situacions en què un alumne concret pot no ajustar-se al model. Convé detectar-les de manera quantitativa, sense dades empíriques externes, a partir del propi patró de respostes de la sessió: això és el que mesura un estadístic d'ajust de la persona (<em>person-fit</em>).</p>
+<p>Sigui un alumne que ha respost \(N\) preguntes, amb resultat \(x_q \in \{0, 1\}\) (encert/error) a la pregunta \(q\), i sigui \(p_q = P(A \mid \hat\theta, q)\) la probabilitat d'encert que el model assigna a aquesta pregunta sota el nivell estimat \(\hat\theta\) (la hipòtesi més probable del posterior final). La log-versemblança observada del patró és:</p>
+<div class="math-block">\[l_0 = \sum_q \left[ x_q \ln p_q + (1 - x_q) \ln(1 - p_q) \right]\]</div>
+<p>Si l'alumne fos realment del nivell \(\hat\theta\), aquesta quantitat tindria valor esperat i variància:</p>
+<div class="math-block">\[\mathbb{E}[l_0] = \sum_q \left[ p_q \ln p_q + (1 - p_q) \ln(1 - p_q) \right]\]</div>
+<div class="math-block">\[\mathrm{Var}[l_0] = \sum_q p_q (1 - p_q) \left[ \ln \frac{p_q}{1 - p_q} \right]^2\]</div>
+<p>L'índex estandarditzat \(l_z\) (Drasgow, Levine i Williams, 1985) és:</p>
+<div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
+<p>que, sota el model, es distribueix aproximadament com \(N(0, 1)\). Valors molt negatius (orientativament \(l_z &lt; -2\)) assenyalen un patró improbable sota el nivell estimat —típicament, encertar preguntes difícils i fallar les fàcils, descuits o respostes a l'atzar—: el diagnòstic, encara que el posterior el doni com a segur, pot no ser fiable per a aquest alumne. Valors propers a \(0\) indiquen coherència.</p>
+<p>Això quantifica el senyal qualitatiu de §11.6: l'entropia mesura com de concentrada està la creença del model, però no si el patró observat és compatible amb aquesta creença; el person-fit cobreix aquest flanc. <strong>Limitació:</strong> \(l_z\) és una aproximació asimptòtica; amb poques preguntes la seva distribució s'allunya de la normal i el llindar és orientatiu, un senyal de cautela, no una prova formal.</p>
+<h3>11.8. Validació del disseny per simulació (Monte Carlo)</h3>
+<p>El person-fit valida el diagnòstic d'un alumne concret; una qüestió diferent és si el test en conjunt —banc i paràmetres— separa bé els nivells. Com que els paràmetres són a priori i no calibrats (§11.1), no es pot respondre amb dades reals, però sí examinar el comportament del propi model mitjançant simulació de Monte Carlo.</p>
+<p>El procediment genera respondents sintètics situats en el \(\theta_i\) de cada hipòtesi. Per a un respondent de nivell \(\theta_i\), cada resposta es simula com un assaig de Bernoulli amb probabilitat \(P(A \mid \theta_i, q)\) donada per la ICC (§4.2), aplicant-li la mateixa selecció adaptativa (§6) i el mateix criteri d'aturada (§7) que a un alumne real. Repetint-ho moltes vegades per nivell s'estima la matriu de confusió:</p>
+<div class="math-block">\[C_{ij} = P(\text{diagnòstic} = H_j \mid \text{nivell veritable} = H_i)\]</div>
+<p>La diagonal \(C_{ii}\) és la taxa d'encert per nivell; els elements fora de la diagonal, les confusions. D'ella es deriven l'exactitud global i la longitud mitjana del test.</p>
+<p><strong>Límit essencial:</strong> els respondents es generen amb el mateix model que després els classifica, de manera que <strong>no és una validació empírica</strong>. Mesura la coherència interna i la separabilitat del disseny —si ni tan sols respondents ideals situats en el \(\theta\) de cada nivell es distingeixen bé, el banc no discrimina aquests nivells—, però no garanteix que els \(\theta_i\) i les dificultats \(b_q\) corresponguin a la realitat. És, en termes bayesians, una comprovació <em>pre-posterior</em> del procediment de decisió. Per a validesa real encara calen dades d'alumnat (§11.1). Tot i així, és un diagnòstic del disseny valuós i barat, calculable abans d'aplicar el test a ningú.</p>
 </section>
 <section id="s12">
 <h2>Referències i lectures addicionals</h2>
@@ -715,11 +732,12 @@
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2a ed.). Wiley. [Entropia de Shannon i informació mútua.]</li>
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referència enciclopèdica de models i aplicacions de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selecció adaptativa d'ítems i informació.]</li>
+<li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Índexs estandarditzats d'ajust de la persona (person-fit), \(l_z\).]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En castellà; accés obert. TRI: fonaments i models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.1). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.2). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>
