@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.0**
+**Versió 1.2**
 
 ## Propòsit
 
@@ -13,7 +13,7 @@ Si hi hagués conflicte entre tots dos documents, preval aquest.
 
 Adjunta aquest document a la IA i utilitza aquest prompt:
 
-> Llegeix el document adjunt i implementa el recurs seguint exactament les seves regles operatives.
+> Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables al tipus de recurs sol·licitat.
 
 ## Flux obligatori
 
@@ -29,7 +29,7 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
    - sortida final esperada.
 2. Si falta informació essencial, pregunta només per allò imprescindible.
 3. Si la informació ja ha estat donada, no repeteixis preguntes i passa a implementar.
-4. El resultat ha de ser una pàgina web estàtica autocontinguda en un únic fitxer `HTML + CSS + JavaScript`, llevat que s'hagi demanat explícitament un altre format.
+4. El resultat ha de ser un recurs web estàtic en `HTML + CSS + JavaScript`, preferentment sense backend, llevat que s'hagi demanat explícitament un altre format. Es pot organitzar en un o diversos fitxers si això millora la claredat, el manteniment o la reutilització.
 
 ## Regles de disseny
 
@@ -122,7 +122,8 @@ Cada pregunta o interacció autocorregible ha de tenir, quan escaigui:
 - categoria o concepte;
 - criteri de correcció;
 - ajuda o pista opcional;
-- explicació o retroalimentació.
+- retroalimentació mínima després de la resposta;
+- explicació específica, especialment si la finalitat principal és aprenentatge, pràctica o reforç.
 
 Si el recurs és procedural o tutorial, les interaccions poden no ser preguntes clàssiques, però han de continuar sent autocorregibles o avaluables de manera explícita.
 
@@ -136,7 +137,7 @@ Per a cada candidata disponible:
 4. calcula l'entropia esperada posterior;
 5. calcula el guany esperat d'informació.
 
-Selecciona la candidata amb un guany esperat d'informació més gran.
+Selecciona la candidata amb un guany esperat d'informació més gran quan la finalitat principal sigui diagnòstica i l'objectiu sigui estimar un nivell global.
 
 En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de problema o conceptes, utilitza una selecció en dues fases:
 
@@ -144,6 +145,8 @@ En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de 
 2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és combinar guany d'informació amb adequació de dificultat, penalitzant preguntes massa allunyades de la zona de treball.
 
 No facis servir l'entropia de Shannon com a únic criteri permanent quan la finalitat principal sigui practicar o reforçar. Shannon indica on hi ha més incertesa diagnòstica; el reforç ha d'atendre també, i preferentment, allò que l'alumne domina menys.
+
+En tests adaptatius de diagnòstic global amb criteri d'aturada, no és obligatori aplicar la fase de reforç. En aquest cas n'hi ha prou amb maximitzar la informació esperada, diversificant categories en empats o quan diverses candidates tenen una utilitat equivalent.
 
 Si diverses candidates són pràcticament equivalents:
 
@@ -240,7 +243,7 @@ Si és un itinerari o activitat d'aprenentatge, afegeix-hi a més:
 - ajudes utilitzades;
 - àrees a reforçar.
 
-No declaris un domini alt basant-te en molt pocs intents. Exigeix una mostra mínima per categoria o dimensió abans de mostrar nivells alts de domini, i limita o marca com a provisional l'estimació quan l'evidència sigui escassa.
+No declaris un domini alt basant-te en molt pocs intents. Si el resultat fa afirmacions per categoria o dimensió, exigeix una mostra mínima en aquestes categories o dimensions abans de presentar-les com a fermes. Si l'estimació és global, la mostra mínima pot referir-se al conjunt de la sessió; limita o marca com a provisional l'estimació quan l'evidència sigui escassa.
 
 No retornis només una nota o etiqueta.
 

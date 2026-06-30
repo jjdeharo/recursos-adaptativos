@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.0**
+**Version 1.2**
 
 ## Purpose
 
@@ -13,7 +13,7 @@ If there is any conflict between both documents, this one takes precedence.
 
 Attach this document to the AI and use the following prompt:
 
-> Read the attached document and implement the resource following its operational rules exactly.
+> Read the attached document and implement the resource following the operational rules applicable to the requested type of resource.
 
 ## Mandatory Workflow
 
@@ -29,7 +29,7 @@ Attach this document to the AI and use the following prompt:
    - expected final output.
 2. If essential information is missing, ask only for what is strictly necessary.
 3. If the information has already been provided, do not repeat questions — proceed directly to implementation.
-4. The result must be a self-contained static web page in a single `HTML + CSS + JavaScript` file, unless another format is explicitly requested.
+4. The result must be a static web resource in `HTML + CSS + JavaScript`, preferably without a backend, unless another format is explicitly requested. It may be organised into one or several files if that improves clarity, maintainability, or reuse.
 
 ## Design Rules
 
@@ -122,7 +122,8 @@ Each question or self-correctable interaction must have, where applicable:
 - category or concept;
 - correction criterion;
 - optional help or hint;
-- explanation or feedback.
+- minimum feedback after the response;
+- specific explanation, especially if the main purpose is learning, practice, or reinforcement.
 
 If the resource is procedural or tutorial in nature, interactions may not be classical questions, but they must still be self-correctable or explicitly assessable.
 
@@ -136,7 +137,7 @@ For each available candidate:
 4. compute the expected posterior entropy;
 5. compute the expected information gain.
 
-Select the candidate with the highest expected information gain.
+Select the candidate with the highest expected information gain when the main purpose is diagnostic and the goal is to estimate a global level.
 
 In adaptive practice or reinforcement resources with multiple categories, problem types, or concepts, use a two-phase selection:
 
@@ -144,6 +145,8 @@ In adaptive practice or reinforcement resources with multiple categories, proble
 2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is to combine information gain with difficulty appropriateness, penalising questions too far from the working zone.
 
 Do not use Shannon entropy as the sole permanent criterion when the main purpose is to practise or reinforce. Shannon indicates where there is the most diagnostic uncertainty; reinforcement must also attend — and preferably give priority — to what the learner has least mastered.
+
+In adaptive tests for global diagnosis with a stopping criterion, it is not mandatory to apply the reinforcement phase. In that case, it is enough to maximise expected information, diversifying categories in ties or when several candidates have equivalent utility.
 
 If several candidates are practically equivalent:
 
@@ -240,7 +243,7 @@ If it is a learning pathway or activity, also add:
 - help used;
 - areas to reinforce.
 
-Do not declare high mastery based on very few attempts. Require a minimum sample per category or dimension before showing high mastery levels, and limit or mark the estimate as provisional when evidence is scarce.
+Do not declare high mastery based on very few attempts. If the result makes claims by category or dimension, require a minimum sample in those categories or dimensions before presenting them as firm. If the estimate is global, the minimum sample may refer to the session as a whole; limit or mark the estimate as provisional when evidence is scarce.
 
 Do not return only a score or label.
 
