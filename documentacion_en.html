@@ -263,8 +263,23 @@
     [data-theme="dark"] tbody tr:nth-child(even) { background: #243044; }
     [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
     [data-theme="dark"] thead tr { background: #4338ca; }
-    [data-theme="dark"] blockquote { background: #1e1a40; color: #a5b4fc; }
+    [data-theme="dark"] blockquote { background: #1e293b; color: #e2e8f0; border-left-color: #818cf8; }
     [data-theme="dark"] blockquote strong { color: #a5b4fc; }
+    [data-theme="dark"] blockquote a { color: #a5b4fc; }
+    .callout {
+      margin-top: 1.4rem;
+      padding: 0.9rem 1.1rem;
+      background: #f0f4ff;
+      border-left: 3px solid #4a6cf7;
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+    }
+    [data-theme="dark"] .callout {
+      background: #1e293b;
+      border-left-color: #818cf8;
+      color: #e2e8f0;
+    }
+    [data-theme="dark"] .callout a { color: #a5b4fc; }
 </style>
 </head>
 <body>
@@ -729,7 +744,7 @@
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Mastery learning; basis of the reinforcement and recovery mechanisms.]</li>
 </ul>
 <p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.1). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
-<p style="margin-top:1.4rem; padding:0.9rem 1.1rem; background:var(--accent-light,#f0f4ff); border-left:3px solid var(--accent,#4a6cf7); border-radius:0 6px 6px 0;">
+<p class="callout">
 The formal development of the mechanisms described in this protocol —Bayesian inference, IRT model, Shannon entropy and adaptive selection— is provided in the companion document <a href="matematicas_en.html">Mathematical Foundations</a>, which includes formulas, proofs and a complete numerical example.
 </p>
 </section>
