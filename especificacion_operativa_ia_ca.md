@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.3**
+**Versió 1.4**
 
 ## Propòsit
 
@@ -79,8 +79,14 @@ Això s'ha de fer després de cada interacció rellevant.
 
 `P(error | H_i, q) = 1 - P(encert | H_i, q)`
 
-- Si les hipòtesis no són jeràrquiques, no facis servir IRT logística. Defineix versemblances diagnòstiques específiques.
+- Si les hipòtesis no són jeràrquiques (errors conceptuals sense ordre), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
+- Assigna cada valor responent: «si l'alumne tingués H_i, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que aquest error distorsiona; alt si l'error no interfereix.
+- Acota cada valor: mai per sota del terra d'atzar `1/m` (m opcions); la hipòtesi de domini al voltant de `0.9`–`0.95`, mai `1`.
+- Si un distractor concret és la resposta que produeix H_i, posa aquesta cel·la a prop del terra o per sota: l'alumne és atret activament cap a aquesta opció equivocada.
+- No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra). El que importa és que la hipòtesi correcta superi clarament les altres en les preguntes que discriminen.
+- L'error és el complementari `1 - P(encert | H_i, q)`. El vector no suma 1: són `n` probabilitats d'encert independents, no una distribució.
 - No facis servir taules fixes globals si cada pregunta pot generar les seves pròpies versemblances.
+- En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre): reporta la hipòtesi de màxima probabilitat posterior (MAP) i la seva probabilitat com a confiança.
 
 ## Respostes amb crèdit parcial
 

@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.2</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.3</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -680,6 +680,51 @@
 </tbody>
 </table>
 <p>Aquestes versemblances les defineix el docent o la IA a partir del coneixement sobre quins errors produeix cada confusió. La <strong>actualització bayesiana és idèntica</strong>; només canvia la font de les versemblances.</p>
+<h3>10.1. Estructura de dades</h3>
+<p>Per operar amb hipòtesis no jeràrquiques se substitueix l'estructura paramètrica (\(a\), \(b_q\), \(c_q\) per pregunta, §4) per una <strong>matriu de versemblança</strong> explícita. Donat un conjunt d'hipòtesis \(\{H_1, \ldots, H_n\}\) i un banc de preguntes \(\{q_1, \ldots, q_m\}\), el model queda completament especificat per una matriu \(\mathbf{M}\) de mida \(m \times n\) les entrades de la qual són la probabilitat d'encert de cada pregunta sota cada hipòtesi:</p>
+<div class="math-block">\[M_{qi} = P(A \mid H_i, q)\]</div>
+<p>Cada pregunta aporta així una fila de la taula de l'exemple anterior. Aquesta matriu és l'equivalent de la ICC (§4.2) del cas ordenat, però <strong>llegida d'una taula</strong> en lloc de calculada amb una funció logística. Si es vol aprofitar quin distractor concret ha triat l'alumne —i no només encert/error—, cada pregunta defineix a més un mapa \(\text{opció} \to \text{hipòtesi}\) i la matriu es generalitza a \(P(R = r \mid H_i, q)\), amb les respostes sumant 1 per a cada parell \((q, i)\).</p>
+<h3>10.2. Substitució en la resta del procediment</h3>
+<p>La resta de la metodologia funciona <strong>sense canvis</strong>, substituint cada aparició de la versemblança paramètrica \(P(A \mid \theta_i, q)\) de la ICC (§4.2) per l'entrada corresponent de la matriu \(M_{qi} = P(A \mid H_i, q)\):</p>
+<ul>
+<li><strong>Actualització bayesiana</strong> (§3): idèntica; la regla \(P(H_i \mid R) \propto P(R \mid H_i)\, P(H_i)\) no depèn que les hipòtesis estiguin ordenades.</li>
+<li><strong>Selecció de pregunta</strong> (§6): l'entropia \(H(\mathbf{p})\) i el guany esperat \(IG(q)\) estan definits sobre qualsevol distribució discreta; es calcula el posterior predictiu de cada pregunta candidata amb \(M_{qi}\) i es tria la que maximitza la reducció esperada d'entropia. La fórmula no canvia.</li>
+<li><strong>Criteri d'aturada</strong> (§7): el llindar \(H_{\text{stop}}\) transfereix directament, ja que opera sobre l'entropia del posterior sobre \(\{H_i\}\), sigui quin sigui el significat de les hipòtesis.</li>
+<li><strong>Person-fit</strong> (§11.7): se substitueix \(p_q = P(A \mid \hat\theta, q)\) per \(p_q = P(A \mid \hat H, q) = M_{q\hat H}\), la fila de la hipòtesi més probable. Les expressions de \(l_0\), \(\mathbb{E}[l_0]\), \(\mathrm{Var}[l_0]\) i \(l_z\) es mantenen.</li>
+<li><strong>Validació Monte Carlo</strong> (§11.8): es generen respondents sintètics de tipus \(H_i\) simulant cada resposta com un assaig de Bernoulli amb probabilitat \(M_{qi}\); la matriu de confusió \(C_{ij}\) ja està escrita en forma nominal.</li>
+</ul>
+<h3>10.3. Report del diagnòstic</h3>
+<p>L'únic que <strong>no</strong> transfereix és el resum del posterior com un punt sobre una escala. Amb hipòtesis ordenades es reporta el valor esperat \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (i un nivell o color derivat d'ell); amb hipòtesis nominals aquest promig ponderat no té sentit, perquè fer la mitjana de «confon massa amb pes» i «domini correcte» no produeix res interpretable. En lloc seu es reporta:</p>
+<ul>
+<li>la <strong>hipòtesi de màxima probabilitat posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), i</li>
+<li>la seva probabilitat \(p_{\hat H}\) com a mesura de confiança del diagnòstic.</li>
+</ul>
+<p>Quan dues hipòtesis competeixen, mostrar la <strong>distribució posterior completa</strong> sobre \(\{H_i\}\) (per exemple, un diagrama de barres) informa més que una sola etiqueta.</p>
+<h3>10.4. Límits de calibratge de la matriu</h3>
+<p>Les entrades \(M_{qi}\) les defineix a priori el docent o la IA a partir del coneixement didàctic sobre quins errors produeix cada confusió; <strong>no estan calibrades amb dades de resposta reals</strong>. Això arrossega les mateixes cauteles que §11.1 i n'afegeix una: a diferència del cas paramètric, no hi ha «valors per defecte contrastats» (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) als quals recórrer —cada cel·la de la matriu és un judici específic—. En conseqüència:</p>
+<ul>
+<li>els errors en la matriu es propaguen directament al posterior, sense el suavitzat que aporta una forma funcional paramètrica;</li>
+<li>la validació Monte Carlo (§11.8) mesura la separabilitat interna d'aquesta matriu, no la seva correspondència amb la realitat (mateixa circularitat que §11.8);</li>
+<li>si es disposés de dades d'una mostra d'alumnes, les entrades es podrien estimar (per exemple, com a freqüències relatives de cada opció de resposta entre alumnes classificats de manera independent en cada error conceptual, o mitjançant un procediment de classes latents / EM), però aquesta estimació queda fora d'aquesta metodologia.</li>
+</ul>
+<h3>10.5. Criteri d'assignació de les versemblances</h3>
+<p>Com que els valors \(M_{qi}\) no surten d'una fórmula (§10.4), convé fixar-los amb un criteri explícit. Cada cel·la respon a una única pregunta: <em>«si l'alumne tingués \(H_i\), amb quina probabilitat encertaria \(q\)?»</em>.</p>
+<p><strong>1. Relació pedagògica pregunta–hipòtesi.</strong> El valor depèn de si la pregunta activa l'error conceptual: si \(q\) ataca just el concepte que \(H_i\) distorsiona, l'alumne tendeix a fallar i \(M_{qi}\) és baixa; si \(q\) no té relació amb aquest error, no interfereix i \(M_{qi}\) és alta (semblant a la fila de domini); en casos intermedis, un valor central. Cada fila \(H_i\) ha de mostrar així la <em>signatura</em> d'aquest error —baixa on el corromp, alta on no arriba—; una fila plana indica que la pregunta no distingeix aquesta hipòtesi.</p>
+<p><strong>2. Ancoratges.</strong> Cada cel·la queda acotada entre dos límits: un <strong>terra d'atzar</strong> \(M_{qi} \geq 1/m\) (amb \(m\) opcions, ningú no baixa de l'encert per casualitat; és el paper de \(c_q\) a §4.2) i un <strong>sostre de descuit</strong> per a la hipòtesi de domini, \(\approx 0.90\text{–}0.95\), mai \(1\) exacte.</p>
+<p><strong>3. Estructura de distractors.</strong> Si la pregunta és d'opció múltiple i un dels distractors és <em>exactament</em> la resposta que produeix \(H_i\), l'alumne no encerta a l'atzar sinó que és atret cap a aquesta opció equivocada: llavors \(M_{qi}\) cau per sota del terra d'atzar. El criteri no és només «fallarà?», sinó «quina resposta equivocada genera aquest error i és entre les opcions?».</p>
+<p><strong>4. Trams gruixuts.</strong> Per a Bayes el decisiu no és el decimal exacte sinó la <strong>separació</strong>: en una pregunta que discrimina, la hipòtesi correcta ha de superar clarament la que l'error fa fallar. N'hi ha prou de treballar per trams:</p>
+<table>
+<thead>
+<tr><th>Situació</th><th>\(P(A \mid H_i, q)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Domini, o l'error no afecta la pregunta</td><td>\(\approx 0.90\)</td></tr>
+<tr><td>Afectació parcial, sense distractor que capturi l'error</td><td>\(\approx 0.50\)</td></tr>
+<tr><td>L'error empeny cap a un distractor concret</td><td>\(\approx 0.15\text{–}0.25\)</td></tr>
+<tr><td>Terra d'atzar (mai per sota)</td><td>\(\approx 1/m\)</td></tr>
+</tbody>
+</table>
+<p>En el cas ordenat aquest mateix judici està empaquetat dins la dificultat \(b_q\) i la logística; el cas nominal només el fa explícit cel·la a cel·la. Un cop plena la matriu, la validació Monte Carlo (§11.8) comprova si el conjunt de judicis separa les hipòtesis, sense necessitat de dades reals.</p>
 </section>
 <section id="s11">
 <h2>11. Límits i validació del model</h2>
@@ -737,7 +782,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.2). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.3). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

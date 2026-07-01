@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.3**
+**Version 1.4**
 
 ## Purpose
 
@@ -79,8 +79,14 @@ This must be done after each relevant interaction.
 
 `P(incorrect | H_i, q) = 1 - P(correct | H_i, q)`
 
-- If the hypotheses are not hierarchical, do not use logistic IRT. Define specific diagnostic likelihoods.
+- If the hypotheses are not hierarchical (misconceptions with no order), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
+- Assign each value by answering: "if the student had H_i, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
+- Bound each value: never below the guessing floor `1/m` (m options); the mastery hypothesis around `0.9`–`0.95`, never `1`.
+- If a specific distractor is the answer H_i produces, place that cell near the floor or below: the student is actively drawn toward that wrong option.
+- Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor). What matters is that the correct hypothesis clearly exceeds the others in discriminating questions.
+- Failure is the complement `1 - P(correct | H_i, q)`. The vector does not sum to 1: they are `n` independent success probabilities, not a distribution.
 - Do not use fixed global tables if each question can generate its own likelihoods.
+- In the final diagnosis do not compute an expected `theta` (meaningless without order): report the maximum a posteriori hypothesis (MAP) and its probability as confidence.
 
 ## Partial Credit Responses
 

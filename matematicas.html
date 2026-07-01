@@ -214,7 +214,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.2</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.3</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -682,6 +682,51 @@
 </tbody>
 </table>
 <p>Estas verosimilitudes las define el docente o la IA a partir del conocimiento sobre qué errores produce cada confusión. La <strong>actualización bayesiana es idéntica</strong>; solo cambia la fuente de las verosimilitudes.</p>
+<h3>10.1. Estructura de datos</h3>
+<p>Para operar con hipótesis no jerárquicas se sustituye la estructura paramétrica (\(a\), \(b_q\), \(c_q\) por pregunta, §4) por una <strong>matriz de verosimilitud</strong> explícita. Dado un conjunto de hipótesis \(\{H_1, \ldots, H_n\}\) y un banco de preguntas \(\{q_1, \ldots, q_m\}\), el modelo queda completamente especificado por una matriz \(\mathbf{M}\) de tamaño \(m \times n\) cuyas entradas son la probabilidad de acierto de cada pregunta bajo cada hipótesis:</p>
+<div class="math-block">\[M_{qi} = P(A \mid H_i, q)\]</div>
+<p>Cada pregunta aporta así una fila de la tabla del ejemplo anterior. Esta matriz es el equivalente de la ICC (§4.2) del caso ordenado, pero <strong>leída de una tabla</strong> en lugar de calculada con una función logística. Si se desea aprovechar qué distractor concreto ha elegido el alumno —y no solo acierto/fallo—, cada pregunta define además un mapa \(\text{opción} \to \text{hipótesis}\) y la matriz se generaliza a \(P(R = r \mid H_i, q)\), con las respuestas sumando 1 para cada par \((q, i)\).</p>
+<h3>10.2. Sustitución en el resto del procedimiento</h3>
+<p>El resto de la metodología funciona <strong>sin cambios</strong>, sustituyendo cada aparición de la verosimilitud paramétrica \(P(A \mid \theta_i, q)\) de la ICC (§4.2) por la entrada correspondiente de la matriz \(M_{qi} = P(A \mid H_i, q)\):</p>
+<ul>
+<li><strong>Actualización bayesiana</strong> (§3): idéntica; la regla \(P(H_i \mid R) \propto P(R \mid H_i)\, P(H_i)\) no depende de que las hipótesis estén ordenadas.</li>
+<li><strong>Selección de pregunta</strong> (§6): la entropía \(H(\mathbf{p})\) y la ganancia esperada \(IG(q)\) están definidas sobre cualquier distribución discreta; se calcula el posterior predictivo de cada pregunta candidata con \(M_{qi}\) y se elige la que maximiza la reducción esperada de entropía. La fórmula no cambia.</li>
+<li><strong>Criterio de parada</strong> (§7): el umbral \(H_{\text{stop}}\) transfiere directamente, pues opera sobre la entropía del posterior sobre \(\{H_i\}\), sea cual sea el significado de las hipótesis.</li>
+<li><strong>Person-fit</strong> (§11.7): se sustituye \(p_q = P(A \mid \hat\theta, q)\) por \(p_q = P(A \mid \hat H, q) = M_{q\hat H}\), la fila de la hipótesis más probable. Las expresiones de \(l_0\), \(\mathbb{E}[l_0]\), \(\mathrm{Var}[l_0]\) y \(l_z\) se mantienen.</li>
+<li><strong>Validación Monte Carlo</strong> (§11.8): se generan respondentes sintéticos de tipo \(H_i\) simulando cada respuesta como un ensayo de Bernoulli con probabilidad \(M_{qi}\); la matriz de confusión \(C_{ij}\) ya está escrita en forma nominal.</li>
+</ul>
+<h3>10.3. Reporte del diagnóstico</h3>
+<p>Lo único que <strong>no</strong> transfiere es el resumen del posterior como un punto sobre una escala. Con hipótesis ordenadas se reporta el valor esperado \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (y un nivel o color derivado de él); con hipótesis nominales ese promedio ponderado carece de sentido, porque promediar «confunde masa con peso» y «dominio correcto» no produce nada interpretable. En su lugar se reporta:</p>
+<ul>
+<li>la <strong>hipótesis de máxima probabilidad posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), y</li>
+<li>su probabilidad \(p_{\hat H}\) como medida de confianza del diagnóstico.</li>
+</ul>
+<p>Cuando dos hipótesis compiten, mostrar la <strong>distribución posterior completa</strong> sobre \(\{H_i\}\) (por ejemplo, un diagrama de barras) informa más que una sola etiqueta.</p>
+<h3>10.4. Límites de calibración de la matriz</h3>
+<p>Las entradas \(M_{qi}\) las define a priori el docente o la IA a partir del conocimiento didáctico sobre qué errores produce cada confusión; <strong>no están calibradas con datos de respuesta reales</strong>. Esto arrastra las mismas cautelas que §11.1 y añade una: a diferencia del caso paramétrico, no hay «valores por defecto contrastados» (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) a los que recurrir —cada celda de la matriz es un juicio específico—. En consecuencia:</p>
+<ul>
+<li>los errores en la matriz se propagan directamente al posterior, sin el suavizado que aporta una forma funcional paramétrica;</li>
+<li>la validación Monte Carlo (§11.8) mide la separabilidad interna de esa matriz, no su correspondencia con la realidad (misma circularidad que §11.8);</li>
+<li>si se dispusiera de datos de una muestra de alumnos, las entradas podrían estimarse (por ejemplo, como frecuencias relativas de cada opción de respuesta entre alumnos clasificados de forma independiente en cada error conceptual, o mediante un procedimiento de clases latentes / EM), pero esa estimación queda fuera de esta metodología.</li>
+</ul>
+<h3>10.5. Criterio de asignación de las verosimilitudes</h3>
+<p>Como los valores \(M_{qi}\) no salen de una fórmula (§10.4), conviene fijarlos con un criterio explícito. Cada celda responde a una única pregunta: <em>«si el alumno tuviera \(H_i\), ¿con qué probabilidad acertaría \(q\)?»</em>.</p>
+<p><strong>1. Relación pedagógica pregunta–hipótesis.</strong> El valor depende de si la pregunta activa el error conceptual: si \(q\) ataca justo el concepto que \(H_i\) distorsiona, el alumno tiende a fallar y \(M_{qi}\) es baja; si \(q\) no tiene relación con ese error, este no interfiere y \(M_{qi}\) es alta (parecida a la fila de dominio); en casos intermedios, un valor central. Cada fila \(H_i\) debe mostrar así la <em>firma</em> de ese error —baja donde lo corrompe, alta donde no llega—; una fila plana indica que la pregunta no distingue esa hipótesis.</p>
+<p><strong>2. Anclajes.</strong> Cada celda queda acotada entre dos límites: un <strong>suelo de azar</strong> \(M_{qi} \geq 1/m\) (con \(m\) opciones, nadie baja del acierto por casualidad; es el papel de \(c_q\) en §4.2) y un <strong>techo de descuido</strong> para la hipótesis de dominio, \(\approx 0.90\text{–}0.95\), nunca \(1\) exacto.</p>
+<p><strong>3. Estructura de distractores.</strong> Si la pregunta es de opción múltiple y uno de los distractores es <em>exactamente</em> la respuesta que produce \(H_i\), el alumno no acierta al azar sino que es atraído hacia esa opción equivocada: entonces \(M_{qi}\) cae por debajo del suelo de azar. El criterio no es solo «¿fallará?», sino «¿qué respuesta equivocada genera este error y está entre las opciones?».</p>
+<p><strong>4. Tramos gruesos.</strong> Para Bayes lo decisivo no es el decimal exacto sino la <strong>separación</strong>: en una pregunta que discrimina, la hipótesis correcta debe superar claramente a la que el error hace fallar. Basta trabajar por tramos:</p>
+<table>
+<thead>
+<tr><th>Situación</th><th>\(P(A \mid H_i, q)\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Dominio, o el error no afecta a la pregunta</td><td>\(\approx 0.90\)</td></tr>
+<tr><td>Afectación parcial, sin distractor que capture el error</td><td>\(\approx 0.50\)</td></tr>
+<tr><td>El error empuja hacia un distractor concreto</td><td>\(\approx 0.15\text{–}0.25\)</td></tr>
+<tr><td>Suelo de azar (nunca por debajo)</td><td>\(\approx 1/m\)</td></tr>
+</tbody>
+</table>
+<p>En el caso ordenado este mismo juicio está empaquetado dentro de la dificultad \(b_q\) y la logística; el caso nominal solo lo hace explícito celda a celda. Una vez rellena la matriz, la validación Monte Carlo (§11.8) comprueba si el conjunto de juicios separa las hipótesis, sin necesidad de datos reales.</p>
 </section>
 <section id="s11">
 <h2>11. Límites y validación del modelo</h2>
@@ -739,7 +784,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.2). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.3). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
 <p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

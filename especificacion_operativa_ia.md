@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.3**
+**Versión 1.4**
 
 ## Propósito
 
@@ -79,8 +79,14 @@ Esto debe hacerse después de cada interacción relevante.
 
 `P(fallo | H_i, q) = 1 - P(acierto | H_i, q)`
 
-- Si las hipótesis no son jerárquicas, no uses IRT logística. Define verosimilitudes diagnósticas específicas.
+- Si las hipótesis no son jerárquicas (errores conceptuales sin orden), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
+- Asigna cada valor respondiendo: «si el alumno tuviera H_i, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
+- Acota cada valor: nunca por debajo del suelo de azar `1/m` (m opciones); la hipótesis de dominio en torno a `0.9`–`0.95`, nunca `1`.
+- Si un distractor concreto es la respuesta que produce H_i, pon esa celda cerca del suelo o por debajo: el alumno es atraído activamente hacia esa opción equivocada.
+- No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo). Lo que importa es que la hipótesis correcta supere claramente a las demás en las preguntas que discriminan.
+- El fallo es el complementario `1 - P(acierto | H_i, q)`. El vector no suma 1: son `n` probabilidades de acierto independientes, no una distribución.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
+- En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden): reporta la hipótesis de máxima probabilidad posterior (MAP) y su probabilidad como confianza.
 
 ## Respuestas con crédito parcial
 

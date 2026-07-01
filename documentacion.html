@@ -289,7 +289,7 @@
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Protocolo para sistemas educativos adaptativos bayesianos</h1>
 <p>Guía técnica para implementar evaluación adaptativa con inferencia bayesiana y entropía de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.2</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.3</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -527,6 +527,7 @@
 <p>La fórmula anterior supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis, lo que no siempre ocurre en distribuciones reales. Por ejemplo, con tres hipótesis, las distribuciones (0,80, 0,10, 0,10) y (0,80, 0,19, 0,01) tienen la misma hipótesis máxima pero distinta entropía. Por tanto, el umbral \(H_{\text{stop}}\) debe entenderse como una <strong>aproximación práctica</strong>, no como un equivalente exacto. En la implementación, conviene comprobar ambos criterios de forma complementaria: entropía por debajo del umbral e hipótesis más probable por encima de \(p_{\min}\).</p>
 <p>Las hipótesis de una misma distribución deben ser mutuamente excluyentes y cubrir las alternativas relevantes para esa decisión. Si varios errores, lagunas o necesidades pueden coexistir, conviene usar distribuciones separadas por concepto, dimensión o categoría, en lugar de forzarlas dentro de una única lista de hipótesis.</p>
 <p>Cuando las hipótesis no son jerárquicas —por ejemplo, distintos errores conceptuales sin relación de orden entre ellos—, la función logística IRT puede no ser el modelo más adecuado, porque asume que existe una escala única de «más o menos nivel». En esos casos conviene definir las verosimilitudes de otra forma: por ejemplo, asignando directamente una probabilidad de acierto alta para las preguntas que diagnostican la hipótesis correcta y una probabilidad más baja para las que la confunden con otras hipótesis. La actualización bayesiana sigue siendo idéntica; solo cambia la forma de generar las verosimilitudes.</p>
+<p>Para asignar esas probabilidades sin datos empíricos conviene un criterio explícito. Por cada pregunta y cada hipótesis, estima: «si el alumno tuviera este error, ¿con qué frecuencia acertaría esta pregunta?». El valor será bajo cuando la pregunta ataca justo el concepto que el error distorsiona, y alto cuando el error no interfiere. Acota cada valor entre un suelo de azar (no menos de \(1/m\), con \(m\) opciones) y un techo inferior a 1 para la hipótesis de dominio (en torno a 0,90–0,95, dejando margen a descuidos). Si la pregunta es de opción múltiple y uno de los distractores es precisamente la respuesta que produce el error, el alumno es atraído hacia esa opción y su probabilidad de acierto cae por debajo del azar. No hace falta afinar el decimal exacto: basta con que, en las preguntas que discriminan, la hipótesis correcta tenga claramente más probabilidad que la que el error hace fallar. La <a href="matematicas.html#s10">formulación matemática (§10.5)</a> detalla estos tramos y su validación.</p>
 </section>
 <section id="s10">
 <h2>10. Tipos de preguntas admisibles</h2>
@@ -746,7 +747,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Evaluación formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprendizaje para el dominio; base de los mecanismos de refuerzo y recuperación.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.2). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.3). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
 <p class="callout">
 El desarrollo formal de los mecanismos descritos en este protocolo —inferencia bayesiana, modelo IRT, entropía de Shannon y selección adaptativa— se encuentra en el documento complementario <a href="matematicas.html">Fundamentos matemáticos</a>, que incluye fórmulas, demostraciones y un ejemplo numérico completo.
 </p>
