@@ -11,6 +11,8 @@ Un recurso educativo adaptativo bayesiano es una aplicación que modifica su com
 
 El protocolo recogido en este sitio define cómo diseñar e implementar ese mecanismo de forma rigurosa. Cualquier modelo de IA puede generar un recurso concreto a partir de él.
 
+Para una introducción divulgativa al método, antes de entrar en la documentación técnica, puedes leer el [artículo de presentación](https://educacion.bilateria.org/metodologia-para-la-creacion-de-sistemas-educativos-adaptativos-bayesianos).
+
 ---
 
 ## Crear un recurso con IA
@@ -67,6 +69,11 @@ Repositorio: [github.com/jjdeharo/bayes-test](https://github.com/jjdeharo/bayes-
 **https://jjdeharo.github.io/bayes-itinerario/**  
 Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno a lo largo de la sesión.  
 Repositorio: [github.com/jjdeharo/bayes-itinerario](https://github.com/jjdeharo/bayes-itinerario)
+
+### Laboratorio de combinatoria
+**https://jjdeharo.github.io/labcom/**  
+Práctica adaptativa que mantiene una distribución bayesiana independiente por cada habilidad implicada (lectura del enunciado, pasos de resolución…) y ajusta el tipo y la dificultad de los problemas al diagnóstico de cada dimensión.  
+Repositorio: [github.com/jjdeharo/labcom](https://github.com/jjdeharo/labcom)
 
 ---
 
