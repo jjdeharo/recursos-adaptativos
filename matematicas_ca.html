@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.5</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.6</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -251,7 +251,7 @@
 <section id="s2">
 <h2>2. Representació probabilística de l'estat de l'alumne</h2>
 <h3>2.1. L'espai d'hipòtesis</h3>
-<p>En lloc d'assignar a l'alumne un valor fix (una nota, una etiqueta), el sistema en manté una <strong>distribució de probabilitats</strong> sobre un conjunt d'hipòtesis mútuament excloents i exhaustives.</p>
+<p>En lloc d'assignar a l'alumne un valor fix (una nota, una etiqueta), el sistema en manté una <strong>distribució de probabilitats</strong> sobre un conjunt d'hipòtesis. En el cas clàssic aquestes hipòtesis són mútuament excloents i exhaustives; quan diversos errors poden coexistir, l'estat es representa millor mitjançant diverses dimensions en paral·lel o mitjançant una distribució sobre perfils complets.</p>
 <p>Sigui \(\mathcal{H} = \{H_1, H_2, \ldots, H_n\}\) el conjunt d'hipòtesis possibles. Per exemple:</p>
 <div class="math-block">\[H_1 = \text{nivell bàsic}, \quad H_2 = \text{nivell mitjà}, \quad H_3 = \text{nivell avançat}\]</div>
 <p>A cada moment, el sistema manté un vector de probabilitats:</p>
@@ -671,7 +671,7 @@
 </section>
 <section id="s10">
 <h2>10. Hipòtesis no jeràrquiques</h2>
-<p>La funció logística IRT 3PL assumeix que les hipòtesis tenen un ordre: més θ significa més nivell. Això és adequat per avaluar domini, però no quan les hipòtesis són categories alternatives sense relació d'ordre entre elles. Poden ser errors conceptuals (per exemple, «confon massa amb pes»), però també estratègies de resolució que empra l'alumne (comptar davant de recuperar un fet memoritzat, mètode additiu davant de multiplicatiu), diferents causes possibles d'un mateix error (llacuna conceptual, descuit de càlcul o mala lectura de l'enunciat), o àrees temàtiques sense jerarquia entre elles. En tots aquests casos les hipòtesis són mútuament excloents, però no es poden situar en una escala de «més o menys».</p>
+<p>La funció logística IRT 3PL assumeix que les hipòtesis tenen un ordre: més θ significa més nivell. Això és adequat per avaluar domini, però no quan les hipòtesis són categories alternatives sense relació d'ordre entre elles. Poden ser errors conceptuals, estratègies de resolució, diferents causes possibles d'un mateix error o àrees temàtiques sense jerarquia entre elles. Si aquestes categories són realment alternatives, es poden modelar com a hipòtesis mútuament excloents. Si, en canvi, diversos errors poden coexistir, no s'han de forçar dins d'una sola llista nominal: convé passar a un model multifactorial o a una distribució sobre perfils complets.</p>
 <p><strong>Exemple.</strong> Suposem tres hipòtesis:</p>
 <ul>
 <li>\(H_A\): confon massa amb pes</li>
@@ -692,25 +692,23 @@
 </table>
 <p>Aquestes versemblances les defineix el docent o la IA a partir del coneixement sobre quins errors produeix cada confusió. La <strong>actualització bayesiana és idèntica</strong>; només canvia la font de les versemblances.</p>
 <h3>10.1. Estructura de dades</h3>
-<p>Per operar amb hipòtesis no jeràrquiques se substitueix l'estructura paramètrica (\(a\), \(b_q\), \(c_q\) per pregunta, §4) per una <strong>matriu de versemblança</strong> explícita. Donat un conjunt d'hipòtesis \(\{H_1, \ldots, H_n\}\) i un banc de preguntes \(\{q_1, \ldots, q_m\}\), el model queda completament especificat per una matriu \(\mathbf{M}\) de mida \(m \times n\) les entrades de la qual són la probabilitat d'encert de cada pregunta sota cada hipòtesi:</p>
+<p>Per operar amb hipòtesis no jeràrquiques excloents se substitueix l'estructura paramètrica (\(a\), \(b_q\), \(c_q\) per pregunta, §4) per una <strong>matriu de versemblança</strong> explícita. Donat un conjunt d'hipòtesis \(\{H_1, \ldots, H_n\}\) i un banc de preguntes \(\{q_1, \ldots, q_m\}\), el model queda completament especificat per una matriu \(\mathbf{M}\) de mida \(m \times n\) les entrades de la qual són la probabilitat d'encert de cada pregunta sota cada hipòtesi:</p>
 <div class="math-block">\[M_{qi} = P(A \mid H_i, q)\]</div>
-<p>Cada pregunta aporta així una fila de la taula de l'exemple anterior. Aquesta matriu és l'equivalent de la ICC (§4.2) del cas ordenat, però <strong>llegida d'una taula</strong> en lloc de calculada amb una funció logística. Si es vol aprofitar quin distractor concret ha triat l'alumne —i no només encert/error—, cada pregunta defineix a més un mapa \(\text{opció} \to \text{hipòtesi}\) i la matriu es generalitza a \(P(R = r \mid H_i, q)\), amb les respostes sumant 1 per a cada parell \((q, i)\).</p>
+<p>Cada pregunta aporta així una fila de la taula de l'exemple anterior. Aquesta matriu és l'equivalent de la ICC (§4.2) del cas ordenat, però <strong>llegida d'una taula</strong> en lloc de calculada amb una funció logística. Si es vol aprofitar quin distractor concret ha triat l'alumne —i no només encert/error—, cada pregunta defineix a més una distribució \(P(R = r \mid H_i, q)\), amb les respostes sumant 1 per a cada parell \((q, i)\).</p>
+<p>Si els errors poden coexistir, el mateix principi s'aplica sobre <strong>perfils</strong> en lloc d'hipòtesis simples. Amb \(k\) factors binaris apareixen fins a \(2^k\) perfils possibles, i l'estructura de dades passa a ser una matriu \(P(R = r \mid \pi_j, q)\), on \(\pi_j\) és un perfil complet. A la pràctica això també es pot factoritzar en diverses dimensions paral·leles si les interaccions entre errors són febles.</p>
 <h3>10.2. Substitució en la resta del procediment</h3>
 <p>La resta de la metodologia funciona <strong>sense canvis</strong>, substituint cada aparició de la versemblança paramètrica \(P(A \mid \theta_i, q)\) de la ICC (§4.2) per l'entrada corresponent de la matriu \(M_{qi} = P(A \mid H_i, q)\):</p>
 <ul>
 <li><strong>Actualització bayesiana</strong> (§3): idèntica; la regla \(P(H_i \mid R) \propto P(R \mid H_i)\, P(H_i)\) no depèn que les hipòtesis estiguin ordenades.</li>
-<li><strong>Selecció de pregunta</strong> (§6): l'entropia \(H(\mathbf{p})\) i el guany esperat \(IG(q)\) estan definits sobre qualsevol distribució discreta; es calcula el posterior predictiu de cada pregunta candidata amb \(M_{qi}\) i es tria la que maximitza la reducció esperada d'entropia. La fórmula no canvia.</li>
+<li><strong>Selecció de pregunta</strong> (§6): l'entropia \(H(\mathbf{p})\) i el guany esperat \(IG(q)\) estan definits sobre qualsevol distribució discreta; es calcula el posterior predictiu de cada pregunta candidata amb \(M_{qi}\) o amb \(P(R=r \mid \pi_j, q)\) i es tria la que maximitza la reducció esperada d'entropia. La fórmula conceptual no canvia, però la mitjana s'ha de fer sobre tots els resultats que l'ítem modela.</li>
 <li><strong>Criteri d'aturada</strong> (§7): el llindar \(H_{\text{stop}}\) transfereix directament, ja que opera sobre l'entropia del posterior sobre \(\{H_i\}\), sigui quin sigui el significat de les hipòtesis.</li>
 <li><strong>Person-fit</strong> (§11.7): se substitueix \(p_q = P(A \mid \hat\theta, q)\) per \(p_q = P(A \mid \hat H, q) = M_{q\hat H}\), la fila de la hipòtesi més probable. Les expressions de \(l_0\), \(\mathbb{E}[l_0]\), \(\mathrm{Var}[l_0]\) i \(l_z\) es mantenen.</li>
-<li><strong>Validació Monte Carlo</strong> (§11.8): es generen respondents sintètics de tipus \(H_i\) simulant cada resposta com un assaig de Bernoulli amb probabilitat \(M_{qi}\); la matriu de confusió \(C_{ij}\) ja està escrita en forma nominal.</li>
+<li><strong>Validació Monte Carlo</strong> (§11.8): es generen respondents sintètics de tipus \(H_i\) o de perfil \(\pi_j\) simulant cada resposta a partir de la distribució que correspongui al model; la matriu de confusió es construeix després sobre hipòtesis excloents o sobre perfils complets, segons el disseny.</li>
 </ul>
 <h3>10.3. Report del diagnòstic</h3>
-<p>L'únic que <strong>no</strong> transfereix és el resum del posterior com un punt sobre una escala. Amb hipòtesis ordenades es reporta el valor esperat \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (i un nivell o color derivat d'ell); amb hipòtesis nominals aquest promig ponderat no té sentit, perquè fer la mitjana de «confon massa amb pes» i «domini correcte» no produeix res interpretable. En lloc seu es reporta:</p>
-<ul>
-<li>la <strong>hipòtesi de màxima probabilitat posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), i</li>
-<li>la seva probabilitat \(p_{\hat H}\) com a mesura de confiança del diagnòstic.</li>
-</ul>
-<p>Quan dues hipòtesis competeixen, mostrar la <strong>distribució posterior completa</strong> sobre \(\{H_i\}\) (per exemple, un diagrama de barres) informa més que una sola etiqueta.</p>
+<p>L'únic que <strong>no</strong> transfereix és el resum del posterior com un punt sobre una escala. Amb hipòtesis ordenades es reporta el valor esperat \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (i un nivell o color derivat d'ell); amb hipòtesis nominals aquest promig ponderat no té sentit.</p>
+<p>Si el model és nominal <strong>excloent</strong>, es pot reportar la <strong>hipòtesi de màxima probabilitat posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), i la seva probabilitat \(p_{\hat H}\) com a confiança. Quan dues hipòtesis competeixen, mostrar la <strong>distribució posterior completa</strong> sobre \(\{H_i\}\) informa més que una sola etiqueta.</p>
+<p>Si el model és <strong>multifactorial</strong>, l'informe final s'ha de fer per factor: per a cada error se'n calcula la probabilitat marginal i es classifica com a <em>present</em>, <em>absent</em> o <em>indeterminat</em> segons el llindar de confiança triat. El resum global passa llavors a ser un <strong>perfil d'errors</strong> (per exemple, «presenta 2 dels 3 errors analitzats») i no una sola etiqueta guanyadora.</p>
 <h3>10.4. Límits de calibratge de la matriu</h3>
 <p>Les entrades \(M_{qi}\) les defineix a priori el docent o la IA a partir del coneixement didàctic sobre quins errors produeix cada confusió; <strong>no estan calibrades amb dades de resposta reals</strong>. Això arrossega les mateixes cauteles que §11.1 i n'afegeix una: a diferència del cas paramètric, no hi ha «valors per defecte contrastats» (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) als quals recórrer —cada cel·la de la matriu és un judici específic—. En conseqüència:</p>
 <ul>
@@ -794,7 +792,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.5). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

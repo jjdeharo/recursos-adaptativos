@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.5**
+**Versió 1.6**
 
 ## Propòsit
 
@@ -80,14 +80,16 @@ Això s'ha de fer després de cada interacció rellevant.
 
 `P(error | H_i, q) = 1 - P(encert | H_i, q)`
 
-- Si les hipòtesis no són jeràrquiques (errors conceptuals sense ordre), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
-- Assigna cada valor responent: «si l'alumne tingués H_i, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que aquest error distorsiona; alt si l'error no interfereix.
-- Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi de domini al voltant de `0.9`–`0.95`, mai `1`.
-- Si un distractor concret és la resposta que produeix H_i, posa aquesta cel·la a prop del terra o per sota: l'alumne és atret activament cap a aquesta opció equivocada.
-- No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra si falla per atzar). El que importa és que la hipòtesi correcta superi clarament les altres en les preguntes que discriminen.
-- L'error és el complementari `1 - P(encert | H_i, q)`. El vector no suma 1: són `n` probabilitats d'encert independents, no una distribució.
+- Si les hipòtesis no són jeràrquiques, distingeix dos casos.
+- Si són **alternatives excloents** (per exemple, estratègia A / estratègia B / domini correcte), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
+- Si els errors o necessitats **poden coexistir**, no els forcis dins d'una sola distribució nominal. Modela una dimensió per factor (`error llarg`, `error del zero`, etc.) o, de manera equivalent, una distribució sobre **perfils complets** (`2^k` combinacions possibles de `k` factors).
+- En aquest cas multifactorial, cada pregunta ha de definir com respon cada perfil. El mínim és una probabilitat d'encert per perfil; encara millor és una distribució per opció `P(R = r | perfil, q)` per aprofitar quin distractor ha triat l'alumne, i no només encert/error.
+- Si parteixes de factors simples, assigna cada valor responent: «si l'alumne tingués aquest error, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que l'error distorsiona; alt si l'error no interfereix.
+- Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi o perfil de domini al voltant de `0.9`–`0.95`, mai `1`.
+- Si un distractor concret és la resposta que produeix un error, la probabilitat d'**aquella opció** ha d'augmentar sota aquell perfil, i la probabilitat d'encert pot quedar a prop del terra o per sota: l'alumne és atret activament cap a aquella resposta equivocada.
+- No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra si falla per atzar). El que importa és que els factors o perfils correctes se separin clarament en les preguntes que discriminen.
 - No facis servir taules fixes globals si cada pregunta pot generar les seves pròpies versemblances.
-- En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre): reporta la hipòtesi de màxima probabilitat posterior (MAP) i la seva probabilitat com a confiança.
+- En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre). Si el model és nominal excloent, pots reportar la hipòtesi MAP i la seva probabilitat. Si el model és multifactorial, reporta per a cada factor si queda **present**, **absent** o **indeterminat**, amb la seva probabilitat marginal o confiança associada.
 
 ## Respostes amb crèdit parcial
 
@@ -100,7 +102,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Casos límit: `s = 1` equival a encert ple; `s = 0` a error ple; `s = 0.5` no aporta informació i deixa el posterior gairebé intacte.
 - Defineix com es calcula `s` de manera explícita i autocorregible: suma ponderada de subcriteris, fracció de passos correctes, proximitat a la solució numèrica, etc. Els pesos han de sumar `1`.
 - No tractis com a binària una resposta que admet graus: perds informació diagnòstica.
-- Per seleccionar la pregunta següent, calcula el guany d'informació amb els dos escenaris binaris (encert i error plens) com a aproximació; la versemblança interpolada es fa servir només en l'actualització, un cop observada la resposta.
+- Per seleccionar la pregunta següent, calcula el guany d'informació sobre els resultats que l'ítem modela realment. Per a ítems binaris o amb crèdit parcial, l'aproximació amb encert i error plens continua essent acceptable; si modeles distractors o perfils complets, fes la mitjana sobre totes les respostes rellevants.
 
 ## Sòl d'atzar en ítems compostos
 
@@ -118,6 +120,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Actualitza amb la mateixa resposta totes les distribucions rellevants: el resultat global alimenta la creença de nivell; cada subcriteteri alimenta la creença de la seva dimensió.
 - Cada dimensió pot tenir el seu propi sòl d'atzar `c` segons el seu nombre d'opcions, de manera que els seus percentatges no són directament comparables entre si: la referència comuna és el valor latent `theta`.
 - No posis en una sola distribució dimensions que poden coexistir: utilitza distribucions separades.
+- Si diverses dimensions diagnòstiques interactuen de manera forta, pots substituir aquestes distribucions independents per una sola distribució sobre perfils complets; el més important és no forçar com a excloents factors que en realitat poden coexistir.
 - El nivell per categoria guia què practicar; el diagnòstic per dimensió guia què explicar o reforçar.
 
 ## Preguntes i activitats

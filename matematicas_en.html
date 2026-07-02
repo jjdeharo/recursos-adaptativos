@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.5</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.6</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -251,7 +251,7 @@
 <section id="s2">
 <h2>2. Probabilistic representation of the student's state</h2>
 <h3>2.1. The hypothesis space</h3>
-<p>Instead of assigning the student a fixed value, such as a grade or label, the system maintains a <strong>probability distribution</strong> over a set of mutually exclusive and exhaustive hypotheses.</p>
+<p>Instead of assigning the student a fixed value, such as a grade or label, the system maintains a <strong>probability distribution</strong> over a set of hypotheses. In the classical case those hypotheses are mutually exclusive and exhaustive; when several errors can coexist, the state is better represented by several parallel dimensions or by a distribution over full profiles.</p>
 <p>Let \(\mathcal{H} = \{H_1, H_2, \ldots, H_n\}\) be the set of possible hypotheses. For example:</p>
 <div class="math-block">\[H_1 = \text{basic level}, \quad H_2 = \text{intermediate level}, \quad H_3 = \text{advanced level}\]</div>
 <p>At each moment, the system maintains a vector of probabilities:</p>
@@ -671,7 +671,7 @@
 </section>
 <section id="s10">
 <h2>10. Non-hierarchical hypotheses</h2>
-<p>The IRT 3PL logistic function assumes that the hypotheses have an order: more θ means more level. This is appropriate for assessing mastery, but not when the hypotheses are alternative categories with no relation of order between them. They may be misconceptions (for example, "confuses mass with weight"), but also resolution strategies the student uses (counting versus retrieving a memorized fact, additive versus multiplicative method), different possible causes of the same error (a conceptual gap, a calculation slip, or misreading the question), or thematic areas with no hierarchy between them. In all these cases the hypotheses are mutually exclusive, but cannot be placed on a scale of "more or less".</p>
+<p>The IRT 3PL logistic function assumes that the hypotheses have an order: more θ means more level. This is appropriate for assessing mastery, but not when the hypotheses are alternative categories with no relation of order between them. They may be misconceptions, resolution strategies, different possible causes of the same error, or thematic areas with no hierarchy between them. If those categories are genuinely alternative, they can be modeled as mutually exclusive hypotheses. If, however, several errors can coexist, they should not be forced into a single nominal list: one should move to a multifactorial model or to a distribution over full profiles.</p>
 <p><strong>Example.</strong> Let's assume three hypotheses:</p>
 <ul>
 <li>\(H_A\): confuse mass with weight</li>
@@ -692,25 +692,23 @@
 </table>
 <p>These likelihoods are defined by the teacher or the AI based on knowledge of which errors each confusion produces. The <strong>Bayesian update is identical</strong>; only the source of the likelihoods changes.</p>
 <h3>10.1. Data structure</h3>
-<p>To operate with non-hierarchical hypotheses, the parametric structure (\(a\), \(b_q\), \(c_q\) per question, §4) is replaced by an explicit <strong>likelihood matrix</strong>. Given a set of hypotheses \(\{H_1, \ldots, H_n\}\) and a bank of questions \(\{q_1, \ldots, q_m\}\), the model is fully specified by a matrix \(\mathbf{M}\) of size \(m \times n\) whose entries are the probability of a correct answer to each question under each hypothesis:</p>
+<p>To operate with exclusive non-hierarchical hypotheses, the parametric structure (\(a\), \(b_q\), \(c_q\) per question, §4) is replaced by an explicit <strong>likelihood matrix</strong>. Given a set of hypotheses \(\{H_1, \ldots, H_n\}\) and a bank of questions \(\{q_1, \ldots, q_m\}\), the model is fully specified by a matrix \(\mathbf{M}\) of size \(m \times n\) whose entries are the probability of a correct answer to each question under each hypothesis:</p>
 <div class="math-block">\[M_{qi} = P(A \mid H_i, q)\]</div>
-<p>Each question thus contributes a row of the table in the previous example. This matrix is the equivalent of the ICC (§4.2) of the ordered case, but <strong>read from a table</strong> instead of computed with a logistic function. If one wants to exploit which specific distractor the student chose —and not just correct/incorrect—, each question additionally defines a map \(\text{option} \to \text{hypothesis}\) and the matrix generalizes to \(P(R = r \mid H_i, q)\), with the responses summing to 1 for each pair \((q, i)\).</p>
+<p>Each question thus contributes a row of the table in the previous example. This matrix is the equivalent of the ICC (§4.2) of the ordered case, but <strong>read from a table</strong> instead of computed with a logistic function. If one wants to exploit which specific distractor the student chose —and not just correct/incorrect—, each question additionally defines a distribution \(P(R = r \mid H_i, q)\), with the responses summing to 1 for each pair \((q, i)\).</p>
+<p>If errors can coexist, the same principle is applied over <strong>profiles</strong> rather than simple hypotheses. With \(k\) binary factors there are up to \(2^k\) possible profiles, and the data structure becomes a matrix \(P(R = r \mid \pi_j, q)\), where \(\pi_j\) is a full profile. In practice this may also be factorized into several parallel dimensions if interactions between errors are weak.</p>
 <h3>10.2. Substitution in the rest of the procedure</h3>
 <p>The rest of the methodology works <strong>unchanged</strong>, replacing every occurrence of the parametric likelihood \(P(A \mid \theta_i, q)\) from the ICC (§4.2) with the corresponding entry of the matrix \(M_{qi} = P(A \mid H_i, q)\):</p>
 <ul>
 <li><strong>Bayesian update</strong> (§3): identical; the rule \(P(H_i \mid R) \propto P(R \mid H_i)\, P(H_i)\) does not depend on the hypotheses being ordered.</li>
-<li><strong>Question selection</strong> (§6): the entropy \(H(\mathbf{p})\) and the expected gain \(IG(q)\) are defined over any discrete distribution; the predictive posterior of each candidate question is computed with \(M_{qi}\) and the one that maximizes the expected reduction in entropy is chosen. The formula does not change.</li>
+<li><strong>Question selection</strong> (§6): the entropy \(H(\mathbf{p})\) and the expected gain \(IG(q)\) are defined over any discrete distribution; the predictive posterior of each candidate question is computed with \(M_{qi}\) or with \(P(R=r \mid \pi_j, q)\), and the one that maximizes the expected reduction in entropy is chosen. The conceptual formula does not change, but the average must run over all outcomes the item models.</li>
 <li><strong>Stopping criterion</strong> (§7): the threshold \(H_{\text{stop}}\) transfers directly, since it operates on the entropy of the posterior over \(\{H_i\}\), whatever the meaning of the hypotheses.</li>
 <li><strong>Person-fit</strong> (§11.7): \(p_q = P(A \mid \hat\theta, q)\) is replaced by \(p_q = P(A \mid \hat H, q) = M_{q\hat H}\), the row of the most probable hypothesis. The expressions for \(l_0\), \(\mathbb{E}[l_0]\), \(\mathrm{Var}[l_0]\) and \(l_z\) are preserved.</li>
-<li><strong>Monte Carlo validation</strong> (§11.8): synthetic respondents of type \(H_i\) are generated by simulating each answer as a Bernoulli trial with probability \(M_{qi}\); the confusion matrix \(C_{ij}\) is already written in nominal form.</li>
+<li><strong>Monte Carlo validation</strong> (§11.8): synthetic respondents of type \(H_i\) or of profile \(\pi_j\) are generated by simulating each response from the distribution that corresponds to the model; the confusion matrix is then built over exclusive hypotheses or full profiles, depending on the design.</li>
 </ul>
 <h3>10.3. Diagnosis reporting</h3>
-<p>The only thing that does <strong>not</strong> transfer is summarizing the posterior as a point on a scale. With ordered hypotheses one reports the expected value \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (and a level or color derived from it); with nominal hypotheses that weighted average is meaningless, because averaging "confuses mass with weight" and "correct mastery" produces nothing interpretable. Instead, one reports:</p>
-<ul>
-<li>the <strong>maximum a posteriori hypothesis</strong> (MAP), \(\hat H = \arg\max_i p_i\), and</li>
-<li>its probability \(p_{\hat H}\) as a measure of diagnostic confidence.</li>
-</ul>
-<p>When two hypotheses compete, showing the <strong>full posterior distribution</strong> over \(\{H_i\}\) (for example, a bar chart) is more informative than a single label.</p>
+<p>The only thing that does <strong>not</strong> transfer is summarizing the posterior as a point on a scale. With ordered hypotheses one reports the expected value \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (and a level or color derived from it); with nominal hypotheses that weighted average is meaningless.</p>
+<p>If the model is <strong>exclusive nominal</strong>, one may report the <strong>maximum a posteriori hypothesis</strong> (MAP), \(\hat H = \arg\max_i p_i\), and its probability \(p_{\hat H}\) as confidence. When two hypotheses compete, showing the <strong>full posterior distribution</strong> over \(\{H_i\}\) is more informative than a single label.</p>
+<p>If the model is <strong>multifactorial</strong>, the final report should be factor-wise: for each error one computes its marginal probability and classifies it as <em>present</em>, <em>absent</em>, or <em>undetermined</em> according to the chosen confidence threshold. The global summary then becomes an <strong>error profile</strong> (for example, “2 of the 3 analysed errors are present”) rather than a single winning label.</p>
 <h3>10.4. Limits of matrix calibration</h3>
 <p>The entries \(M_{qi}\) are defined a priori by the teacher or the AI from didactic knowledge about which errors each confusion produces; they are <strong>not calibrated with real response data</strong>. This carries the same caveats as §11.1 and adds one: unlike the parametric case, there are no "contrasted default values" (\(a = 1{.}5\), \(c_q \approx 1/m_q\)) to fall back on —each cell of the matrix is a specific judgment—. Consequently:</p>
 <ul>
@@ -794,7 +792,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.5). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
 <p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.5**
+**Versión 1.6**
 
 ## Propósito
 
@@ -80,14 +80,16 @@ Esto debe hacerse después de cada interacción relevante.
 
 `P(fallo | H_i, q) = 1 - P(acierto | H_i, q)`
 
-- Si las hipótesis no son jerárquicas (errores conceptuales sin orden), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
-- Asigna cada valor respondiendo: «si el alumno tuviera H_i, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
-- Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis de dominio en torno a `0.9`–`0.95`, nunca `1`.
-- Si un distractor concreto es la respuesta que produce H_i, pon esa celda cerca del suelo o por debajo: el alumno es atraído activamente hacia esa opción equivocada.
-- No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo si falla por azar). Lo que importa es que la hipótesis correcta supere claramente a las demás en las preguntas que discriminan.
-- El fallo es el complementario `1 - P(acierto | H_i, q)`. El vector no suma 1: son `n` probabilidades de acierto independientes, no una distribución.
+- Si las hipótesis no son jerárquicas, distingue dos casos.
+- Si son **alternativas excluyentes** (por ejemplo, estrategia A / estrategia B / dominio correcto), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
+- Si los errores o necesidades **pueden coexistir**, no los metas en una sola distribución nominal. Modela una dimensión por factor (`error largo`, `error cero`, etc.) o, de forma equivalente, una distribución sobre **perfiles completos** (`2^k` combinaciones posibles de `k` factores).
+- En ese caso multifactorial, cada pregunta debe definir cómo responde cada perfil. Lo mínimo es una probabilidad de acierto por perfil; mejor aún, una distribución por opción `P(R = r | perfil, q)` para aprovechar qué distractor ha elegido el alumno, no solo si acertó o falló.
+- Si partes de factores simples, asigna cada valor respondiendo: «si el alumno tuviera este error, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
+- Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis o perfil de dominio en torno a `0.9`–`0.95`, nunca `1`.
+- Si un distractor concreto es la respuesta que produce un error, la probabilidad de **esa opción** debe subir bajo ese perfil, y la de acierto puede quedar cerca del suelo o por debajo: el alumno es atraído activamente hacia esa respuesta equivocada.
+- No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo si falla por azar). Lo importante es que los perfiles o factores correctos se separen claramente en las preguntas que discriminan.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
-- En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden): reporta la hipótesis de máxima probabilidad posterior (MAP) y su probabilidad como confianza.
+- En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden). Si el modelo es nominal excluyente, puedes reportar la hipótesis MAP y su probabilidad. Si el modelo es multifactorial, reporta por cada factor si queda **presente**, **ausente** o **indeterminado**, con su probabilidad marginal o confianza asociada.
 
 ## Respuestas con crédito parcial
 
@@ -100,7 +102,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno; `s = 0.5` no aporta información y deja el posterior casi intacto.
 - Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
 - No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
-- Para seleccionar la siguiente pregunta, calcula la ganancia de información con los dos escenarios binarios (acierto y fallo plenos) como aproximación; la verosimilitud interpolada se usa solo en la actualización, una vez observada la respuesta.
+- Para seleccionar la siguiente pregunta, calcula la ganancia de información con los resultados que realmente modele el ítem. Si trabajas con binario o crédito parcial, la aproximación con acierto y fallo plenos sigue siendo aceptable; si modelas distractores o perfiles completos, promedia sobre todas las respuestas relevantes del ítem.
 
 ## Suelo de azar en ítems compuestos
 
@@ -118,6 +120,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Actualiza con la misma respuesta todas las distribuciones relevantes: el resultado global alimenta la creencia de nivel; cada subcriterio alimenta la creencia de su dimensión.
 - Cada dimensión puede tener su propio suelo de azar `c` según su número de opciones, por lo que sus porcentajes no son directamente comparables entre sí: la referencia común es el valor latente `theta`.
 - No metas en una sola distribución dimensiones que pueden coexistir: usa distribuciones separadas.
+- Si varias dimensiones diagnósticas interactúan de manera fuerte, puedes sustituir las distribuciones independientes por una sola distribución sobre perfiles completos; lo importante es no forzar como excluyentes factores que en realidad pueden coexistir.
 - El nivel por categoría guía qué practicar; el diagnóstico por dimensión guía qué explicar o reforzar.
 
 ## Preguntas y actividades

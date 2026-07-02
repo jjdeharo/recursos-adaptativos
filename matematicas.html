@@ -214,7 +214,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.5</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.6</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -253,7 +253,7 @@
 <section id="s2">
 <h2>2. Representación probabilística del estado del alumno</h2>
 <h3>2.1. El espacio de hipótesis</h3>
-<p>En lugar de asignar al alumno un valor fijo (una nota, una etiqueta), el sistema mantiene una <strong>distribución de probabilidades</strong> sobre un conjunto de hipótesis mutuamente excluyentes y exhaustivas.</p>
+<p>En lugar de asignar al alumno un valor fijo (una nota, una etiqueta), el sistema mantiene una <strong>distribución de probabilidades</strong> sobre un conjunto de hipótesis. En el caso clásico esas hipótesis son mutuamente excluyentes y exhaustivas; cuando varios errores pueden coexistir, el estado se representa mejor mediante varias dimensiones en paralelo o mediante una distribución sobre perfiles completos.</p>
 <p>Sea \(\mathcal{H} = \{H_1, H_2, \ldots, H_n\}\) el conjunto de hipótesis posibles. Por ejemplo:</p>
 <div class="math-block">\[H_1 = \text{nivel básico}, \quad H_2 = \text{nivel medio}, \quad H_3 = \text{nivel avanzado}\]</div>
 <p>En cada momento, el sistema mantiene un vector de probabilidades:</p>
@@ -673,7 +673,7 @@
 </section>
 <section id="s10">
 <h2>10. Hipótesis no jerárquicas</h2>
-<p>La función logística IRT 3PL asume que las hipótesis tienen un orden: más θ significa más nivel. Esto es adecuado para evaluar dominio, pero no cuando las hipótesis son categorías alternativas sin relación de orden entre sí. Pueden ser errores conceptuales (por ejemplo, «confunde masa con peso»), pero también estrategias de resolución que emplea el alumno (contar frente a recuperar un hecho memorizado, método aditivo frente a multiplicativo), distintas causas posibles de un mismo fallo (laguna conceptual, descuido de cálculo o mala lectura del enunciado), o áreas temáticas sin jerarquía entre ellas. En todos estos casos las hipótesis son mutuamente excluyentes, pero no pueden situarse en una escala de «más o menos».</p>
+<p>La función logística IRT 3PL asume que las hipótesis tienen un orden: más θ significa más nivel. Esto es adecuado para evaluar dominio, pero no cuando las hipótesis son categorías alternativas sin relación de orden entre sí. Pueden ser errores conceptuales, estrategias de resolución, distintas causas posibles de un mismo fallo o áreas temáticas sin jerarquía entre ellas. Si esas categorías son realmente alternativas, pueden modelarse como hipótesis mutuamente excluyentes. Si, en cambio, varios errores pueden coexistir, no deben forzarse en una sola lista nominal: conviene pasar a un modelo multifactorial o a una distribución sobre perfiles completos.</p>
 <p><strong>Ejemplo.</strong> Supongamos tres hipótesis:</p>
 <ul>
 <li>\(H_A\): confunde masa con peso</li>
@@ -694,25 +694,23 @@
 </table>
 <p>Estas verosimilitudes las define el docente o la IA a partir del conocimiento sobre qué errores produce cada confusión. La <strong>actualización bayesiana es idéntica</strong>; solo cambia la fuente de las verosimilitudes.</p>
 <h3>10.1. Estructura de datos</h3>
-<p>Para operar con hipótesis no jerárquicas se sustituye la estructura paramétrica (\(a\), \(b_q\), \(c_q\) por pregunta, §4) por una <strong>matriz de verosimilitud</strong> explícita. Dado un conjunto de hipótesis \(\{H_1, \ldots, H_n\}\) y un banco de preguntas \(\{q_1, \ldots, q_m\}\), el modelo queda completamente especificado por una matriz \(\mathbf{M}\) de tamaño \(m \times n\) cuyas entradas son la probabilidad de acierto de cada pregunta bajo cada hipótesis:</p>
+<p>Para operar con hipótesis no jerárquicas excluyentes se sustituye la estructura paramétrica (\(a\), \(b_q\), \(c_q\) por pregunta, §4) por una <strong>matriz de verosimilitud</strong> explícita. Dado un conjunto de hipótesis \(\{H_1, \ldots, H_n\}\) y un banco de preguntas \(\{q_1, \ldots, q_m\}\), el modelo queda completamente especificado por una matriz \(\mathbf{M}\) de tamaño \(m \times n\) cuyas entradas son la probabilidad de acierto de cada pregunta bajo cada hipótesis:</p>
 <div class="math-block">\[M_{qi} = P(A \mid H_i, q)\]</div>
-<p>Cada pregunta aporta así una fila de la tabla del ejemplo anterior. Esta matriz es el equivalente de la ICC (§4.2) del caso ordenado, pero <strong>leída de una tabla</strong> en lugar de calculada con una función logística. Si se desea aprovechar qué distractor concreto ha elegido el alumno —y no solo acierto/fallo—, cada pregunta define además un mapa \(\text{opción} \to \text{hipótesis}\) y la matriz se generaliza a \(P(R = r \mid H_i, q)\), con las respuestas sumando 1 para cada par \((q, i)\).</p>
+<p>Cada pregunta aporta así una fila de la tabla del ejemplo anterior. Esta matriz es el equivalente de la ICC (§4.2) del caso ordenado, pero <strong>leída de una tabla</strong> en lugar de calculada con una función logística. Si se desea aprovechar qué distractor concreto ha elegido el alumno —y no solo acierto/fallo—, cada pregunta define además una distribución \(P(R = r \mid H_i, q)\), con las respuestas sumando 1 para cada par \((q, i)\).</p>
+<p>Si los errores pueden coexistir, el mismo principio se aplica sobre <strong>perfiles</strong> en lugar de hipótesis simples. Con \(k\) factores binarios aparecen hasta \(2^k\) perfiles posibles, y la estructura de datos pasa a ser una matriz \(P(R = r \mid \pi_j, q)\), donde \(\pi_j\) es un perfil completo. En la práctica también puede factorizarse en varias dimensiones paralelas si las interacciones entre errores son débiles.</p>
 <h3>10.2. Sustitución en el resto del procedimiento</h3>
 <p>El resto de la metodología funciona <strong>sin cambios</strong>, sustituyendo cada aparición de la verosimilitud paramétrica \(P(A \mid \theta_i, q)\) de la ICC (§4.2) por la entrada correspondiente de la matriz \(M_{qi} = P(A \mid H_i, q)\):</p>
 <ul>
 <li><strong>Actualización bayesiana</strong> (§3): idéntica; la regla \(P(H_i \mid R) \propto P(R \mid H_i)\, P(H_i)\) no depende de que las hipótesis estén ordenadas.</li>
-<li><strong>Selección de pregunta</strong> (§6): la entropía \(H(\mathbf{p})\) y la ganancia esperada \(IG(q)\) están definidas sobre cualquier distribución discreta; se calcula el posterior predictivo de cada pregunta candidata con \(M_{qi}\) y se elige la que maximiza la reducción esperada de entropía. La fórmula no cambia.</li>
+<li><strong>Selección de pregunta</strong> (§6): la entropía \(H(\mathbf{p})\) y la ganancia esperada \(IG(q)\) están definidas sobre cualquier distribución discreta; se calcula el posterior predictivo de cada pregunta candidata con \(M_{qi}\) o con \(P(R=r \mid \pi_j, q)\) y se elige la que maximiza la reducción esperada de entropía. La fórmula conceptual no cambia, pero el promedio debe hacerse sobre todos los resultados que el ítem modele.</li>
 <li><strong>Criterio de parada</strong> (§7): el umbral \(H_{\text{stop}}\) transfiere directamente, pues opera sobre la entropía del posterior sobre \(\{H_i\}\), sea cual sea el significado de las hipótesis.</li>
 <li><strong>Person-fit</strong> (§11.7): se sustituye \(p_q = P(A \mid \hat\theta, q)\) por \(p_q = P(A \mid \hat H, q) = M_{q\hat H}\), la fila de la hipótesis más probable. Las expresiones de \(l_0\), \(\mathbb{E}[l_0]\), \(\mathrm{Var}[l_0]\) y \(l_z\) se mantienen.</li>
-<li><strong>Validación Monte Carlo</strong> (§11.8): se generan respondentes sintéticos de tipo \(H_i\) simulando cada respuesta como un ensayo de Bernoulli con probabilidad \(M_{qi}\); la matriz de confusión \(C_{ij}\) ya está escrita en forma nominal.</li>
+<li><strong>Validación Monte Carlo</strong> (§11.8): se generan respondentes sintéticos de tipo \(H_i\) o de perfil \(\pi_j\) simulando cada respuesta con la distribución que corresponda al modelo; la matriz de confusión se construye sobre hipótesis exclusivas o sobre perfiles completos, según el diseño.</li>
 </ul>
 <h3>10.3. Reporte del diagnóstico</h3>
-<p>Lo único que <strong>no</strong> transfiere es el resumen del posterior como un punto sobre una escala. Con hipótesis ordenadas se reporta el valor esperado \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (y un nivel o color derivado de él); con hipótesis nominales ese promedio ponderado carece de sentido, porque promediar «confunde masa con peso» y «dominio correcto» no produce nada interpretable. En su lugar se reporta:</p>
-<ul>
-<li>la <strong>hipótesis de máxima probabilidad posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), y</li>
-<li>su probabilidad \(p_{\hat H}\) como medida de confianza del diagnóstico.</li>
-</ul>
-<p>Cuando dos hipótesis compiten, mostrar la <strong>distribución posterior completa</strong> sobre \(\{H_i\}\) (por ejemplo, un diagrama de barras) informa más que una sola etiqueta.</p>
+<p>Lo único que <strong>no</strong> transfiere es el resumen del posterior como un punto sobre una escala. Con hipótesis ordenadas se reporta el valor esperado \(\mathbb{E}[\theta] = \sum_i p_i\, \theta_i\) (y un nivel o color derivado de él); con hipótesis nominales ese promedio ponderado carece de sentido.</p>
+<p>Si el modelo es nominal <strong>excluyente</strong>, puede reportarse la <strong>hipótesis de máxima probabilidad posterior</strong> (MAP), \(\hat H = \arg\max_i p_i\), y su probabilidad \(p_{\hat H}\) como confianza. Cuando dos hipótesis compiten, mostrar la <strong>distribución posterior completa</strong> sobre \(\{H_i\}\) informa más que una sola etiqueta.</p>
+<p>Si el modelo es <strong>multifactorial</strong>, el reporte final debe hacerse por factor: para cada error se calcula su probabilidad marginal y se clasifica como <em>presente</em>, <em>ausente</em> o <em>indeterminado</em> según el umbral de confianza elegido. El resumen global pasa entonces a ser un <strong>perfil de errores</strong> (por ejemplo, «presenta 2 de los 3 errores analizados») y no una sola etiqueta ganadora.</p>
 <h3>10.4. Límites de calibración de la matriz</h3>
 <p>Las entradas \(M_{qi}\) las define a priori el docente o la IA a partir del conocimiento didáctico sobre qué errores produce cada confusión; <strong>no están calibradas con datos de respuesta reales</strong>. Esto arrastra las mismas cautelas que §11.1 y añade una: a diferencia del caso paramétrico, no hay «valores por defecto contrastados» (\(a = 1{,}5\), \(c_q \approx 1/m_q\)) a los que recurrir —cada celda de la matriz es un juicio específico—. En consecuencia:</p>
 <ul>
@@ -796,7 +794,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.5). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
 <p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

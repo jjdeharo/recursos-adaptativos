@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.5**
+**Version 1.6**
 
 ## Purpose
 
@@ -80,14 +80,16 @@ This must be done after each relevant interaction.
 
 `P(incorrect | H_i, q) = 1 - P(correct | H_i, q)`
 
-- If the hypotheses are not hierarchical (misconceptions with no order), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
-- Assign each value by answering: "if the student had H_i, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
-- Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis around `0.9`–`0.95`, never `1`.
-- If a specific distractor is the answer H_i produces, place that cell near the floor or below: the student is actively drawn toward that wrong option.
-- Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor when failing by guessing). What matters is that the correct hypothesis clearly exceeds the others in discriminating questions.
-- Failure is the complement `1 - P(correct | H_i, q)`. The vector does not sum to 1: they are `n` independent success probabilities, not a distribution.
+- If the hypotheses are not hierarchical, distinguish two cases.
+- If they are **mutually exclusive alternatives** (for example, strategy A / strategy B / correct mastery), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
+- If the errors or needs **can coexist**, do not force them into a single nominal distribution. Model one dimension per factor (`longer-decimal`, `zero-ignoring`, etc.) or, equivalently, a distribution over **full profiles** (`2^k` combinations for `k` factors).
+- In that multifactorial case, each question should define how each profile responds. The minimum is a probability of success by profile; better still is an option-level distribution `P(R = r | profile, q)` so that the chosen distractor carries evidence, not only correct/incorrect.
+- If you start from simple factors, assign each value by asking: "if the student had this error, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
+- Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis or mastery profile around `0.9`–`0.95`, never `1`.
+- If a specific distractor is the answer an error produces, the probability of **that option** should rise under that profile, and the probability of success may fall near or below chance: the student is actively drawn toward that wrong option.
+- Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor when failing by guessing). What matters is that the correct factors or profiles separate clearly in discriminating questions.
 - Do not use fixed global tables if each question can generate its own likelihoods.
-- In the final diagnosis do not compute an expected `theta` (meaningless without order): report the maximum a posteriori hypothesis (MAP) and its probability as confidence.
+- In the final diagnosis do not compute an expected `theta` (meaningless without order). If the model is exclusive nominal, you may report the MAP hypothesis and its probability. If the model is multifactorial, report for each factor whether it is **present**, **absent**, or **undetermined**, together with its marginal probability or confidence.
 
 ## Partial Credit Responses
 
@@ -100,7 +102,7 @@ This must be done after each relevant interaction.
 - Edge cases: `s = 1` is equivalent to full credit; `s = 0` to full failure; `s = 0.5` provides no information and leaves the posterior almost unchanged.
 - Define how `s` is calculated in an explicit, self-correctable way: weighted sum of sub-criteria, fraction of correct steps, proximity to the numerical solution, etc. Weights must sum to `1`.
 - Do not treat a response that admits degrees as binary: diagnostic information is lost.
-- To select the next question, compute the information gain using the two binary scenarios (full success and full failure) as an approximation; the interpolated likelihood is used only in the update, once the response has been observed.
+- To select the next question, compute information gain over the outcomes the item actually models. For binary or partial-credit items, the approximation with full success and full failure remains acceptable; if you model distractors or full profiles, average over all relevant response outcomes.
 
 ## Chance Floor in Composite Items
 
@@ -118,6 +120,7 @@ This must be done after each relevant interaction.
 - Update all relevant distributions with the same response: the overall outcome feeds the level belief; each sub-criterion feeds the belief for its own dimension.
 - Each dimension may have its own chance floor `c` depending on its number of options, so their percentages are not directly comparable across dimensions: the common reference is the latent value `theta`.
 - Do not merge into a single distribution dimensions that can coexist: use separate distributions.
+- If several diagnostic dimensions interact strongly, you may replace those independent distributions with a single distribution over full profiles; the key is not to force as mutually exclusive factors that can in fact coexist.
 - The level by category guides what to practise; the diagnosis by dimension guides what to explain or reinforce.
 
 ## Questions and Activities
