@@ -52,6 +52,7 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 - Si les hipòtesis són jeràrquiques, assigna-les valors `theta` ordenats i centrats.
 - Si el docent no fixa valors, utilitza una escala simètrica centrada en 0.
 - Quan facis servir dificultats `b_q` centrades, fes que l'escala `theta` abasti un rang més gran que l'escala de dificultat. Regla pràctica: `theta_max = 2 * max(abs(b_q))`.
+- Cas límit: si `max(abs(b_q)) = 0` (totes les preguntes amb la mateixa dificultat central), aquesta regla donaria `theta_max = 0` i les hipòtesis col·lapsarien en el mateix valor. Fes servir llavors un mínim `theta_max = 1`.
 
 ## Actualització bayesiana
 
@@ -99,6 +100,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Casos límit: `s = 1` equival a encert ple; `s = 0` a error ple; `s = 0.5` no aporta informació i deixa el posterior gairebé intacte.
 - Defineix com es calcula `s` de manera explícita i autocorregible: suma ponderada de subcriteris, fracció de passos correctes, proximitat a la solució numèrica, etc. Els pesos han de sumar `1`.
 - No tractis com a binària una resposta que admet graus: perds informació diagnòstica.
+- Per seleccionar la pregunta següent, calcula el guany d'informació amb els dos escenaris binaris (encert i error plens) com a aproximació; la versemblança interpolada es fa servir només en l'actualització, un cop observada la resposta.
 
 ## Sòl d'atzar en ítems compostos
 
@@ -147,12 +149,14 @@ Selecciona la candidata amb un guany esperat d'informació més gran quan la fin
 
 En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de problema o conceptes, utilitza una selecció en dues fases:
 
-1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase.
+1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase. Si hi ha moltes categories, aquesta fase pot consumir la sessió (amb `10` categories i `2` intents ja són `20` preguntes): agrupa categories afins en blocs o redueix la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.
 2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és combinar guany d'informació amb adequació de dificultat, penalitzant preguntes massa allunyades de la zona de treball.
 
 No facis servir l'entropia de Shannon com a únic criteri permanent quan la finalitat principal sigui practicar o reforçar. Shannon indica on hi ha més incertesa diagnòstica; el reforç ha d'atendre també, i preferentment, allò que l'alumne domina menys.
 
 En tests adaptatius de diagnòstic global amb criteri d'aturada, no és obligatori aplicar la fase de reforç. En aquest cas n'hi ha prou amb maximitzar la informació esperada, diversificant categories en empats o quan diverses candidates tenen una utilitat equivalent.
+
+Tingues en compte que maximitzar la informació esperada tendeix a proposar preguntes amb una probabilitat d'encert propera al `50 %`. Amb alumnat jove o amb dificultats, pots obrir amb una pregunta assequible o intercalar-ne alguna d'èxit probable: perds una mica d'eficiència informativa a canvi de sostenir la motivació. És una decisió pedagògica opcional.
 
 Si diverses candidates són pràcticament equivalents:
 
@@ -256,6 +260,8 @@ Si és un itinerari o activitat d'aprenentatge, afegeix-hi a més:
 No declaris un domini alt basant-te en molt pocs intents. Si el resultat fa afirmacions per categoria o dimensió, exigeix una mostra mínima en aquestes categories o dimensions abans de presentar-les com a fermes. Si l'estimació és global, la mostra mínima pot referir-se al conjunt de la sessió; limita o marca com a provisional l'estimació quan l'evidència sigui escassa.
 
 No retornis només una nota o etiqueta.
+
+Si dues hipòtesis acaben amb probabilitats properes, mostra la distribució posterior completa (per exemple, un diagrama de barres), no només l'etiqueta guanyadora.
 
 ## Restriccions d'implementació
 

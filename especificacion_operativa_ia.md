@@ -52,6 +52,7 @@ Adjunta este documento a la IA y usa este prompt:
 - Si las hipótesis son jerárquicas, asígnales valores `theta` ordenados y centrados.
 - Si el docente no fija valores, usa una escala simétrica centrada en 0.
 - Cuando uses dificultades `b_q` centradas, haz que la escala `theta` abarque un rango mayor que la escala de dificultad. Regla práctica: `theta_max = 2 * max(abs(b_q))`.
+- Caso límite: si `max(abs(b_q)) = 0` (todas las preguntas con la misma dificultad central), esa regla daría `theta_max = 0` y las hipótesis colapsarían en el mismo valor. Usa entonces un mínimo `theta_max = 1`.
 
 ## Actualización bayesiana
 
@@ -99,6 +100,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno; `s = 0.5` no aporta información y deja el posterior casi intacto.
 - Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
 - No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
+- Para seleccionar la siguiente pregunta, calcula la ganancia de información con los dos escenarios binarios (acierto y fallo plenos) como aproximación; la verosimilitud interpolada se usa solo en la actualización, una vez observada la respuesta.
 
 ## Suelo de azar en ítems compuestos
 
@@ -147,12 +149,14 @@ Selecciona la candidata con mayor ganancia esperada de información cuando la fi
 
 En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
 
-1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase.
+1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase. Si hay muchas categorías, esta fase puede consumir la sesión (con `10` categorías y `2` intentos son ya `20` preguntas): agrupa categorías afines en bloques o reduce la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.
 2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es combinar ganancia de información con adecuación de dificultad, penalizando preguntas demasiado alejadas de la zona de trabajo.
 
 No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
 
 En tests adaptativos de diagnóstico global con criterio de parada, no es obligatorio aplicar la fase de refuerzo. En ese caso basta con maximizar la información esperada, diversificando categorías en empates o cuando varias candidatas tengan utilidad equivalente.
+
+Ten en cuenta que maximizar la información esperada tiende a proponer preguntas con probabilidad de acierto cercana al `50 %`. Con alumnado joven o con dificultades, puedes abrir con una pregunta asequible o intercalar alguna de éxito probable: pierdes algo de eficiencia informativa a cambio de sostener la motivación. Es una decisión pedagógica opcional.
 
 Si varias son prácticamente equivalentes:
 
@@ -256,6 +260,8 @@ Si es un itinerario o actividad de aprendizaje, añade además:
 No declares un dominio alto basándote en muy pocos intentos. Si el resultado hace afirmaciones por categoría o dimensión, exige una muestra mínima en esas categorías o dimensiones antes de presentarlas como firmes. Si la estimación es global, la muestra mínima puede referirse al conjunto de la sesión; limita o marca como provisional la estimación cuando la evidencia sea escasa.
 
 No devuelvas solo una nota o etiqueta.
+
+Si dos hipótesis terminan con probabilidades próximas, muestra la distribución posterior completa (por ejemplo, un diagrama de barras), no solo la etiqueta ganadora.
 
 ## Restricciones de implementación
 

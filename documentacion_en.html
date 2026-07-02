@@ -588,7 +588,7 @@
 <p>In adaptive practice, reinforcement, or skill-training resources, selection should not always pursue the same objective. At first it is useful to diagnose; afterwards it is better to intervene where mastery is weakest.</p>
 <p>A two-phase strategy is recommended:</p>
 <ol>
-<li><strong>Initial diagnostic phase.</strong> As long as there are categories, concepts, or problem types with less than a minimum sample of attempts, the system must prioritize them. The goal is to avoid conclusions based on too small a sample. Within these categories, the question with the greatest expected gain of information can be chosen. A reasonable default is to require at least 2 attempts per category.</li>
+<li><strong>Initial diagnostic phase.</strong> As long as there are categories, concepts, or problem types with less than a minimum sample of attempts, the system must prioritize them. The goal is to avoid conclusions based on too small a sample. Within these categories, the question with the greatest expected gain of information can be chosen. A reasonable default is to require at least 2 attempts per category. With many categories, this phase can consume the entire session (for example, 10 categories with 2 attempts is already 20 questions): it is advisable to group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.</li>
 <li><strong>Reinforcement phase.</strong> When all relevant categories have a minimum sample, the system must prioritize the category with the lowest estimated mastery or greatest pedagogical need. Once the category is chosen, the specific question does not necessarily have to be the most difficult. It is advisable to combine the expected gain of information with a measure of difficulty adequacy, so that the system prefers informative exercises but close to the student's estimated level.</li>
 </ol>
 <p>This separation avoids excessive use of Shannon entropy. Entropy answers the question “where do I have the most uncertainty?”, but it does not always answer “what does the student need to practice the most?” In pure diagnostic evaluation, maximizing uncertainty reduction may be the main criterion. In adaptive practice and reinforcement, it should be combined with a pedagogical utility function that gives priority to less mastered content.</p>
@@ -613,6 +613,7 @@
 </ul>
 <p>The best question does not have to be the one that matches the most probable level. It can be a question that helps distinguish between two still plausible hypotheses.</p>
 <p>For example, if the system hesitates between intermediate and advanced levels, a difficult question may be more useful than a medium one. If it hesitates between basic and intermediate, a medium or easy question may be more informative, depending on the likelihoods.</p>
+<p>Maximising uncertainty reduction has a side effect worth knowing: the most informative questions tend to be those whose probability of success is around 50%, so the student will fail roughly half of what they answer during the diagnosis. This is optimal from an informational point of view, but it can have a motivational cost with young learners or learners who struggle. A reasonable —and optional— pedagogical decision is to open with an accessible question or interleave one with a high chance of success, accepting a small loss of efficiency in exchange for sustaining the student's confidence.</p>
 </section>
 <section id="s15">
 <h2>15. Recovery mechanisms</h2>
@@ -668,6 +669,7 @@
 <li>whether the diagnosis is firm or provisional.</li>
 </ul>
 <p>It should not be limited to displaying a score or a label.</p>
+<p>When two hypotheses end with close probabilities, it is advisable to show the full posterior distribution (for example, with a bar chart) instead of a single winning label.</p>
 <p>The purpose of the system is to help make educational decisions.</p>
 </section>
 <section id="s19">

@@ -395,6 +395,7 @@
 <p>Aplicant Bayes i normalitzant (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)):</p>
 <div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
 <p>El posterior es desplaça cap al domini, però de manera més moderada que amb un encert ple (\(s = 1\) donaria \(\approx (0.20,\, 0.33,\, 0.47)\)). El crèdit parcial gradua així la força de l'evidència segons la qualitat de la resposta.</p>
+<p><strong>Selecció amb crèdit parcial.</strong> El guany esperat d'informació (§6) està definit sobre els dos resultats binaris; la versió exacta amb respostes graduades exigiria fer la mitjana sobre la distribució de \(s\), que no es coneix a priori. A la pràctica n'hi ha prou de continuar seleccionant la pregunta amb els dos escenaris binaris (encert i error plens) com a aproximació, i reservar la versemblança interpolada per a l'actualització, un cop observada la resposta.</p>
 </section>
 <section id="s5">
 <h2>5. Entropia de Shannon com a mesura d'incertesa</h2>
@@ -550,6 +551,7 @@
 <p>La forma més robusta és calcular \(\theta_{\max}\) directament a partir de les dificultats del banc:</p>
 <div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
 <p>i distribuir els valors \(\theta_i\) uniformement a \([-\theta_{\max},\; +\theta_{\max}]\). Així, l'escala s'adapta automàticament al banc de preguntes, sense necessitat d'ajust manual.</p>
+<p><strong>Cas límit:</strong> si totes les preguntes comparteixen la dificultat central (\(\max_q |b_q| = 0\)), la regla donaria \(\theta_{\max} = 0\) i totes les hipòtesis col·lapsarien en el mateix valor, anul·lant el model. En aquest cas s'ha d'imposar un mínim, per exemple \(\theta_{\max} = 1\), per conservar la separació entre nivells.</p>
 </section>
 <section id="s9">
 <h2>9. Exemple numèric complet</h2>
@@ -582,7 +584,7 @@
 </thead>
 <tbody>
 <tr><td>\(H_1\)</td><td>\(-2 - (-1) = -1\)</td><td>\(e^{1.5} = 4.48\)</td><td>\(0.182\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
-<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.863\)</td><td>\(0.137\)</td></tr>
 <tr><td>\(H_3\)</td><td>\(2 - (-1) = +3\)</td><td>\(e^{-4.5} = 0.011\)</td><td>\(0.989\)</td><td>\(0.992\)</td><td>\(0.008\)</td></tr>
 </tbody>
 </table>
@@ -605,7 +607,7 @@
 <tbody>
 <tr><td>\(H_1\)</td><td>\(-3\)</td><td>\(0.258\)</td><td>\(0.742\)</td></tr>
 <tr><td>\(H_2\)</td><td>\(-1\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
-<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.863\)</td><td>\(0.137\)</td></tr>
 </tbody>
 </table>
 <h3>9.3. Selecció de la primera pregunta</h3>
@@ -613,18 +615,18 @@
 <p><strong>Entropia inicial:</strong></p>
 <div class="math-block">\[H^{(0)} = -3 \cdot 0.333 \cdot \log_2(0.333) = \log_2 3 = 1.585 \text{ bits}\]</div>
 <p><strong>Per Q1</strong> (\(b = -1\)):</p>
-<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.864 + 0.333 \cdot 0.992 = 0.748\]</div>
-<div class="math-block">\[P(F \mid Q1) = 0.252\]</div>
+<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.863 + 0.333 \cdot 0.992 = 0.747\]</div>
+<div class="math-block">\[P(F \mid Q1) = 0.253\]</div>
 <p>Posteriors després d'encert:</p>
-<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.748} = 0.172, \quad P(H_2 \mid A) = \frac{0.864 \cdot 0.333}{0.748} = 0.385, \quad P(H_3 \mid A) = 0.443\]</div>
+<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.747} = 0.173, \quad P(H_2 \mid A) = \frac{0.863 \cdot 0.333}{0.747} = 0.385, \quad P(H_3 \mid A) = 0.442\]</div>
 <p>Entropia posterior si encerta:</p>
-<div class="math-block">\[H_A(Q1) = -(0.172 \log_2 0.172 + 0.385 \log_2 0.385 + 0.443 \log_2 0.443) = 1.488 \text{ bits}\]</div>
+<div class="math-block">\[H_A(Q1) = -(0.173 \log_2 0.173 + 0.385 \log_2 0.385 + 0.442 \log_2 0.442) = 1.488 \text{ bits}\]</div>
 <p>Posteriors després de la fallada:</p>
-<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.252} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
+<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.253} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
 <p>Entropia posterior si falla:</p>
 <div class="math-block">\[H_F(Q1) = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
 <p>Guany d'informació:</p>
-<div class="math-block">\[IG(Q1) = 1.585 - (0.748 \cdot 1.488 + 0.252 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
+<div class="math-block">\[IG(Q1) = 1.585 - (0.747 \cdot 1.488 + 0.253 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
 <p><strong>Resum de guanys</strong> (seguint el mateix procediment per a Q2 i Q3):</p>
 <table>
 <thead>

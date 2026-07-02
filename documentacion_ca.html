@@ -588,7 +588,7 @@
 <p>En recursos de pràctica adaptativa, reforç o entrenament per tipus, la selecció no ha de perseguir sempre el mateix objectiu. Al principi convé diagnosticar; després convé intervenir sobre el menys dominat.</p>
 <p>Es recomana una estratègia en dues fases:</p>
 <ol>
-<li><strong>Fase diagnòstica inicial.</strong> Mentre hi hagi categories, conceptes o tipus de problema amb menys d'una mostra mínima d'intents, el sistema els ha de prioritzar. L'objectiu és evitar les conclusions basades en una mostra massa petita. Dins d'aquestes categories, es pot triar la pregunta amb més guany esperat d'informació. Un valor per defecte raonable és exigir com a mínim 2 intents per categoria.</li>
+<li><strong>Fase diagnòstica inicial.</strong> Mentre hi hagi categories, conceptes o tipus de problema amb menys d'una mostra mínima d'intents, el sistema els ha de prioritzar. L'objectiu és evitar les conclusions basades en una mostra massa petita. Dins d'aquestes categories, es pot triar la pregunta amb més guany esperat d'informació. Un valor per defecte raonable és exigir com a mínim 2 intents per categoria. Amb moltes categories, aquesta fase pot consumir la sessió sencera (per exemple, 10 categories amb 2 intents ja són 20 preguntes): convé agrupar categories afins en blocs o reduir la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.</li>
 <li><strong>Fase de reforç.</strong> Quan totes les categories rellevants tinguin una mostra mínima, el sistema ha de prioritzar la categoria amb menor domini estimat o més necessitat pedagògica. Un cop triada la categoria, la pregunta concreta no ha de ser necessàriament la més difícil. Convé combinar el guany esperat d'informació amb una mesura d'adequació de dificultat, de manera que el sistema prefereixi exercicis informatius però propers al nivell estimat de l'alumne.</li>
 </ol>
 <p>Aquesta separació evita un ús excessiu de l'entropia de Shannon. L'entropia respon a la pregunta “on tinc més incertesa?” però no sempre respon a “què necessita practicar més l'alumne?”. En avaluació diagnòstica pura, maximitzar la reducció d'incertesa pot ser el criteri principal. En pràctica adaptativa i reforç, s'ha de combinar amb una funció d'utilitat pedagògica que prioritzi els continguts menys dominats.</p>
@@ -613,6 +613,7 @@
 </ul>
 <p>La millor pregunta no ha de ser la que coincideix amb el nivell més probable. Pot ser una pregunta que ajudi a distingir entre dues hipòtesis encara plausibles.</p>
 <p>Per exemple, si el sistema dubta entre nivell mitjà i avançat, una pregunta difícil pot ser més útil que una pregunta mitjana. Si dubta entre bàsic i mitjà, una pregunta mitjana o fàcil pot ser més informativa, segons les versemblances.</p>
+<p>Maximitzar la reducció d'incertesa té un efecte secundari que convé conèixer: les preguntes més informatives tendeixen a ser aquelles amb una probabilitat d'encert al voltant del 50 %, de manera que l'alumne fallarà aproximadament la meitat del que respongui durant el diagnòstic. És l'òptim des del punt de vista informatiu, però pot tenir cost motivacional amb alumnat jove o amb dificultats. Una decisió pedagògica raonable —i opcional— és obrir amb una pregunta assequible o intercalar-ne alguna d'èxit probable, acceptant una petita pèrdua d'eficiència a canvi de sostenir la confiança de l'alumne.</p>
 </section>
 <section id="s15">
 <h2>15. Mecanismes de recuperació</h2>
@@ -668,6 +669,7 @@
 <li>si el diagnòstic és ferm o provisional.</li>
 </ul>
 <p>No us heu de limitar a mostrar una puntuació o una etiqueta.</p>
+<p>Quan dues hipòtesis acaben amb probabilitats properes, convé mostrar la distribució posterior completa (per exemple, mitjançant un diagrama de barres) en lloc d'una sola etiqueta guanyadora.</p>
 <p>La finalitat del sistema és ajudar a prendre decisions educatives.</p>
 </section>
 <section id="s19">

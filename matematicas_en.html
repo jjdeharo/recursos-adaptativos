@@ -395,6 +395,7 @@
 <p>Applying Bayes and normalising (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)) gives:</p>
 <div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
 <p>The posterior shifts towards mastery, but in a more moderate way than after a fully correct answer (\(s = 1\) would give \(\approx (0.20,\, 0.33,\, 0.47)\)). Partial credit therefore modulates the strength of the evidence according to the quality of the answer.</p>
+<p><strong>Selection with partial credit.</strong> The expected information gain (§6) is defined over the two binary outcomes; the exact version with graded responses would require averaging over the distribution of \(s\), which is not known a priori. In practice it is enough to keep selecting the question using the two binary scenarios (full success and full failure) as an approximation, and to reserve the interpolated likelihood for the update, once the response has been observed.</p>
 </section>
 <section id="s5">
 <h2>5. Shannon entropy as a measure of uncertainty</h2>
@@ -550,6 +551,7 @@
 <p>The most robust way is to calculate \(\theta_{\max}\) directly from the bank's difficulties:</p>
 <div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
 <p>and distribute the \(\theta_i\) values evenly in \([-\theta_{\max},\; +\theta_{\max}]\). Thus the scale automatically adapts to the question bank, without the need for manual adjustment.</p>
+<p><strong>Edge case:</strong> if all questions share the central difficulty (\(\max_q |b_q| = 0\)), the rule would give \(\theta_{\max} = 0\) and all hypotheses would collapse to the same value, nullifying the model. In that case a minimum should be imposed, for example \(\theta_{\max} = 1\), to preserve the separation between levels.</p>
 </section>
 <section id="s9">
 <h2>9. Complete numerical example</h2>
@@ -582,7 +584,7 @@
 </thead>
 <tbody>
 <tr><td>\(H_1\)</td><td>\(-2 - (-1) = -1\)</td><td>\(e^{1.5} = 4.48\)</td><td>\(0.182\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
-<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_2\)</td><td>\(0 - (-1) = +1\)</td><td>\(e^{-1.5} = 0.223\)</td><td>\(0.818\)</td><td>\(0.863\)</td><td>\(0.137\)</td></tr>
 <tr><td>\(H_3\)</td><td>\(2 - (-1) = +3\)</td><td>\(e^{-4.5} = 0.011\)</td><td>\(0.989\)</td><td>\(0.992\)</td><td>\(0.008\)</td></tr>
 </tbody>
 </table>
@@ -605,7 +607,7 @@
 <tbody>
 <tr><td>\(H_1\)</td><td>\(-3\)</td><td>\(0.258\)</td><td>\(0.742\)</td></tr>
 <tr><td>\(H_2\)</td><td>\(-1\)</td><td>\(0.387\)</td><td>\(0.613\)</td></tr>
-<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.864\)</td><td>\(0.136\)</td></tr>
+<tr><td>\(H_3\)</td><td>\(+1\)</td><td>\(0.863\)</td><td>\(0.137\)</td></tr>
 </tbody>
 </table>
 <h3>9.3. Selection of the first question</h3>
@@ -613,18 +615,18 @@
 <p><strong>Initial entropy:</strong></p>
 <div class="math-block">\[H^{(0)} = -3 \cdot 0.333 \cdot \log_2(0.333) = \log_2 3 = 1.585 \text{ bits}\]</div>
 <p><strong>For Q1</strong> (\(b = -1\)):</p>
-<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.864 + 0.333 \cdot 0.992 = 0.748\]</div>
-<div class="math-block">\[P(F \mid Q1) = 0.252\]</div>
+<div class="math-block">\[P(A \mid Q1) = 0.333 \cdot 0.387 + 0.333 \cdot 0.863 + 0.333 \cdot 0.992 = 0.747\]</div>
+<div class="math-block">\[P(F \mid Q1) = 0.253\]</div>
 <p>Posteriors after a correct answer:</p>
-<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.748} = 0.172, \quad P(H_2 \mid A) = \frac{0.864 \cdot 0.333}{0.748} = 0.385, \quad P(H_3 \mid A) = 0.443\]</div>
+<div class="math-block">\[P(H_1 \mid A) = \frac{0.387 \cdot 0.333}{0.747} = 0.173, \quad P(H_2 \mid A) = \frac{0.863 \cdot 0.333}{0.747} = 0.385, \quad P(H_3 \mid A) = 0.442\]</div>
 <p>Posterior entropy if correct:</p>
-<div class="math-block">\[H_A(Q1) = -(0.172 \log_2 0.172 + 0.385 \log_2 0.385 + 0.443 \log_2 0.443) = 1.488 \text{ bits}\]</div>
+<div class="math-block">\[H_A(Q1) = -(0.173 \log_2 0.173 + 0.385 \log_2 0.385 + 0.442 \log_2 0.442) = 1.488 \text{ bits}\]</div>
 <p>Posteriors after an incorrect answer:</p>
-<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.252} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
+<div class="math-block">\[P(H_1 \mid F) = \frac{0.613 \cdot 0.333}{0.253} = 0.809, \quad P(H_2 \mid F) = 0.180, \quad P(H_3 \mid F) = 0.011\]</div>
 <p>Posterior entropy if it fails:</p>
 <div class="math-block">\[H_F(Q1) = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
 <p>Information gain:</p>
-<div class="math-block">\[IG(Q1) = 1.585 - (0.748 \cdot 1.488 + 0.252 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
+<div class="math-block">\[IG(Q1) = 1.585 - (0.747 \cdot 1.488 + 0.253 \cdot 0.764) = 1.585 - 1.305 = 0.280 \text{ bits}\]</div>
 <p><strong>Summary of information gains</strong> (following the same procedure for Q2 and Q3):</p>
 <table>
 <thead>

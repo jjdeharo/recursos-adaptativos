@@ -590,7 +590,7 @@
 <p>En recursos de práctica adaptativa, refuerzo o entrenamiento por tipos, la selección no debe perseguir siempre el mismo objetivo. Al principio conviene diagnosticar; después conviene intervenir sobre lo menos dominado.</p>
 <p>Se recomienda una estrategia en dos fases:</p>
 <ol>
-<li><strong>Fase diagnóstica inicial.</strong> Mientras existan categorías, conceptos o tipos de problema con menos de una muestra mínima de intentos, el sistema debe priorizarlos. El objetivo es evitar conclusiones basadas en una muestra demasiado pequeña. Dentro de esas categorías, puede elegirse la pregunta con mayor ganancia esperada de información. Un valor por defecto razonable es exigir al menos 2 intentos por categoría.</li>
+<li><strong>Fase diagnóstica inicial.</strong> Mientras existan categorías, conceptos o tipos de problema con menos de una muestra mínima de intentos, el sistema debe priorizarlos. El objetivo es evitar conclusiones basadas en una muestra demasiado pequeña. Dentro de esas categorías, puede elegirse la pregunta con mayor ganancia esperada de información. Un valor por defecto razonable es exigir al menos 2 intentos por categoría. Con muchas categorías, esta fase puede consumir la sesión entera (por ejemplo, 10 categorías con 2 intentos son ya 20 preguntas): conviene agrupar categorías afines en bloques o reducir la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.</li>
 <li><strong>Fase de refuerzo.</strong> Cuando todas las categorías relevantes tengan muestra mínima, el sistema debe priorizar la categoría con menor dominio estimado o mayor necesidad pedagógica. Una vez elegida la categoría, la pregunta concreta no debe ser necesariamente la más difícil. Conviene combinar la ganancia esperada de información con una medida de adecuación de dificultad, de modo que el sistema prefiera ejercicios informativos pero cercanos al nivel estimado del alumno.</li>
 </ol>
 <p>Esta separación evita un uso excesivo de la entropía de Shannon. La entropía responde a la pregunta “¿dónde tengo más incertidumbre?”, pero no siempre responde a “¿qué necesita practicar más el alumno?”. En evaluación diagnóstica pura, maximizar la reducción de incertidumbre puede ser el criterio principal. En práctica adaptativa y refuerzo, debe combinarse con una función de utilidad pedagógica que dé prioridad a los contenidos menos dominados.</p>
@@ -615,6 +615,7 @@
 </ul>
 <p>La mejor pregunta no tiene por qué ser la que coincide con el nivel más probable. Puede ser una pregunta que ayude a distinguir entre dos hipótesis todavía plausibles.</p>
 <p>Por ejemplo, si el sistema duda entre nivel medio y avanzado, una pregunta difícil puede ser más útil que una pregunta media. Si duda entre básico y medio, una pregunta media o fácil puede ser más informativa, según las verosimilitudes.</p>
+<p>Maximizar la reducción de incertidumbre tiene un efecto secundario que conviene conocer: las preguntas más informativas tienden a ser aquellas cuya probabilidad de acierto ronda el 50 %, de modo que el alumno fallará aproximadamente la mitad de lo que responda durante el diagnóstico. Es lo óptimo desde el punto de vista informativo, pero puede tener coste motivacional con alumnado joven o con dificultades. Una decisión pedagógica razonable —y opcional— es abrir con una pregunta asequible o intercalar alguna de éxito probable, aceptando una pequeña pérdida de eficiencia a cambio de sostener la confianza del alumno.</p>
 </section>
 <section id="s15">
 <h2>15. Mecanismos de recuperación</h2>
@@ -670,6 +671,7 @@
 <li>si el diagnóstico es firme o provisional.</li>
 </ul>
 <p>No debe limitarse a mostrar una puntuación o una etiqueta.</p>
+<p>Cuando dos hipótesis terminan con probabilidades próximas, conviene mostrar la distribución posterior completa (por ejemplo, mediante un diagrama de barras) en lugar de una sola etiqueta ganadora.</p>
 <p>La finalidad del sistema es ayudar a tomar decisiones educativas.</p>
 </section>
 <section id="s19">

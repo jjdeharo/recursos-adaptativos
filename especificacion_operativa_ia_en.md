@@ -52,6 +52,7 @@ Attach this document to the AI and use the following prompt:
 - If the hypotheses are hierarchical, assign them ordered, centred `theta` values.
 - If the teacher does not set values, use a symmetric scale centred at 0.
 - When using centred difficulties `b_q`, make the `theta` scale span a wider range than the difficulty scale. Practical rule: `theta_max = 2 * max(abs(b_q))`.
+- Edge case: if `max(abs(b_q)) = 0` (all questions share the same central difficulty), that rule would give `theta_max = 0` and the hypotheses would collapse to the same value. Use a minimum of `theta_max = 1` in that case.
 
 ## Bayesian Update
 
@@ -99,6 +100,7 @@ This must be done after each relevant interaction.
 - Edge cases: `s = 1` is equivalent to full credit; `s = 0` to full failure; `s = 0.5` provides no information and leaves the posterior almost unchanged.
 - Define how `s` is calculated in an explicit, self-correctable way: weighted sum of sub-criteria, fraction of correct steps, proximity to the numerical solution, etc. Weights must sum to `1`.
 - Do not treat a response that admits degrees as binary: diagnostic information is lost.
+- To select the next question, compute the information gain using the two binary scenarios (full success and full failure) as an approximation; the interpolated likelihood is used only in the update, once the response has been observed.
 
 ## Chance Floor in Composite Items
 
@@ -147,12 +149,14 @@ Select the candidate with the highest expected information gain when the main pu
 
 In adaptive practice or reinforcement resources with multiple categories, problem types, or concepts, use a two-phase selection:
 
-1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase.
+1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase. If there are many categories, this phase can consume the session (with `10` categories and `2` attempts that is already `20` questions): group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.
 2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is to combine information gain with difficulty appropriateness, penalising questions too far from the working zone.
 
 Do not use Shannon entropy as the sole permanent criterion when the main purpose is to practise or reinforce. Shannon indicates where there is the most diagnostic uncertainty; reinforcement must also attend — and preferably give priority — to what the learner has least mastered.
 
 In adaptive tests for global diagnosis with a stopping criterion, it is not mandatory to apply the reinforcement phase. In that case, it is enough to maximise expected information, diversifying categories in ties or when several candidates have equivalent utility.
+
+Bear in mind that maximising expected information tends to propose questions with a probability of success close to `50%`. With young learners or learners who struggle, you may open with an accessible question or interleave one with a high chance of success: you lose some informational efficiency in exchange for sustaining motivation. This is an optional pedagogical decision.
 
 If several candidates are practically equivalent:
 
@@ -256,6 +260,8 @@ If it is a learning pathway or activity, also add:
 Do not declare high mastery based on very few attempts. If the result makes claims by category or dimension, require a minimum sample in those categories or dimensions before presenting them as firm. If the estimate is global, the minimum sample may refer to the session as a whole; limit or mark the estimate as provisional when evidence is scarce.
 
 Do not return only a score or label.
+
+If two hypotheses end with close probabilities, show the full posterior distribution (for example, a bar chart), not just the winning label.
 
 ## Implementation Constraints
 
