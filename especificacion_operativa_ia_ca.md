@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.4**
+**Versió 1.5**
 
 ## Propòsit
 
@@ -81,9 +81,9 @@ Això s'ha de fer després de cada interacció rellevant.
 
 - Si les hipòtesis no són jeràrquiques (errors conceptuals sense ordre), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
 - Assigna cada valor responent: «si l'alumne tingués H_i, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que aquest error distorsiona; alt si l'error no interfereix.
-- Acota cada valor: mai per sota del terra d'atzar `1/m` (m opcions); la hipòtesi de domini al voltant de `0.9`–`0.95`, mai `1`.
+- Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi de domini al voltant de `0.9`–`0.95`, mai `1`.
 - Si un distractor concret és la resposta que produeix H_i, posa aquesta cel·la a prop del terra o per sota: l'alumne és atret activament cap a aquesta opció equivocada.
-- No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra). El que importa és que la hipòtesi correcta superi clarament les altres en les preguntes que discriminen.
+- No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra si falla per atzar). El que importa és que la hipòtesi correcta superi clarament les altres en les preguntes que discriminen.
 - L'error és el complementari `1 - P(encert | H_i, q)`. El vector no suma 1: són `n` probabilitats d'encert independents, no una distribució.
 - No facis servir taules fixes globals si cada pregunta pot generar les seves pròpies versemblances.
 - En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre): reporta la hipòtesi de màxima probabilitat posterior (MAP) i la seva probabilitat com a confiança.
@@ -190,6 +190,10 @@ Regles mínimes:
 - En aquest mode, l'estat estimat no és un diagnòstic tancat, sinó una estimació viva que s'actualitza amb cada resposta.
 - No apliquis `H_stop` ni `p_min` per tancar la sessió; utilitza'ls, si de cas, només per informar del grau de confiança assolit.
 - Mantén la selecció en dues fases durant tota la sessió: diagnòstic mínim per categoria i, després, reforç del que menys es domina.
+- L'estat de l'alumne pot canviar mentre practica: aplica oblit exponencial perquè l'estimació segueixi el seu estat actual. Abans de cada actualització, atenua el posterior elevant-lo a `lambda` i renormalitzant: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- Fes servir `lambda ≈ 0.9`–`0.98` en pràctica o reforç continu (regla pràctica: `lambda = 1 - 1/W`, amb `W` el nombre de respostes recents que han de dominar l'estimació). En recursos diagnòstics de sessió curta fes servir `lambda = 1` (sense oblit): allà només afegiria soroll.
+- Amb oblit actiu, presenta la confiança com a referida a l'estat recent de l'alumne.
+- Si necessites modelar explícitament l'aprenentatge (per exemple, més probabilitat de pujar de nivell just després d'una explicació), fes servir un model de transició (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
 
 ## Itineraris per etapes
 
@@ -272,6 +276,7 @@ Si el docent no especifica paràmetres:
 - mínim de diagnòstic per categoria en pràctica adaptativa: `2` intents;
 - màxim pràctic: entre `10` i `20`, segons el tipus de recurs;
 - pes del guany d'informació en la fase de reforç: `α = 0.65` (rang raonable `0.6`–`0.7`);
+- oblit exponencial: `lambda = 0.95` en pràctica o reforç continu (memòria efectiva ≈ `20` respostes); `lambda = 1` en diagnòstic de sessió curta;
 - crèdit parcial: pesos de subcriteris definits pel disseny, sumant `1`;
 - mostra mínima per categoria o dimensió abans de mostrar domini alt: `2`–`4` intents.
 

@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.4**
+**Versión 1.5**
 
 ## Propósito
 
@@ -81,9 +81,9 @@ Esto debe hacerse después de cada interacción relevante.
 
 - Si las hipótesis no son jerárquicas (errores conceptuales sin orden), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
 - Asigna cada valor respondiendo: «si el alumno tuviera H_i, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
-- Acota cada valor: nunca por debajo del suelo de azar `1/m` (m opciones); la hipótesis de dominio en torno a `0.9`–`0.95`, nunca `1`.
+- Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis de dominio en torno a `0.9`–`0.95`, nunca `1`.
 - Si un distractor concreto es la respuesta que produce H_i, pon esa celda cerca del suelo o por debajo: el alumno es atraído activamente hacia esa opción equivocada.
-- No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo). Lo que importa es que la hipótesis correcta supere claramente a las demás en las preguntas que discriminan.
+- No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo si falla por azar). Lo que importa es que la hipótesis correcta supere claramente a las demás en las preguntas que discriminan.
 - El fallo es el complementario `1 - P(acierto | H_i, q)`. El vector no suma 1: son `n` probabilidades de acierto independientes, no una distribución.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
 - En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden): reporta la hipótesis de máxima probabilidad posterior (MAP) y su probabilidad como confianza.
@@ -190,6 +190,10 @@ Reglas mínimas:
 - En ese modo, el estado estimado no es un diagnóstico cerrado, sino una estimación viva que se actualiza con cada respuesta.
 - No apliques `H_stop` ni `p_min` para cerrar la sesión; úsalos, si acaso, solo para informar del grado de confianza alcanzado.
 - Mantén la selección en dos fases durante toda la sesión: diagnóstico mínimo por categoría y, después, refuerzo de lo menos dominado.
+- El estado del alumno puede cambiar mientras practica: aplica olvido exponencial para que la estimación siga su estado actual. Antes de cada actualización, atenúa el posterior elevándolo a `lambda` y renormalizando: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- Usa `lambda ≈ 0.9`–`0.98` en práctica o refuerzo continuo (regla práctica: `lambda = 1 - 1/W`, con `W` el número de respuestas recientes que deben dominar la estimación). En recursos diagnósticos de sesión corta usa `lambda = 1` (sin olvido): ahí solo añadiría ruido.
+- Con olvido activo, presenta la confianza como referida al estado reciente del alumno.
+- Si necesitas modelar explícitamente el aprendizaje (por ejemplo, mayor probabilidad de subir de nivel justo tras una explicación), usa un modelo de transición (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
 
 ## Itinerarios por etapas
 
@@ -272,6 +276,7 @@ Si el docente no especifica parámetros:
 - mínimo de diagnóstico por categoría en práctica adaptativa: `2` intentos;
 - máximo práctico: entre `10` y `20`, según el tipo de recurso;
 - peso de la ganancia de información en la fase de refuerzo: `α = 0.65` (rango razonable `0.6`–`0.7`);
+- olvido exponencial: `lambda = 0.95` en práctica o refuerzo continuo (memoria efectiva ≈ `20` respuestas); `lambda = 1` en diagnóstico de sesión corta;
 - crédito parcial: pesos de subcriterios definidos por el diseño, sumando `1`;
 - muestra mínima por categoría o dimensión antes de mostrar dominio alto: `2`–`4` intentos.
 

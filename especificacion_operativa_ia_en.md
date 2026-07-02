@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.4**
+**Version 1.5**
 
 ## Purpose
 
@@ -81,9 +81,9 @@ This must be done after each relevant interaction.
 
 - If the hypotheses are not hierarchical (misconceptions with no order), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
 - Assign each value by answering: "if the student had H_i, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
-- Bound each value: never below the guessing floor `1/m` (m options); the mastery hypothesis around `0.9`–`0.95`, never `1`.
+- Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis around `0.9`–`0.95`, never `1`.
 - If a specific distractor is the answer H_i produces, place that cell near the floor or below: the student is actively drawn toward that wrong option.
-- Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor). What matters is that the correct hypothesis clearly exceeds the others in discriminating questions.
+- Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor when failing by guessing). What matters is that the correct hypothesis clearly exceeds the others in discriminating questions.
 - Failure is the complement `1 - P(correct | H_i, q)`. The vector does not sum to 1: they are `n` independent success probabilities, not a distribution.
 - Do not use fixed global tables if each question can generate its own likelihoods.
 - In the final diagnosis do not compute an expected `theta` (meaningless without order): report the maximum a posteriori hypothesis (MAP) and its probability as confidence.
@@ -190,6 +190,10 @@ Minimum rules:
 - In that mode, the estimated state is not a closed diagnosis but a live estimate that updates with each response.
 - Do not apply `H_stop` or `p_min` to close the session; use them, if at all, only to report the level of confidence reached.
 - Maintain the two-phase selection throughout the session: minimum diagnosis per category, then reinforcement of what is least mastered.
+- The learner's state can change while they practise: apply exponential forgetting so the estimate tracks their current state. Before each update, attenuate the posterior by raising it to `lambda` and renormalising: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- Use `lambda ≈ 0.9`–`0.98` in continuous practice or reinforcement (practical rule: `lambda = 1 - 1/W`, where `W` is the number of recent responses that should dominate the estimate). In short-session diagnostic resources use `lambda = 1` (no forgetting): there it would only add noise.
+- With forgetting active, present the confidence as referring to the learner's recent state.
+- If you need to model learning explicitly (for example, a higher probability of moving up a level right after an explanation), use a transition model (Bayesian Knowledge Tracing); see `matematicas.html §3.5`.
 
 ## Stage-Based Pathways
 
@@ -272,6 +276,7 @@ If the teacher does not specify parameters:
 - minimum diagnostic sample per category in adaptive practice: `2` attempts;
 - practical maximum: between `10` and `20`, depending on the resource type;
 - weight of information gain in the reinforcement phase: `α = 0.65` (reasonable range `0.6`–`0.7`);
+- exponential forgetting: `lambda = 0.95` in continuous practice or reinforcement (effective memory ≈ `20` responses); `lambda = 1` in short-session diagnosis;
 - partial credit: sub-criterion weights defined by the design, summing to `1`;
 - minimum sample per category or dimension before showing high mastery: `2`–`4` attempts.
 

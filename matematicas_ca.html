@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.4</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.5</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -318,6 +318,14 @@
 <li><strong>No dogmatisme</strong>: cap hipòtesi queda bloquejada en 0 o 1 sempre que la seva probabilitat inicial sigui estrictament positiva. Per això convé assignar probabilitats inicials estrictament positives a totes les hipòtesis plausibles.</li>
 </ul>
 <p>Alternatives com les xarxes de regles o els sistemes experts clàssics no tenen aquestes propietats i poden quedar bloquejades en diagnòstics incorrectes quan l'alumne respon de manera inesperada.</p>
+<h3>3.5. Actualització amb oblit exponencial (estat no estacionari)</h3>
+<p>L'actualització seqüencial de §3.3 dona el mateix pes a totes les respostes, la primera i l'última. Això és correcte si l'estat de l'alumne no canvia durant la sessió, però en recursos de pràctica prolongada l'alumne aprèn mentre practica (vegeu §11.3): el posterior arrossega l'evidència antiga i pot convergir cap a un estat que ja no existeix.</p>
+<p>La correcció mínima és l'<strong>oblit exponencial</strong>: abans d'incorporar cada nova resposta, s'atenua el posterior acumulat elevant-lo a una potència \(\lambda \in (0, 1]\) i renormalitzant:</p>
+<div class="math-block">\[P^{(t+1)}(H_i) \propto \left[P^{(t)}(H_i)\right]^{\lambda} \cdot P(R_{t+1} \mid H_i)\]</div>
+<p>Amb \(\lambda = 1\) es recupera el Bayes estàndard de §3.3. Amb \(\lambda &lt; 1\), l'evidència de fa \(k\) passos entra amb pes efectiu \(\lambda^k\): decau geomètricament, i la <strong>memòria efectiva</strong> del sistema és d'aproximadament \(1/(1-\lambda)\) respostes. Una regla pràctica: \(\lambda = 1 - 1/W\), on \(W\) és el nombre de respostes recents que han de dominar l'estimació. Una variant d'efecte semblant és barrejar el posterior amb la distribució uniforme, \(p_i \leftarrow (1-\gamma)\,p_i + \gamma/n\); totes dues retornen una mica de massa a les hipòtesis descartades i mantenen l'estimació permeable al canvi.</p>
+<p><strong>Exemple.</strong> Amb el posterior \((0.809,\; 0.180,\; 0.011)\) i \(\lambda = 0.9\), l'atenuació produeix \((0.782,\; 0.202,\; 0.016)\): la creença dominant es conserva, però les alternatives recuperen marge per reaccionar si el comportament de l'alumne canvia.</p>
+<p><strong>Quan usar-lo.</strong> En recursos <strong>diagnòstics</strong> de sessió curta, on l'estat és estable, s'ha d'usar \(\lambda = 1\): l'oblit només afegiria soroll i endarreriria la convergència. En <strong>pràctica o reforç continu</strong> (§7.6), valors de \(\lambda \approx 0.9\)–\(0.98\) fan que l'estimació segueixi l'estat actual de l'alumne. Amb oblit actiu, la confiança mostrada s'ha d'interpretar com a confiança sobre l'<em>estat recent</em>; l'entropia es manté una mica més alta i la sessió no es tanca sola, cosa coherent amb el mode sense parada.</p>
+<p>L'oblit és <em>simètric</em>: no pressuposa que l'alumne millora, només evita que l'evidència antiga bloquegi el seguiment d'un estat que canvia. Si es vol modelar explícitament la direcció de l'aprenentatge, l'extensió natural és un <strong>model de transició</strong> (filtratge bayesià): abans de cada actualització s'aplica una matriu \(T\) amb una petita probabilitat d'ascendir de nivell —més gran, per exemple, just després de mostrar una explicació—, de manera que \(\mathbf{p} \leftarrow \text{normalitzar}\!\left(L \circ (T^{\top}\mathbf{p})\right)\). El seu cas particular de dos estats és el <em>Bayesian Knowledge Tracing</em> (Corbett i Anderson, 1995), el model clàssic dels tutors intel·ligents. A canvi introdueix un paràmetre més per fixar sense dades —la probabilitat d'aprendre per pas—, amb les cauteles de §11.1.</p>
 </section>
 <section id="s4">
 <h2>4. Model IRT de tres paràmetres</h2>
@@ -497,9 +505,9 @@
 <li>\((0.80,\; 0.10,\; 0.10)\): \(H = 0.92\) bits</li>
 <li>\((0.80,\; 0.19,\; 0.01)\): \(H = 0.78\) bits</li>
 </ul>
-<p>La segona té entropia menor, encara que el màxim sigui el mateix, perquè la probabilitat està més concentrada. Per tant, <strong>convé comprovar ambdós criteris de forma complementària</strong>:</p>
+<p>La segona té entropia menor, encara que el màxim sigui el mateix, perquè la probabilitat està més concentrada. Una implementació prudent pot comprovar ambdues condicions alhora:</p>
 <div class="math-block">\[\text{aturar si } H(\mathbf{p}) &lt; H_{\text{stop}} \text{ i } \max_i P(H_i) \geq p_{\min}\]</div>
-<p>Ambdós criteris no són completament independents: quan \(H_{\text{stop}}\) se'n deriva \(p_{\min}\), el criteri d'entropia no afegeix una exigència diferent del de probabilitat màxima. El criteri de probabilitat màxima garanteix el nivell mínim de confiança a la hipòtesi guanyadora; l'entropia actua com a control complementari de la incertesa global. Com a alternativa, es pot afegir un criteri de separació:</p>
+<p>En realitat, quan \(H_{\text{stop}}\) es deriva del mateix \(p_{\min}\), la condició de probabilitat màxima implica la d'entropia: la distribució que defineix \(H_{\text{stop}}\) és la de màxima entropia entre les que tenen un màxim igual a \(p_{\min}\), i aquest llindar decreix quan el màxim augmenta, de manera que \(\max_i P(H_i) \geq p_{\min}\) garanteix per si sola \(H \leq H_{\text{stop}}\). Comprovar ambdues condicions és inofensiu, però redundant. Si es vol un control addicional que sí que afegeixi exigència, es pot usar un criteri de separació:</p>
 <div class="math-block">\[P(H_{\text{guanyadora}}) - P(H_{\text{segona}}) \geq \Delta_{\min}\]</div>
 <p>que exigeix no només que la hipòtesi més probable superi \(p_{\min}\), sinó que estigui prou separada de la segona candidata.</p>
 <h3>7.5. Criteris addicionals de parada</h3>
@@ -516,6 +524,7 @@
 <li>El posterior no s'interpreta com un diagnòstic tancat, sinó com una <strong>estimació viva</strong> que s'actualitza amb cada resposta i pot reflectir l'aprenentatge ocorregut durant la sessió.</li>
 <li>\(H_{\text{stop}}\) i \(p_{\min}\) no es fan servir per tancar; com a màxim, per <strong>informar</strong> del grau de confiança assolit.</li>
 <li>La selecció en dues fases (§6.4 del protocol) es manté durant tota la sessió: diagnòstic mínim per categoria i, després, reforç del menys dominat.</li>
+<li>Convé activar l'<strong>oblit exponencial</strong> (§3.5) amb \(\lambda \approx 0.9\)–\(0.98\), perquè l'estimació segueixi l'estat actual de l'alumne i no quedi ancorada a l'evidència antiga si aprèn durant la pràctica.</li>
 </ul>
 <p><strong>Cautela per mida de mostra.</strong> Amb pocs intents, el posterior es pot desplaçar molt per una sola resposta. Per no comunicar un domini infundat, convé exigir-ne una <strong>mostra mínima</strong> per categoria o dimensió (per exemple, 2-4 intents) abans de mostrar nivells alts de domini, i marcar com a provisional l'estimació mentre l'evidència sigui escassa. Aquesta cautela és una decisió de presentació: no altera el posterior bayesià, només com es tradueix a la interfície.</p>
 </section>
@@ -534,7 +543,7 @@
 <p><strong>Exemple.</strong> Amb 3 nivells de dificultat \(b \in \{-1,\; 0,\; +1\}\):</p>
 <ul>
 <li>Escala incorrecta: \(\theta \in \{-1,\; 0,\; +1\}\) → el nivell avançat i la pregunta difícil tenen el mateix valor; la corba logística dóna \(P(A) = (1 + c_q)/2 \approx 0.625\) per a 4 opcions, un valor mediocre per confirmar el nivell avançat.</li>
-<li>Escala correcta: \(\theta \in \{-2,\; 0,\; +2\}\) → el nivell avançat supera amb comoditat la dificultat extrema; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.82\), un valor prou alt perquè la pregunta sigui informativa.</li>
+<li>Escala correcta: \(\theta \in \{-2,\; 0,\; +2\}\) → el nivell avançat supera amb comoditat la dificultat extrema; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.86\), un valor prou alt perquè la pregunta sigui informativa.</li>
 </ul>
 <p>on \(\sigma(x) = 1/(1 + e^{-x})\) és la funció sigmoide estàndard.</p>
 <h3>8.3. Càlcul automàtic des del banc de preguntes</h3>
@@ -710,7 +719,7 @@
 <h3>10.5. Criteri d'assignació de les versemblances</h3>
 <p>Com que els valors \(M_{qi}\) no surten d'una fórmula (§10.4), convé fixar-los amb un criteri explícit. Cada cel·la respon a una única pregunta: <em>«si l'alumne tingués \(H_i\), amb quina probabilitat encertaria \(q\)?»</em>.</p>
 <p><strong>1. Relació pedagògica pregunta–hipòtesi.</strong> El valor depèn de si la pregunta activa l'error conceptual: si \(q\) ataca just el concepte que \(H_i\) distorsiona, l'alumne tendeix a fallar i \(M_{qi}\) és baixa; si \(q\) no té relació amb aquest error, no interfereix i \(M_{qi}\) és alta (semblant a la fila de domini); en casos intermedis, un valor central. Cada fila \(H_i\) ha de mostrar així la <em>signatura</em> d'aquest error —baixa on el corromp, alta on no arriba—; una fila plana indica que la pregunta no distingeix aquesta hipòtesi.</p>
-<p><strong>2. Ancoratges.</strong> Cada cel·la queda acotada entre dos límits: un <strong>terra d'atzar</strong> \(M_{qi} \geq 1/m\) (amb \(m\) opcions, ningú no baixa de l'encert per casualitat; és el paper de \(c_q\) a §4.2) i un <strong>sostre de descuit</strong> per a la hipòtesi de domini, \(\approx 0.90\text{–}0.95\), mai \(1\) exacte.</p>
+<p><strong>2. Ancoratges.</strong> Cada cel·la queda acotada entre dos límits: un <strong>terra d'atzar</strong> \(M_{qi} \geq 1/m\) quan el fall prové de respondre a l'atzar (amb \(m\) opcions, qui respon a l'atzar no baixa d'aquesta probabilitat; és el paper de \(c_q\) a §4.2) —amb l'única excepció del punt 3— i un <strong>sostre de descuit</strong> per a la hipòtesi de domini, \(\approx 0.90\text{–}0.95\), mai \(1\) exacte.</p>
 <p><strong>3. Estructura de distractors.</strong> Si la pregunta és d'opció múltiple i un dels distractors és <em>exactament</em> la resposta que produeix \(H_i\), l'alumne no encerta a l'atzar sinó que és atret cap a aquesta opció equivocada: llavors \(M_{qi}\) cau per sota del terra d'atzar. El criteri no és només «fallarà?», sinó «quina resposta equivocada genera aquest error i és entre les opcions?».</p>
 <p><strong>4. Trams gruixuts.</strong> Per a Bayes el decisiu no és el decimal exacte sinó la <strong>separació</strong>: en una pregunta que discrimina, la hipòtesi correcta ha de superar clarament la que l'error fa fallar. N'hi ha prou de treballar per trams:</p>
 <table>
@@ -721,7 +730,7 @@
 <tr><td>Domini, o l'error no afecta la pregunta</td><td>\(\approx 0.90\)</td></tr>
 <tr><td>Afectació parcial, sense distractor que capturi l'error</td><td>\(\approx 0.50\)</td></tr>
 <tr><td>L'error empeny cap a un distractor concret</td><td>\(\approx 0.15\text{–}0.25\)</td></tr>
-<tr><td>Terra d'atzar (mai per sota)</td><td>\(\approx 1/m\)</td></tr>
+<tr><td>Terra d'atzar (mínim, llevat de l'excepció del punt 3)</td><td>\(\approx 1/m\)</td></tr>
 </tbody>
 </table>
 <p>En el cas ordenat aquest mateix judici està empaquetat dins la dificultat \(b_q\) i la logística; el cas nominal només el fa explícit cel·la a cel·la. Un cop plena la matriu, la validació Monte Carlo (§11.8) comprova si el conjunt de judicis separa les hipòtesis, sense necessitat de dades reals.</p>
@@ -738,7 +747,7 @@
 <li>L'alumne respon a l'atzar en preguntes que no ho sap, amb patrons que depenen de la fatiga o del temps.</li>
 </ul>
 <h3>11.3. Estabilitat de les hipòtesis</h3>
-<p>El model assumeix que l'estat de l'alumne no canvia durant la sessió. En sessions curtes d'avaluació diagnòstica això és raonable. En sessions llargues d'aprenentatge adaptatiu, l'alumne pot millorar durant la mateixa interacció, cosa que faria que el posterior convergís cap a una hipòtesi que ja no reflecteix l'estat actual.</p>
+<p>El model assumeix que l'estat de l'alumne no canvia durant la sessió. En sessions curtes d'avaluació diagnòstica això és raonable. En sessions llargues d'aprenentatge adaptatiu, l'alumne pot millorar durant la mateixa interacció, cosa que faria que el posterior convergís cap a una hipòtesi que ja no reflecteix l'estat actual. Aquest límit es mitiga amb l'actualització amb oblit exponencial, o amb un model de transició explícit, descrits a §3.5: tots dos eviten que l'evidència antiga bloquegi el seguiment d'un estat que canvia.</p>
 <h3>11.4. Respostes a l'atzar</h3>
 <p>Si l'alumne respon a l'atzar sistemàticament, el paràmetre \(c_q\) només protegeix parcialment: redueix el biaix upward a les versemblances d'encert, però no elimina el soroll. Amb prou respostes aleatòries, el posterior pot convergir cap a hipòtesis incorrectes.</p>
 <h3>11.5. Nombre mínim de preguntes</h3>
@@ -775,6 +784,7 @@
 <li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. A Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley. [Model logístic de tres paràmetres; referència fundacional de la TRI.]</li>
 <li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reeditat per University of Chicago Press, 1980; model de dificultat dels ítems.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2a ed.). Wiley. [Entropia de Shannon i informació mútua.]</li>
+<li><strong>Corbett, A. T. &amp; Anderson, J. R.</strong> (1995). Knowledge tracing: Modeling the acquisition of procedural knowledge. <em>User Modeling and User-Adapted Interaction</em>, 4(4), 253–278. [Model de transició de dos estats (Bayesian Knowledge Tracing); seguiment d'un estat que canvia durant la pràctica.]</li>
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referència enciclopèdica de models i aplicacions de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selecció adaptativa d'ítems i informació.]</li>
 <li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Índexs estandarditzats d'ajust de la persona (person-fit), \(l_z\).]</li>
@@ -782,7 +792,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.4). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.5). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

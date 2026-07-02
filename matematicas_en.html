@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.4</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.5</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -318,6 +318,14 @@
 <li><strong>Non-dogmatism</strong>: no hypothesis is locked at 0 or 1 as long as its initial probability is strictly positive. That is why it is advisable to assign strictly positive initial probabilities to all plausible hypotheses.</li>
 </ul>
 <p>Alternatives such as rule networks or classical expert systems do not have these properties and can be blocked in incorrect diagnoses when the student responds unexpectedly.</p>
+<h3>3.5. Updating with exponential forgetting (non-stationary state)</h3>
+<p>The sequential updating of §3.3 gives the same weight to every response, the first and the last. That is correct if the student's state does not change during the session, but in prolonged practice resources the student learns while practising (see §11.3): the posterior drags along the old evidence and can converge towards a state that no longer exists.</p>
+<p>The minimal correction is <strong>exponential forgetting</strong>: before incorporating each new response, the accumulated posterior is attenuated by raising it to a power \(\lambda \in (0, 1]\) and renormalising:</p>
+<div class="math-block">\[P^{(t+1)}(H_i) \propto \left[P^{(t)}(H_i)\right]^{\lambda} \cdot P(R_{t+1} \mid H_i)\]</div>
+<p>With \(\lambda = 1\) the standard Bayes of §3.3 is recovered. With \(\lambda &lt; 1\), evidence from \(k\) steps ago enters with effective weight \(\lambda^k\): it decays geometrically, and the system's <strong>effective memory</strong> is approximately \(1/(1-\lambda)\) responses. A practical rule: \(\lambda = 1 - 1/W\), where \(W\) is the number of recent responses that should dominate the estimate. A variant with a similar effect is mixing the posterior with the uniform distribution, \(p_i \leftarrow (1-\gamma)\,p_i + \gamma/n\); both return some mass to the discarded hypotheses and keep the estimate open to change.</p>
+<p><strong>Example.</strong> With the posterior \((0.809,\; 0.180,\; 0.011)\) and \(\lambda = 0.9\), the attenuation yields \((0.782,\; 0.202,\; 0.016)\): the dominant belief is preserved, but the alternatives regain room to react if the student's behaviour changes.</p>
+<p><strong>When to use it.</strong> In short-session <strong>diagnostic</strong> resources, where the state is stable, \(\lambda = 1\) should be used: forgetting would only add noise and delay convergence. In <strong>continuous practice or reinforcement</strong> (§7.6), values of \(\lambda \approx 0.9\)–\(0.98\) make the estimate track the student's current state. With forgetting active, the confidence shown should be interpreted as confidence about the <em>recent state</em>; entropy stays somewhat higher and the session does not close by itself, which is consistent with the no-stopping mode.</p>
+<p>Forgetting is <em>symmetric</em>: it does not presuppose that the student improves, it only prevents old evidence from blocking the tracking of a changing state. If the direction of learning is to be modelled explicitly, the natural extension is a <strong>transition model</strong> (Bayesian filtering): before each update, a matrix \(T\) is applied with a small probability of moving up a level —larger, for example, right after showing an explanation—, so that \(\mathbf{p} \leftarrow \text{normalise}\!\left(L \circ (T^{\top}\mathbf{p})\right)\). Its two-state special case is <em>Bayesian Knowledge Tracing</em> (Corbett &amp; Anderson, 1995), the classic model of intelligent tutoring systems. In exchange it introduces one more parameter to set without data —the probability of learning per step—, with the cautions of §11.1.</p>
 </section>
 <section id="s4">
 <h2>4. Three-parameter IRT model</h2>
@@ -497,9 +505,9 @@
 <li>\((0.80,\; 0.10,\; 0.10)\): \(H = 0.92\) bits</li>
 <li>\((0.80,\; 0.19,\; 0.01)\): \(H = 0.78\) bits</li>
 </ul>
-<p>The second has lower entropy even though the maximum is the same, because the probability is more concentrated. Therefore, <strong>it is advisable to check both criteria in a complementary way</strong>:</p>
+<p>The second has lower entropy even though the maximum is the same, because the probability is more concentrated. A prudent implementation may check both conditions at once:</p>
 <div class="math-block">\[\text{stop if } H(\mathbf{p}) &lt; H_{\text{stop}} \text{ and } \max_i P(H_i) \geq p_{\min}\]</div>
-<p>Both criteria are not completely independent: when \(H_{\text{stop}}\) is derived from the same \(p_{\min}\), the entropy criterion does not add a requirement other than the maximum probability criterion. The maximum likelihood criterion guarantees the minimum level of confidence in the winning hypothesis; entropy acts as a complementary control for global uncertainty. Alternatively, a separation criterion can be added:</p>
+<p>In fact, when \(H_{\text{stop}}\) is derived from the same \(p_{\min}\), the maximum-probability condition implies the entropy condition: the distribution that defines \(H_{\text{stop}}\) is the maximum-entropy distribution among those whose maximum equals \(p_{\min}\), and that threshold decreases as the maximum grows, so \(\max_i P(H_i) \geq p_{\min}\) alone guarantees \(H \leq H_{\text{stop}}\). Checking both conditions is harmless, but redundant. If an additional check that does add a requirement is desired, a separation criterion can be used:</p>
 <div class="math-block">\[P(H_{\text{winner}}) - P(H_{\text{runner-up}}) \geq \Delta_{\min}\]</div>
 <p>which requires not only that the most probable hypothesis exceeds \(p_{\min}\), but that it is sufficiently separated from the second candidate.</p>
 <h3>7.5. Additional stopping criteria</h3>
@@ -516,6 +524,7 @@
 <li>The posterior is not interpreted as a closed diagnosis, but as an <strong>evolving estimate</strong> updated with each response and capable of reflecting the learning that occurs during the session itself.</li>
 <li>\(H_{\text{stop}}\) and \(p_{\min}\) are not used to end the session; at most, they serve to <strong>inform</strong> the degree of confidence achieved.</li>
 <li>The two-phase selection (§6.4 of the protocol) is maintained throughout the session: minimum diagnosis by category and then reinforcement of the least mastered.</li>
+<li>It is advisable to activate <strong>exponential forgetting</strong> (§3.5) with \(\lambda \approx 0.9\)–\(0.98\), so that the estimate tracks the student's current state and does not stay anchored to old evidence if they learn during practice.</li>
 </ul>
 <p><strong>Caution due to sample size.</strong> With just a few attempts, the posterior can move a long way for a single answer. In order not to communicate an unfounded domain, it is advisable to require a <strong>minimum sample</strong> by category or dimension (e.g., 2–4 attempts) before showing high levels of mastery, and marking the estimate as tentative while evidence is scarce. This caution is a presentational decision: it does not alter the Bayesian posterior, only how it is translated to the interface.</p>
 </section>
@@ -534,7 +543,7 @@
 <p><strong>Example.</strong> With 3 levels of difficulty \(b \in \{-1,\; 0,\; +1\}\):</p>
 <ul>
 <li>Incorrect scale: \(\theta \in \{-1,\; 0,\; +1\}\) → the advanced level and the difficult question have the same value; the logistic curve gives \(P(A) = (1 + c_q)/2 \approx 0.625\) for 4 options, a mediocre value to confirm the advanced level.</li>
-<li>Correct scale: \(\theta \in \{-2,\; 0,\; +2\}\) → the advanced level easily exceeds the extreme difficulty; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.82\), a value high enough for the question to be informative.</li>
+<li>Correct scale: \(\theta \in \{-2,\; 0,\; +2\}\) → the advanced level easily exceeds the extreme difficulty; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.86\), a value high enough for the question to be informative.</li>
 </ul>
 <p>where \(\sigma(x) = 1/(1 + e^{-x})\) is the standard sigmoid function.</p>
 <h3>8.3. Automatic calculation from the question bank</h3>
@@ -710,7 +719,7 @@
 <h3>10.5. Criterion for assigning the likelihoods</h3>
 <p>Since the values \(M_{qi}\) do not come from a formula (§10.4), it is advisable to set them with an explicit criterion. Each cell answers a single question: <em>"if the student had \(H_i\), with what probability would they answer \(q\) correctly?"</em>.</p>
 <p><strong>1. Pedagogical question–hypothesis relationship.</strong> The value depends on whether the question activates the misconception: if \(q\) attacks precisely the concept that \(H_i\) distorts, the student tends to fail and \(M_{qi}\) is low; if \(q\) is unrelated to that error, it does not interfere and \(M_{qi}\) is high (similar to the mastery row); in intermediate cases, a central value. Each row \(H_i\) should thus show the <em>signature</em> of that error —low where it corrupts, high where it does not reach—; a flat row indicates that the question does not distinguish that hypothesis.</p>
-<p><strong>2. Anchors.</strong> Each cell is bounded between two limits: a <strong>guessing floor</strong> \(M_{qi} \geq 1/m\) (with \(m\) options, no one falls below success by chance; this is the role of \(c_q\) in §4.2) and a <strong>slip ceiling</strong> for the mastery hypothesis, \(\approx 0.90\text{–}0.95\), never exactly \(1\).</p>
+<p><strong>2. Anchors.</strong> Each cell is bounded between two limits: a <strong>guessing floor</strong> \(M_{qi} \geq 1/m\) when failure comes from random guessing (with \(m\) options, a student answering at random does not fall below that probability; this is the role of \(c_q\) in §4.2) —with the single exception of point 3— and a <strong>slip ceiling</strong> for the mastery hypothesis, \(\approx 0.90\text{–}0.95\), never exactly \(1\).</p>
 <p><strong>3. Distractor structure.</strong> If the question is multiple-choice and one of the distractors is <em>exactly</em> the answer that \(H_i\) produces, the student does not succeed by chance but is drawn toward that wrong option: then \(M_{qi}\) falls below the guessing floor. The criterion is not just "will they fail?" but "which wrong answer does this error generate, and is it among the options?".</p>
 <p><strong>4. Coarse buckets.</strong> For Bayes what matters is not the exact decimal but the <strong>separation</strong>: in a discriminating question, the correct hypothesis must clearly exceed the one the error makes fail. It is enough to work in buckets:</p>
 <table>
@@ -721,7 +730,7 @@
 <tr><td>Mastery, or the error does not affect the question</td><td>\(\approx 0.90\)</td></tr>
 <tr><td>Partial effect, no distractor capturing the error</td><td>\(\approx 0.50\)</td></tr>
 <tr><td>The error pushes toward a specific distractor</td><td>\(\approx 0.15\text{–}0.25\)</td></tr>
-<tr><td>Guessing floor (never below)</td><td>\(\approx 1/m\)</td></tr>
+<tr><td>Guessing floor (minimum, except for the point-3 case)</td><td>\(\approx 1/m\)</td></tr>
 </tbody>
 </table>
 <p>In the ordered case this same judgment is packaged inside the difficulty \(b_q\) and the logistic; the nominal case merely makes it explicit cell by cell. Once the matrix is filled, Monte Carlo validation (§11.8) checks whether the set of judgments separates the hypotheses, without needing real data.</p>
@@ -738,7 +747,7 @@
 <li>The student answers randomly on questions that he does not know, with patterns that depend on fatigue or time.</li>
 </ul>
 <h3>11.3. Stability of the hypotheses</h3>
-<p>The model assumes that the student's state does not change during the session. In short diagnostic evaluation sessions this is reasonable. In long adaptive learning sessions, the student can improve during the interaction itself, which would cause the subsequent one to converge towards a hypothesis that no longer reflects the current state.</p>
+<p>The model assumes that the student's state does not change during the session. In short diagnostic evaluation sessions this is reasonable. In long adaptive learning sessions, the student can improve during the interaction itself, which would cause the posterior to converge towards a hypothesis that no longer reflects the current state. This limitation is mitigated by updating with exponential forgetting, or by an explicit transition model, described in §3.5: both prevent old evidence from blocking the tracking of a changing state.</p>
 <h3>11.4. random answers</h3>
 <p>If the student responds systematically at random, the \(c_q\) parameter only partially protects: it reduces the upward bias in the probability of success, but does not eliminate the noise. With enough random responses, the posterior can converge toward incorrect hypotheses.</p>
 <h3>11.5. Minimum number of questions</h3>
@@ -775,6 +784,7 @@
 <li><strong>Birnbaum, A.</strong> (1968). Some latent trait models and their use in inferring an examinee's ability. In Lord &amp; Novick, <em>Statistical Theories of Mental Test Scores</em>. Addison-Wesley. [Three-parameter logistic model; foundational IRT reference.]</li>
 <li><strong>Rasch, G.</strong> (1960). <em>Probabilistic Models for Some Intelligence and Attainment Tests</em>. Danmarks Paedagogiske Institut. [Reprinted by University of Chicago Press, 1980; item difficulty model.]</li>
 <li><strong>Cover, T. M. &amp; Thomas, J. A.</strong> (2006). <em>Elements of Information Theory</em> (2nd ed.). Wiley. [Shannon entropy and mutual information.]</li>
+<li><strong>Corbett, A. T. &amp; Anderson, J. R.</strong> (1995). Knowledge tracing: Modeling the acquisition of procedural knowledge. <em>User Modeling and User-Adapted Interaction</em>, 4(4), 253–278. [Two-state transition model (Bayesian Knowledge Tracing); tracking a state that changes during practice.]</li>
 <li><strong>van der Linden, W.J. &amp; Hambleton, R.K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Encyclopedic reference on IRT models and applications.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Adaptive item selection and information.]</li>
 <li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Standardized person-fit indices, \(l_z\).]</li>
@@ -782,7 +792,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.4). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.5). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
 <p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>
