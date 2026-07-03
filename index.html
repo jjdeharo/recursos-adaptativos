@@ -156,30 +156,63 @@
 
     /* EXAMPLES */
     .examples-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
       margin-top: 0.6rem;
     }
 
     .example-card {
-      display: flex;
-      flex-direction: column;
       background: #f8f7ff;
       border: 1px solid #ddd6fe;
       border-radius: 10px;
-      padding: 1rem 1.1rem;
-      text-decoration: none;
       color: var(--text);
       transition: box-shadow 0.15s, border-color 0.15s;
+      overflow: hidden;
     }
     .example-card:hover {
       box-shadow: 0 4px 16px rgba(79,70,229,0.12);
       border-color: var(--primary-light);
     }
-    .example-card .ex-icon  { font-size: 1.5rem; margin-bottom: 0.4rem; }
-    .example-card .ex-title { font-size: 0.93rem; font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
-    .example-card .ex-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.45; }
+    .example-card summary {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      list-style: none;
+      padding: 0.78rem 0.95rem;
+      cursor: pointer;
+    }
+    .example-card summary::-webkit-details-marker { display: none; }
+    .example-card .ex-icon  { font-size: 1.35rem; flex-shrink: 0; }
+    .example-card .ex-title { font-size: 0.93rem; font-weight: 700; color: var(--primary); flex: 1; line-height: 1.3; }
+    .example-card .ex-toggle {
+      color: var(--primary);
+      font-size: 0.85rem;
+      transform: rotate(0deg);
+      transition: transform 0.15s;
+    }
+    .example-card[open] .ex-toggle { transform: rotate(90deg); }
+    .example-card .ex-body {
+      padding: 0 0.95rem 0.95rem 3.05rem;
+    }
+    .example-card .ex-desc  {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.45;
+      margin-bottom: 0.65rem;
+    }
+    .example-card .ex-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--primary);
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    .example-card .ex-link:hover { text-decoration: underline; }
+    @media (max-width: 420px) {
+      .example-card .ex-body { padding-left: 0.95rem; }
+    }
 
     /* PROTOCOL LINK */
     .protocol-link {
@@ -301,26 +334,61 @@
       <section>
         <h2 data-i18n="h2_examples">Ejemplos de aplicación</h2>
         <div class="examples-grid">
-          <a class="example-card" href="https://jjdeharo.github.io/bayes-test/" target="_blank" rel="noopener">
-            <span class="ex-icon">📊</span>
-            <div class="ex-title" data-i18n="ex_test_title">Test adaptativo</div>
-            <div class="ex-desc" data-i18n="ex_test_desc">Evaluación diagnóstica sobre cultura general que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.</div>
-          </a>
-          <a class="example-card" href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">
-            <span class="ex-icon">🗺️</span>
-            <div class="ex-title" data-i18n="ex_itin_title">Itinerario adaptativo</div>
-            <div class="ex-desc" data-i18n="ex_itin_desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.</div>
-          </a>
-          <a class="example-card" href="https://jjdeharo.github.io/labcom/#practica" target="_blank" rel="noopener">
-            <span class="ex-icon">🧮</span>
-            <div class="ex-title" data-i18n="ex_prac_title">Práctica con diagnóstico previo</div>
-            <div class="ex-desc" data-i18n="ex_prac_desc">Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).</div>
-          </a>
-          <a class="example-card" href="https://jjdeharo.github.io/bayes-nominal/" target="_blank" rel="noopener">
-            <span class="ex-icon">🔍</span>
-            <div class="ex-title" data-i18n="ex_nom_title">Diagnóstico de errores conceptuales</div>
-            <div class="ex-desc" data-i18n="ex_nom_desc">Identifica qué error concreto comete el alumno al comparar decimales usando hipótesis nominales (sin orden entre ellas): verosimilitudes por pregunta y diagnóstico por máxima probabilidad posterior.</div>
-          </a>
+          <details class="example-card">
+            <summary>
+              <span class="ex-icon">📊</span>
+              <span class="ex-title" data-i18n="ex_test_title">Test adaptativo</span>
+              <span class="ex-toggle" aria-hidden="true">›</span>
+            </summary>
+            <div class="ex-body">
+              <div class="ex-desc" data-i18n="ex_test_desc">Evaluación diagnóstica sobre cultura general que selecciona preguntas por máxima ganancia de información y ofrece un diagnóstico pedagógico al finalizar.</div>
+              <a class="ex-link" href="https://jjdeharo.github.io/bayes-test/" target="_blank" rel="noopener" data-i18n="ex_open">Abrir recurso</a>
+            </div>
+          </details>
+          <details class="example-card">
+            <summary>
+              <span class="ex-icon">🗺️</span>
+              <span class="ex-title" data-i18n="ex_itin_title">Itinerario adaptativo</span>
+              <span class="ex-toggle" aria-hidden="true">›</span>
+            </summary>
+            <div class="ex-body">
+              <div class="ex-desc" data-i18n="ex_itin_desc">Recurso de aprendizaje que adapta el recorrido, las explicaciones y las actividades al estado estimado del alumno.</div>
+              <a class="ex-link" href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener" data-i18n="ex_open">Abrir recurso</a>
+            </div>
+          </details>
+          <details class="example-card">
+            <summary>
+              <span class="ex-icon">🧮</span>
+              <span class="ex-title" data-i18n="ex_prac_title">Práctica con diagnóstico previo</span>
+              <span class="ex-toggle" aria-hidden="true">›</span>
+            </summary>
+            <div class="ex-body">
+              <div class="ex-desc" data-i18n="ex_prac_desc">Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).</div>
+              <a class="ex-link" href="https://jjdeharo.github.io/labcom/#practica" target="_blank" rel="noopener" data-i18n="ex_open">Abrir recurso</a>
+            </div>
+          </details>
+          <details class="example-card">
+            <summary>
+              <span class="ex-icon">🔍</span>
+              <span class="ex-title" data-i18n="ex_nom_title">Diagnóstico de errores conceptuales</span>
+              <span class="ex-toggle" aria-hidden="true">›</span>
+            </summary>
+            <div class="ex-body">
+              <div class="ex-desc" data-i18n="ex_nom_desc">Identifica qué error concreto comete el alumno al comparar decimales usando hipótesis nominales (sin orden entre ellas): verosimilitudes por pregunta y diagnóstico por máxima probabilidad posterior.</div>
+              <a class="ex-link" href="https://jjdeharo.github.io/bayes-nominal/" target="_blank" rel="noopener" data-i18n="ex_open">Abrir recurso</a>
+            </div>
+          </details>
+          <details class="example-card">
+            <summary>
+              <span class="ex-icon">🌡️</span>
+              <span class="ex-title" data-i18n="ex_temp_title">Calor y temperatura</span>
+              <span class="ex-toggle" aria-hidden="true">›</span>
+            </summary>
+            <div class="ex-body">
+              <div class="ex-desc" data-i18n="ex_temp_desc">Diagnóstico adaptativo de modelos mentales sobre calor y temperatura en Física y Química de ESO: distingue concepciones como “el tacto mide la temperatura” o “la ropa produce calor”.</div>
+              <a class="ex-link" href="https://jjdeharo.github.io/bayes-temperatura/" target="_blank" rel="noopener" data-i18n="ex_open">Abrir recurso</a>
+            </div>
+          </details>
         </div>
       </section>
 
@@ -408,6 +476,9 @@
       ex_prac_desc: 'Práctica de combinatoria que primero diagnostica el nivel en cada tipo de problema y después refuerza los más débiles, usando un modelo bayesiano con ganancia de información (IRT + entropía de Shannon).',
       ex_nom_title: 'Diagnóstico de errores conceptuales',
       ex_nom_desc:  'Identifica qué error concreto comete el alumno al comparar decimales usando hipótesis nominales (sin orden entre ellas): verosimilitudes por pregunta y diagnóstico por máxima probabilidad posterior.',
+      ex_temp_title:'Calor y temperatura',
+      ex_temp_desc: 'Diagnóstico adaptativo de modelos mentales sobre calor y temperatura en Física y Química de ESO: distingue concepciones como “el tacto mide la temperatura” o “la ropa produce calor”.',
+      ex_open:      'Abrir recurso',
       h2_create:    'Crear tu propio recurso con IA',
       p_create:     'Para generar un recurso con IA, adjunta la <strong>especificación operativa para IA</strong> a tu conversación. La IA leerá ese fichero y sabrá exactamente cómo construir o transformar tu recurso para que se adapte al nivel de cada alumno.',
       di_spec_title:'Especificación operativa para IA',
@@ -445,6 +516,9 @@
       ex_prac_desc: 'Combinatorics practice that first diagnoses the level in each type of problem and then reinforces the weakest ones, using a Bayesian model with information gain (IRT + Shannon entropy).',
       ex_nom_title: 'Misconception diagnosis',
       ex_nom_desc:  'Identifies which specific error the student makes when comparing decimals using nominal (unordered) hypotheses: per-question likelihoods and diagnosis by maximum posterior probability.',
+      ex_temp_title:'Heat and temperature',
+      ex_temp_desc: 'Adaptive diagnosis of mental models about heat and temperature in lower-secondary physics and chemistry: it distinguishes misconceptions such as “touch measures temperature” or “clothes produce heat”.',
+      ex_open:      'Open resource',
       h2_create:    'Create your own resource with AI',
       p_create:     'To generate a resource with AI, attach the <strong>AI operational specification</strong> to your conversation. The AI will read that file and know exactly how to build or transform your resource so it adapts to each student\'s level.',
       di_spec_title:'AI operational specification',
@@ -482,6 +556,9 @@
       ex_prac_desc: `Pràctica de combinatòria que primer diagnostica el nivell en cada tipus de problema i després reforça els més febles, fent servir un model bayesià amb guany d'informació (IRT + entropia de Shannon).`,
       ex_nom_title: `Diagnòstic d'errors conceptuals`,
       ex_nom_desc:  `Identifica quin error concret comet l'alumne en comparar decimals fent servir hipòtesis nominals (sense ordre entre elles): versemblances per pregunta i diagnòstic per màxima probabilitat posterior.`,
+      ex_temp_title:'Calor i temperatura',
+      ex_temp_desc: `Diagnòstic adaptatiu de models mentals sobre calor i temperatura en Física i Química d'ESO: distingeix concepcions com “el tacte mesura la temperatura” o “la roba produeix calor”.`,
+      ex_open:      'Obrir recurs',
       h2_create:    'Crea el teu propi recurs amb IA',
       p_create:     `Per generar un recurs amb IA, adjunta l'<strong>especificació operativa per a IA</strong> a la teva conversa. La IA llegirà aquest fitxer i sabrà exactament com construir o transformar el teu recurs perquè s'adapti al nivell de cada alumne.`,
       di_spec_title:'Especificació operativa per a IA',
@@ -538,6 +615,15 @@
   };
 
   applyLang(getLang());
+
+  document.querySelectorAll('.examples-grid details').forEach(function (item) {
+    item.addEventListener('toggle', function () {
+      if (!item.open) return;
+      document.querySelectorAll('.examples-grid details').forEach(function (other) {
+        if (other !== item) other.open = false;
+      });
+    });
+  });
 
   var themeBtn = document.getElementById('theme-toggle');
   function applyTheme(stored) {
