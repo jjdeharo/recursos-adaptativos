@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guía rápida para docentes</title>
+<script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}());</script>
+<style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: clip; scrollbar-gutter: stable; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.25rem 2rem 1.5rem;
+      text-align: center;
+      max-width: 860px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      border-radius: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+    }
+    .back-link:hover { color: white; text-decoration: underline; }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+    }
+    .toc-card ol {
+      margin-left: 1.2rem;
+      font-size: 0.9rem;
+    }
+    .toc-card li { margin-bottom: 0.2rem; }
+    .toc-card a { color: var(--primary); text-decoration: none; }
+    .toc-card a:hover { text-decoration: underline; }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+    h3:first-of-type { margin-top: 0.6rem; }
+
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin-left: 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    li { margin-bottom: 0.25rem; }
+    li:last-child { margin-bottom: 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.2rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--primary);
+      font-weight: 700;
+      background: var(--code-bg);
+    }
+
+    a { color: var(--primary); }
+
+    blockquote {
+      border-left: 4px solid var(--primary-light);
+      background: #f0f0ff;
+      border-radius: 0 8px 8px 0;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      font-size: 0.93rem;
+      color: #3730a3;
+    }
+    blockquote p { margin-bottom: 0.6rem; }
+    blockquote p:last-child { margin-bottom: 0; }
+    blockquote strong { color: #3730a3; }
+
+    .callout {
+      margin-top: 1.4rem;
+      padding: 0.9rem 1.1rem;
+      background: #f0f4ff;
+      border-left: 3px solid #4a6cf7;
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .site-footer {
+      background: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 1.1rem 1.5rem;
+      line-height: 1.8;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      border-radius: 1rem;
+    }
+    .site-footer a { color: #a5b4fc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .theme-toggle {
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-left: 0.4rem;
+      line-height: 1;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #162032;
+    }
+    [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
+    [data-theme="dark"] blockquote { background: #1e293b; color: #e2e8f0; border-left-color: #818cf8; }
+    [data-theme="dark"] blockquote strong { color: #a5b4fc; }
+    [data-theme="dark"] blockquote a { color: #a5b4fc; }
+    [data-theme="dark"] .callout {
+      background: #1e293b;
+      border-left-color: #818cf8;
+      color: #e2e8f0;
+    }
+    [data-theme="dark"] .callout a { color: #a5b4fc; }
+
+    @media (max-width: 600px) {
+      section { padding: 1.25rem 1.1rem; }
+      blockquote { padding: 0.9rem 1rem; }
+    }
+</style>
+</head>
+<body>
+<div class="header"><div class="lang-switcher"><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
+<a class="back-link" href="index.html">← Inicio</a>
+<h1>Guía rápida para docentes</h1>
+<p>Cómo pedir a una IA un recurso adaptativo para tu clase, sin tecnicismos</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.0</p>
+</div>
+<div class="container">
+<div class="toc-card">
+<h2>Contenido</h2>
+<ol>
+<li><a href="#s1">Cómo se usa (3 pasos)</a></li>
+<li><a href="#s2">Qué conviene decirle</a></li>
+<li><a href="#s3">Para qué puede servirte (con ejemplos)</a></li>
+<li><a href="#s4">La única aclaración que no puede faltar</a></li>
+<li><a href="#s5">Otras cosas que puedes pedir</a></li>
+<li><a href="#s6">Después de recibir el recurso</a></li>
+</ol>
+</div>
+
+<section id="s0">
+<p>Esta guía te explica cómo pedir a una IA (ChatGPT, Claude, Gemini…) que cree un recurso educativo adaptativo para tu clase, <strong>sin necesidad de conocer la metodología que hay detrás</strong>. De la parte técnica se encarga la IA siguiendo el archivo <a download="" href="especificacion_operativa_ia.md">especificacion_operativa_ia.md</a>.</p>
+</section>
+
+<section id="s1">
+<h2>1. Cómo se usa (3 pasos)</h2>
+<ol>
+<li><strong>Descarga</strong> el archivo <a download="" href="especificacion_operativa_ia.md">especificacion_operativa_ia.md</a>.</li>
+<li><strong>Adjúntalo</strong> a la conversación con la IA (o pega su contenido).</li>
+<li><strong>Pídele lo que necesitas con tus propias palabras</strong>, como se lo pedirías a un compañero de departamento.</li>
+</ol>
+<p>Con esos tres pasos ya puedes empezar. No hace falta que sigas leyendo ni que rellenes una plantilla: si explicas lo que necesitas, la IA debe poder crear el programa y preguntarte solo por los datos imprescindibles que falten.</p>
+<p>Lo que viene a continuación no es un procedimiento que tengas que seguir paso a paso. Es una guía para ayudarte a pensar qué puedes pedir, qué opciones tienes y cómo expresar mejor tu idea si quieres afinar el recurso.</p>
+<p>La IA te devolverá una página web que funciona sola: puedes abrirla en cualquier navegador y compartirla con tu alumnado.</p>
+</section>
+
+<section id="s2">
+<h2>2. Qué conviene decirle</h2>
+<p>No hay fórmulas que rellenar. Basta con que tu petición deje claro, con tus palabras:</p>
+<ul>
+<li><strong>el tema y el curso</strong>;</li>
+<li><strong>para qué lo quieres</strong>: saber el nivel, descubrir por qué fallan, detectar carencias, que practiquen, guiarles paso a paso…;</li>
+<li><strong>qué quieres ver al final o durante la práctica</strong>: qué información os tiene que dar a ti y al alumno.</li>
+</ul>
+<p>Todo lo demás (número de preguntas, cuándo termina, cómo se calcula el resultado…) lo resuelve la IA con valores razonables, y siempre puedes pedirle cambios después.</p>
+</section>
+
+<section id="s3">
+<h2>3. Para qué puede servirte (con ejemplos)</h2>
+<p>Lo que más condiciona el recurso es <strong>para qué lo quieres</strong>. Estas son las finalidades habituales; cada una lleva un ejemplo de petición real, <strong>solo orientativo</strong>: no lo copies tal cual, escribe la tuya con tus palabras y tu contexto.</p>
+<table>
+<thead>
+<tr><th>Si quieres...</th><th>Pide a la IA...</th></tr>
+</thead>
+<tbody>
+<tr><td>Saber el nivel del alumno</td><td>una prueba adaptativa de nivel</td></tr>
+<tr><td>Averiguar por qué falla</td><td>un diagnóstico de errores excluyentes</td></tr>
+<tr><td>Detectar varios fallos posibles</td><td>un diagnóstico de errores que pueden coexistir</td></tr>
+<tr><td>Practicar lo que peor lleva</td><td>un programa de práctica adaptativa</td></tr>
+<tr><td>Aprender por etapas</td><td>un itinerario guiado paso a paso</td></tr>
+<tr><td>Saber nivel y errores</td><td>una prueba combinada de nivel y diagnóstico</td></tr>
+</tbody>
+</table>
+
+<h3>Saber en qué nivel está cada alumno</h3>
+<p>Una prueba corta que se adapta según las respuestas del alumno y termina diciéndote su nivel. Útil al empezar un tema, al acabarlo o para formar grupos.</p>
+<p>Un docente de 5.º de primaria podría pedir, por ejemplo:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Quiero una prueba corta para saber en qué nivel están mis alumnos de 5.º de primaria en fracciones equivalentes, antes de empezar la unidad. Al terminar, el alumno y yo debemos ver su nivel, cómo de fiable es el resultado y qué le conviene hacer a continuación.</p>
+</blockquote>
+
+<h3>Descubrir por qué falla</h3>
+<p>Cuando un alumno falla y sospechas que hay <strong>una razón concreta</strong> detrás (una idea equivocada, un método mal aprendido), la prueba puede diseñarse para distinguir cuál de las explicaciones posibles es la verdadera.</p>
+<p>Por ejemplo, en física de 2.º de ESO:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Mis alumnos de 2.º de ESO fallan en calor y temperatura y quiero averiguar por qué falla cada uno. Solo una de estas explicaciones puede ser cierta en cada alumno: o cree que el objeto más grande siempre está más caliente, o confunde calor con temperatura, o en realidad lo entiende bien. Al terminar quiero saber cuál es la explicación más probable para ese alumno y qué debería explicarle yo en cada caso.</p>
+</blockquote>
+
+<h3>Detectar qué le falta</h3>
+<p>Cuando los fallos posibles <strong>pueden darse a la vez</strong> (un alumno puede tener uno, varios o ninguno), la prueba revisa cada fallo por separado y te dice cuáles tiene.</p>
+<p>Por ejemplo, con las operaciones con decimales en 6.º de primaria:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Quiero una prueba para 6.º de primaria que detecte qué fallos arrastra cada alumno al operar con decimales. Puede tener varios a la vez: equivocarse al restar con llevadas, no alinear bien la coma, o colocar mal el cero en el cociente. Al terminar quiero ver, para cada fallo, si lo tiene, si no lo tiene o si no ha quedado claro, y qué conviene reforzar.</p>
+</blockquote>
+
+<h3>Que practique y refuerce lo que peor lleva</h3>
+<p>Un entrenador de ejercicios que se adapta solo: detecta qué tipos de ejercicio domina menos el alumno y le propone más de esos. No tiene final: el alumno practica el tiempo que quiera.</p>
+<p>Por ejemplo, para repasar fracciones en 1.º de ESO:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Quiero un programa de práctica de operaciones con fracciones para 1.º de ESO (suma, resta, multiplicación y división) que proponga más ejercicios de lo que peor lleve cada alumno. Después de cada respuesta debe decir si está bien o mal y explicar el error, con la posibilidad de pedir una pista. Quiero que el alumno vea en pantalla cómo va en cada tipo de operación.</p>
+</blockquote>
+
+<h3>Aprender paso a paso</h3>
+<p>Un itinerario guiado que enseña algo por etapas. El alumno no pasa a la siguiente hasta demostrar que domina la actual; si se atasca, recibe ayuda y puede reintentarlo.</p>
+<p>Por ejemplo, para introducir las ecuaciones:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Quiero un itinerario para que mis alumnos de 1.º de ESO aprendan a despejar la x paso a paso: primero ecuaciones como x + 3 = 7, luego como 2x = 10 y por último combinadas como 2x + 3 = 11. Que no pasen de etapa hasta dominarla, y que reciban pistas y explicaciones si se atascan. Al final quiero ver qué etapas ha superado cada uno y dónde ha necesitado ayuda.</p>
+</blockquote>
+
+<h3>Saber el nivel y además qué errores comete</h3>
+<p>Las dos cosas en una sola prueba: el nivel general del alumno y sus fallos concretos.</p>
+<p>Por ejemplo, con la acentuación:</p>
+<blockquote>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Quiero una prueba de acentuación para 3.º de ESO que me diga el nivel de cada alumno y, además, qué fallos concretos tiene: puede confundir las reglas de agudas y llanas, ignorar los hiatos, o fallar solo en la tilde diacrítica, y puede tener varios de estos fallos a la vez. Al terminar quiero su nivel, el estado de cada fallo y una recomendación: qué practicar y qué habría que explicarle.</p>
+</blockquote>
+</section>
+
+<section id="s4">
+<h2>4. La única aclaración que no puede faltar</h2>
+<p>Si tu recurso detecta errores, tienes que dejar claro en tu petición si:</p>
+<ul>
+<li><strong>solo una de las explicaciones puede ser cierta</strong> en cada alumno (compiten entre sí), o</li>
+<li><strong>puede tener varios fallos a la vez</strong> (se acumulan).</li>
+</ul>
+<p>Un ejemplo cotidiano: «llega tarde porque ha perdido el bus <strong>o</strong> porque se ha dormido» son explicaciones que compiten (solo una es la causa). En cambio, «no estudia <strong>y además</strong> se distrae en clase» pueden ser verdad las dos a la vez. Si no lo aclaras, la IA puede montar el recurso mal y el diagnóstico saldrá defectuoso.</p>
+</section>
+
+<section id="s5">
+<h2>5. Otras cosas que puedes pedir</h2>
+<p>Añade a tu petición, con tus palabras, lo que te importe. Algunas ideas:</p>
+<ul>
+<li>Para alumnado joven o inseguro: que empiece con una pregunta fácil y meta de vez en cuando alguna asequible, para que no se desanime.</li>
+<li>Si los ejercicios tienen varios pasos: que valore las respuestas por partes, de modo que un ejercicio a medias cuente a medias y no como fallo total.</li>
+<li>Un resumen final para ti, además del resultado que ve el alumno.</li>
+<li>Una interfaz muy simple, con letra grande y botones claros, si tu alumnado tiene poca soltura digital.</li>
+<li>El recurso en la lengua que necesites.</li>
+</ul>
+</section>
+
+<section id="s6">
+<h2>6. Después de recibir el recurso</h2>
+<ul>
+<li><strong>Pruébalo tú primero</strong>, respondiendo bien y respondiendo mal a propósito, y comprueba que lo que dice al final tiene sentido.</li>
+<li><strong>Pide cambios en lenguaje normal</strong>: «hazlo más corto», «las preguntas son muy difíciles para mi curso», «añade más ejercicios de división», «explica los errores con ejemplos». No necesitas tecnicismos.</li>
+<li><strong>Desconfía de los diagnósticos con pocas preguntas</strong>: el propio recurso te avisará cuando un resultado sea provisional; tómalo como una orientación, no como una sentencia.</li>
+<li>El resultado <strong>nunca sustituye tu criterio</strong>: es una ayuda para decidir, no una calificación.</li>
+</ul>
+<div class="callout">
+<p>Esta guía forma parte del <a href="documentacion.html">Protocolo para sistemas educativos adaptativos bayesianos</a>. Si quieres entender cómo funciona por dentro, ahí está toda la explicación.</p>
+</div>
+<hr/>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>Cómo citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guía rápida para docentes — Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.0). https://jjdeharo.github.io/recursos-adaptativos/</p>
+</section>
+
+</div>
+<footer class="site-footer">
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan José de Haro</a>
+<span class="sep">·</span>
+  Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+  Código: <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener" target="_blank">AGPL-3.0</a>
+<span class="sep">·</span>
+<a href="documentacion.html">Protocolo completo</a>
+<span class="sep">·</span>
+<a href="index.html">← Inicio</a>
+</footer>
+<script>
+(function () {
+  var themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(stored) {
+    var dark = stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (themeBtn) themeBtn.textContent = stored === null ? '💻' : stored === 'dark' ? '🌙' : '☀️';
+  }
+  window.toggleTheme = function () {
+    var stored = localStorage.getItem('theme');
+    var next = stored === null ? 'dark' : stored === 'dark' ? 'light' : null;
+    if (next === null) { localStorage.removeItem('theme'); } else { localStorage.setItem('theme', next); }
+    applyTheme(next);
+  };
+  applyTheme(localStorage.getItem('theme'));
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+    if (!localStorage.getItem('theme')) applyTheme(null);
+  });
+})();
+</script>
+</body>
+</html>
