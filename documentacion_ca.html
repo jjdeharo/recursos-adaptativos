@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.6</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.7</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -366,6 +366,10 @@
 <h3>3.1. Estat multidimensional</h3>
 <p>L'estat de l'alumne no ha de ser una sola distribució. Quan interessa saber no tan sols quant domina, sinó quines habilitats o passos concrets falla, el sistema pot mantenir diverses distribucions de probabilitat en paral·lel: una per categoria o nivell i una altra per cada dimensió diagnòstica (una habilitat, un pas del procés, un tipus d'error).</p>
 <p>Totes s'actualitzen amb la mateixa resposta de l'alumne: el resultat global modifica la creença sobre el nivell, i cada part de la resposta modifica la creença sobre la dimensió corresponent. Així, l'estimació de nivell indica què cal practicar, i el diagnòstic per dimensió indica què convé explicar o reforçar. Cada dimensió pot tenir la seva pròpia probabilitat d'encert per atzar, per la qual cosa els seus percentatges no són directament comparables entre si; la referència comuna és el valor de nivell subjacent.</p>
+<figure style="margin:1.25rem 0 0;text-align:center;">
+<img src="img/clasificacion_hipotesis_ca.png" alt="Classificació de les hipòtesis en quatre tipus: ordinal unifactorial (una sola dimensió amb nivells ordenats, IRT), ordinal multidimensional (diverses dimensions jeràrquiques en paral·lel, IRT per dimensió), nominal unifactorial (categories excloents amb versemblances explícites) i nominal multifactorial (factors que poden coexistir, modelats com a dimensions separades o perfils complets)." loading="lazy" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:12px;">
+<figcaption style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Classificació de les hipòtesis: com decidir l'arquitectura de dades i el model matemàtic.</figcaption>
+</figure>
 </section>
 <section id="s4">
 <h2>4. Actualització bayesiana</h2>
@@ -749,7 +753,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Avaluació formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprenentatge per al domini; base dels mecanismes de reforç i recuperació.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.6). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.7). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
 <p class="callout">
 El desenvolupament formal dels mecanismes descrits en aquest protocol —inferència bayesiana, model IRT, entropia de Shannon i selecció adaptativa— es troba al document complementari <a href="matematicas_ca.html">Fonaments matemàtics</a>, que inclou fórmules, demostracions i un exemple numèric complet.
 </p>

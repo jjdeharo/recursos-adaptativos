@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Protocol for Bayesian adaptive educational systems</h1>
 <p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.6</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.7</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -366,6 +366,10 @@
 <h3>3.1. Multidimensional state</h3>
 <p>The student's state does not have to be represented by a single distribution. When it is useful to know not only how much has been mastered, but also which specific skills or steps are failing, the system can maintain several probability distributions in parallel: one per category or level and another for each diagnostic dimension (a skill, a process step, or a type of error).</p>
 <p>All of them are updated from the same student response: the overall result modifies the belief about level, and each part of the response modifies the belief about the corresponding dimension. In this way, the level estimate indicates what should be practised, while the diagnosis by dimension indicates what should be explained or reinforced. Each dimension may have its own probability of success by chance, so percentages from different dimensions are not directly comparable; the shared reference is the underlying latent level.</p>
+<figure style="margin:1.25rem 0 0;text-align:center;">
+<img src="img/clasificacion_hipotesis_en.png" alt="Classification of hypotheses into four types: single-factor ordinal (one dimension with ordered levels, IRT), multidimensional ordinal (several hierarchical dimensions in parallel, IRT per dimension), single-factor nominal (mutually exclusive categories with explicit likelihoods) and multifactor nominal (factors that can coexist, modeled as separate dimensions or full profiles)." loading="lazy" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:12px;">
+<figcaption style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Classification of hypotheses: how to decide the data architecture and the mathematical model.</figcaption>
+</figure>
 </section>
 <section id="s4">
 <h2>4. Bayesian update</h2>
@@ -749,7 +753,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Formative assessment.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Mastery learning; basis of the reinforcement and recovery mechanisms.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.6). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.7). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
 <p class="callout">
 The formal development of the mechanisms described in this protocol —Bayesian inference, IRT model, Shannon entropy and adaptive selection— is provided in the companion document <a href="matematicas_en.html">Mathematical Foundations</a>, which includes formulas, proofs and a complete numerical example.
 </p>
