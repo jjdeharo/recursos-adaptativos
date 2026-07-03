@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.6**
+**Versió 1.7**
 
 ## Propòsit
 
@@ -64,6 +64,14 @@ Després de cada resposta:
 4. utilitza el resultat com a nou estat.
 
 Això s'ha de fer després de cada interacció rellevant.
+
+## Elecció del model
+
+- Si la finalitat principal és estimar un nivell ordenat de domini, utilitza hipòtesis ordinals i IRT 3PL.
+- Si la finalitat principal és identificar una estratègia o error excloent, utilitza hipòtesis nominals amb versemblances explícites per pregunta.
+- Si diversos errors, habilitats o necessitats poden coexistir, utilitza dimensions separades o perfils complets.
+- Si el recurs ha d'estimar nivell i diagnosticar errors, combina una distribució ordinal global amb distribucions diagnòstiques paral·leles.
+- No forcis errors coexistents dins d'una escala ordinal única.
 
 ## Versemblances
 

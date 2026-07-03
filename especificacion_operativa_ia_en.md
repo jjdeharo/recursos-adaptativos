@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.6**
+**Version 1.7**
 
 ## Purpose
 
@@ -64,6 +64,14 @@ After each response:
 4. use the result as the new state.
 
 This must be done after each relevant interaction.
+
+## Model Choice
+
+- If the main purpose is to estimate an ordered level of mastery, use ordinal hypotheses and IRT 3PL.
+- If the main purpose is to identify a mutually exclusive strategy or error, use nominal hypotheses with explicit likelihoods per question.
+- If several errors, skills, or needs can coexist, use separate dimensions or full profiles.
+- If the resource must estimate level and diagnose errors, combine a global ordinal distribution with parallel diagnostic distributions.
+- Do not force coexisting errors into a single ordinal scale.
 
 ## Likelihoods
 

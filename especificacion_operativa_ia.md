@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.6**
+**Versión 1.7**
 
 ## Propósito
 
@@ -64,6 +64,14 @@ Tras cada respuesta:
 4. usa el resultado como nuevo estado.
 
 Esto debe hacerse después de cada interacción relevante.
+
+## Elección del modelo
+
+- Si la finalidad principal es estimar un nivel ordenado de dominio, usa hipótesis ordinales e IRT 3PL.
+- Si la finalidad principal es identificar una estrategia o error excluyente, usa hipótesis nominales con verosimilitudes explícitas por pregunta.
+- Si varios errores, habilidades o necesidades pueden coexistir, usa dimensiones separadas o perfiles completos.
+- Si el recurso debe estimar nivel y diagnosticar errores, combina una distribución ordinal global con distribuciones diagnósticas paralelas.
+- No fuerces errores coexistentes dentro de una escala ordinal única.
 
 ## Verosimilitudes
 
