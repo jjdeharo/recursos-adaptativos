@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.10</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.11</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -464,6 +464,7 @@
 <li>concepte avaluat;</li>
 <li>possible error conceptual associat.</li>
 </ul>
+<p>Per això, la qualitat del resultat no depèn només de l'algorisme, sinó també de com estigui conformada aquesta informació de partida. Si les classificacions pedagògiques estan mal definides, si les dificultats no estan raonablement calibrades, si els errors conceptuals rellevants no estan ben identificats o si el banc ofereix poca cobertura dels casos importants, les versemblances generades poden representar malament la realitat i l'adaptació posterior pot sortir esbiaixada o poc fiable.</p>
 <p>A partir d'aquesta informació, el programa genera automàticament les versemblances. Això es pot fer amb un model generador, preferiblement una funció logística ajustada per atzar, i més endavant es poden recalibrar els valors amb dades reals si es disposa de prou respostes.</p>
 <p>Per tant, el flux recomanat és:</p>
 <ol>
@@ -506,6 +507,8 @@
 <tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
 </tbody>
 </table>
+<p>En conseqüència, no n'hi ha prou que hi hagi moltes preguntes: convé que el banc estigui ben distribuït en els eixos pedagògicament rellevants del recurs, sobretot la dificultat, el tipus d'ítem i els continguts, habilitats o errors que es volen discriminar. Si una zona important queda infrarepresentada, el sistema pot semblar adaptatiu i, tanmateix, raonar sobre una base pobra.</p>
+<p>Tampoc no n'hi ha prou amb el nombre total. Perquè la selecció adaptativa no es torni repetitiva, cal <strong>redundància local</strong>: en cada zona rellevant del banc convé disposar de diverses preguntes alternatives de dificultat i funció diagnòstica semblants. Si una categoria, nivell o tipus d'error només té un ítem útil, el sistema tendirà a repetir-lo encara que la regla de selecció sigui correcta.</p>
 <p>Els valors numèrics \(\theta_i\) dels nivells o hipòtesis jeràrquiques segueixen la mateixa convenció de centrat en zero amb intervals iguals, <strong>però abasten un rang estrictament més gran que el de \(b_q\)</strong>. Aquesta condició és important: si \(\theta_{\max} = b_{\max}\), el nivell extrem i la dificultat extrema coincideixen al punt d'inflexió de la corba logística. En aquest punt la pregunta discrimina molt, però la probabilitat d'encert del nivell extrem encara pot ser moderada, per això encertar-la confirma feblement aquest nivell. Un factor de 2 funciona bé a la pràctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Per exemple, amb 3 dificultats \(b \in \{-1, 0, +1\}\) i 3 nivells, fer servir \(\theta \in \{-2, 0, +2\}\) fa que les preguntes difícils resultin més informatives per als alumnes avançats. El més robust és calcular automàticament \(\theta_{\max}\): \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
 </section>
 <section id="s9">
@@ -756,7 +759,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Avaluació formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprenentatge per al domini; base dels mecanismes de reforç i recuperació.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.10). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.11). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
 <p class="callout">
 El desenvolupament formal dels mecanismes descrits en aquest protocol —inferència bayesiana, model IRT, entropia de Shannon i selecció adaptativa— es troba al document complementari <a href="matematicas_ca.html">Fonaments matemàtics</a>, que inclou fórmules, demostracions i un exemple numèric complet.
 </p>

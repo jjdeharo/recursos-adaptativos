@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.7**
+**Version 1.8**
 
 ## Purpose
 
@@ -97,6 +97,7 @@ This must be done after each relevant interaction.
 - If a specific distractor is the answer an error produces, the probability of **that option** should rise under that profile, and the probability of success may fall near or below chance: the student is actively drawn toward that wrong option.
 - Do not fine-tune the decimal: use buckets (`≈0.9` unaffected / `≈0.5` partial effect / `≈0.15–0.25` distractor capturing the error / `≈1/m` floor when failing by guessing). What matters is that the correct factors or profiles separate clearly in discriminating questions.
 - Do not use fixed global tables if each question can generate its own likelihoods.
+- Diagnostic quality does not depend only on the algorithm: it also depends on how the hypotheses, categories, difficulties, concepts, and errors are defined. If those classifications are poorly structured, if the relevant errors are not well identified, or if the bank covers important cases poorly, the generated likelihoods may misrepresent reality and bias the adaptation.
 - In the final diagnosis do not compute an expected `theta` (meaningless without order). If the model is exclusive nominal, you may report the MAP hypothesis and its probability. If the model is multifactorial, report for each factor whether it is **present**, **absent**, or **undetermined**, together with its marginal probability or confidence.
 
 ## Partial Credit Responses
@@ -175,6 +176,20 @@ If several candidates are practically equivalent:
 - favour categories or concepts that have been repeated less.
 
 Do not use simple deterministic selection for ties.
+
+Avoid repeating the same question mechanically:
+
+- do not repeat exactly the same item consecutively unless the design explicitly requires an immediate retry;
+- apply a frequency penalty or a recent-exclusion window so that a recently used item loses priority for several selections;
+- if several candidates have similar utility, prefer the least recent and least repeated one;
+- only allow an item to be reused when the bank is small, there are no comparable alternatives, or the pedagogical goal is to deliberately revisit that exact case.
+
+Do not confuse this problem with a simple tie-breaking rule:
+
+- randomisation only helps if several reasonable candidates actually exist;
+- to avoid repetition, the bank needs local redundancy: several alternative questions for each relevant category, difficulty level, item type, or error;
+- if a diagnostic area has only one useful item, the AI should recognise that the bank is insufficient for varied adaptation in that area;
+- in that case do not fake variety with randomisation: reuse the item only when necessary, temporarily shift the pedagogical objective, or mark the result as limited by the size of the bank.
 
 ## Stopping Criterion
 

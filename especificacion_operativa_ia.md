@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.7**
+**Versión 1.8**
 
 ## Propósito
 
@@ -97,6 +97,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Si un distractor concreto es la respuesta que produce un error, la probabilidad de **esa opción** debe subir bajo ese perfil, y la de acierto puede quedar cerca del suelo o por debajo: el alumno es atraído activamente hacia esa respuesta equivocada.
 - No afines el decimal: usa tramos (`≈0.9` no afecta / `≈0.5` afectación parcial / `≈0.15–0.25` distractor que captura el error / `≈1/m` suelo si falla por azar). Lo importante es que los perfiles o factores correctos se separen claramente en las preguntas que discriminan.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
+- La calidad del diagnóstico no depende solo del algoritmo: depende también de cómo estén definidas las hipótesis, categorías, dificultades, conceptos y errores. Si esas clasificaciones están mal conformadas, si los errores relevantes no están bien identificados o si el banco cubre mal los casos importantes, las verosimilitudes generadas pueden representar mal la realidad y sesgar la adaptación.
 - En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden). Si el modelo es nominal excluyente, puedes reportar la hipótesis MAP y su probabilidad. Si el modelo es multifactorial, reporta por cada factor si queda **presente**, **ausente** o **indeterminado**, con su probabilidad marginal o confianza asociada.
 
 ## Respuestas con crédito parcial
@@ -175,6 +176,20 @@ Si varias son prácticamente equivalentes:
 - favorece categorías o conceptos menos repetidos.
 
 No uses selección determinista simple en empates.
+
+Evita repetir la misma pregunta de forma mecánica:
+
+- no repitas exactamente el mismo ítem de manera consecutiva, salvo que el diseño pida de forma explícita un reintento inmediato;
+- aplica penalización por frecuencia o una ventana de exclusión reciente para que un ítem ya usado pierda prioridad durante varias selecciones;
+- si varias candidatas tienen utilidad parecida, prefiere la menos reciente y la menos repetida;
+- solo permite reusar un ítem cuando el banco sea pequeño, no existan alternativas comparables o el objetivo pedagógico sea revisar de forma deliberada ese mismo caso.
+
+No confundas este problema con un simple criterio de desempate:
+
+- la aleatorización solo ayuda si existen varias candidatas razonables;
+- para evitar repeticiones hace falta redundancia local en el banco: varias preguntas alternativas por categoría, nivel de dificultad, tipo de ítem o error relevante;
+- si en una zona diagnóstica solo hay un ítem útil, la IA debe reconocer que el banco es insuficiente para una adaptación variada en esa zona;
+- en ese caso no simules variedad con una falsa aleatorización: reutiliza el ítem solo cuando sea necesario, cambia temporalmente de objetivo pedagógico o deja el resultado como limitado por el tamaño del banco.
 
 ## Criterio de parada
 

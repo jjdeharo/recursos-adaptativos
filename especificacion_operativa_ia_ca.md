@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.7**
+**Versió 1.8**
 
 ## Propòsit
 
@@ -97,6 +97,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Si un distractor concret és la resposta que produeix un error, la probabilitat d'**aquella opció** ha d'augmentar sota aquell perfil, i la probabilitat d'encert pot quedar a prop del terra o per sota: l'alumne és atret activament cap a aquella resposta equivocada.
 - No afinis el decimal: fes servir trams (`≈0.9` no afecta / `≈0.5` afectació parcial / `≈0.15–0.25` distractor que captura l'error / `≈1/m` terra si falla per atzar). El que importa és que els factors o perfils correctes se separin clarament en les preguntes que discriminen.
 - No facis servir taules fixes globals si cada pregunta pot generar les seves pròpies versemblances.
+- La qualitat del diagnòstic no depèn només de l'algorisme: depèn també de com estiguin definides les hipòtesis, categories, dificultats, conceptes i errors. Si aquestes classificacions estan mal conformades, si els errors rellevants no estan ben identificats o si el banc cobreix malament els casos importants, les versemblances generades poden representar malament la realitat i esbiaixar l'adaptació.
 - En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre). Si el model és nominal excloent, pots reportar la hipòtesi MAP i la seva probabilitat. Si el model és multifactorial, reporta per a cada factor si queda **present**, **absent** o **indeterminat**, amb la seva probabilitat marginal o confiança associada.
 
 ## Respostes amb crèdit parcial
@@ -175,6 +176,20 @@ Si diverses candidates són pràcticament equivalents:
 - afavoreix categories o conceptes menys repetits.
 
 No facis servir selecció determinista simple en empats.
+
+Evita repetir la mateixa pregunta de manera mecànica:
+
+- no repeteixis exactament el mateix ítem de manera consecutiva, llevat que el disseny demani de manera explícita un reintent immediat;
+- aplica una penalització per freqüència o una finestra d'exclusió recent perquè un ítem ja utilitzat perdi prioritat durant diverses seleccions;
+- si diverses candidates tenen una utilitat semblant, prioritza la menys recent i la menys repetida;
+- només permet reutilitzar un ítem quan el banc sigui petit, no hi hagi alternatives comparables o l'objectiu pedagògic sigui revisar deliberadament aquell mateix cas.
+
+No confonguis aquest problema amb un simple criteri de desempat:
+
+- l'aleatorització només ajuda si existeixen diverses candidates raonables;
+- per evitar repeticions cal redundància local al banc: diverses preguntes alternatives per categoria, nivell de dificultat, tipus d'ítem o error rellevant;
+- si en una zona diagnòstica només hi ha un ítem útil, la IA ha de reconèixer que el banc és insuficient per a una adaptació variada en aquella zona;
+- en aquest cas no simulis varietat amb una falsa aleatorització: reutilitza l'ítem només quan sigui necessari, canvia temporalment d'objectiu pedagògic o deixa el resultat com a limitat per la mida del banc.
 
 ## Criteri d'aturada
 

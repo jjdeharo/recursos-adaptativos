@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Protocol for Bayesian adaptive educational systems</h1>
 <p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.10</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.11</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -464,6 +464,7 @@
 <li>concept evaluated;</li>
 <li>possible associated conceptual error.</li>
 </ul>
+<p>For that reason, the quality of the result does not depend only on the algorithm, but also on how this initial information is structured. If the pedagogical classifications are poorly defined, if the difficulties are not reasonably calibrated, if the relevant conceptual errors are not well identified, or if the bank offers weak coverage of the important cases, the generated likelihoods may misrepresent reality and the subsequent adaptation may be biased or unreliable.</p>
 <p>From this information, the program automatically generates the likelihoods. This can be done with a generative model, preferably a chance-adjusted logistic function, and the values can later be recalibrated with real data if enough responses are available.</p>
 <p>The recommended workflow is therefore:</p>
 <ol>
@@ -506,6 +507,8 @@
 <tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
 </tbody>
 </table>
+<p>Consequently, it is not enough simply to have many questions: the bank should be well distributed across the pedagogically relevant axes of the resource, especially difficulty, item type, and the content, skills, or errors the system is meant to discriminate. If an important area is underrepresented, the system may look adaptive while actually reasoning from a weak base.</p>
+<p>The total number is not enough either. To prevent adaptive selection from becoming repetitive, the bank needs <strong>local redundancy</strong>: in each relevant area, there should be several alternative questions with similar difficulty and diagnostic function. If a category, level, or error type has only one useful item, the system will tend to repeat it even when the selection rule itself is correct.</p>
 <p>The \(\theta_i\) numerical values of the levels or hierarchical hypotheses follow the same convention of centering at zero with equal intervals, <strong>but they cover a range strictly greater than that of \(b_q\)</strong>. This condition is important: if \(\theta_{\max} = b_{\max}\), the extreme level and the extreme difficulty coincide at the inflection point of the logistic curve. At that point the question is very discriminating, but the probability of correctness at the extreme level can still be moderate, so getting it right weakly confirms that level. A factor of 2 works well in practice: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). For example, with 3 \(b \in \{-1, 0, +1\}\) difficulties and 3 levels, using \(\theta \in \{-2, 0, +2\}\) makes difficult questions more informative for advanced learners. The most robust thing is to calculate \(\theta_{\max}\) automatically: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
 </section>
 <section id="s9">
@@ -756,7 +759,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Formative assessment.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Mastery learning; basis of the reinforcement and recovery mechanisms.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.10). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.11). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
 <p class="callout">
 The formal development of the mechanisms described in this protocol —Bayesian inference, IRT model, Shannon entropy and adaptive selection— is provided in the companion document <a href="matematicas_en.html">Mathematical Foundations</a>, which includes formulas, proofs and a complete numerical example.
 </p>
