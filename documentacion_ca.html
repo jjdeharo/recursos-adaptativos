@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.9</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.10</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -611,6 +611,11 @@
 <p>Els criteris de parada (secció 17) suposen que l'objectiu és diagnosticar i tancar. En recursos de pràctica o reforç obert, en canvi, pot no haver-hi un final fix: la sessió continua mentre l'alumne practica, i l'estat estimat s'entén com una estimació viva, no com un diagnòstic tancat. Així, l'entropia i la confiança serveixen per informar del grau de seguretat, no per acabar la sessió, i la selecció en dues fases es manté durant tota la pràctica.</p>
 <p>Amb pocs intents, una sola resposta pot desplaçar molt l'estimació. Per no comunicar un domini infundat, cal exigir una mostra mínima per categoria o dimensió abans de mostrar nivells alts de domini, i presentar l'estimació com a provisional mentre l'evidència sigui escassa. És una decisió de presentació: no canvia el càlcul bayesià, només com es tradueix a la interfície.</p>
 <p>En sessions de pràctica llargues hi ha un matís més: l'alumne aprèn mentre practica, i l'actualització bayesiana pura dona el mateix pes a les respostes antigues que a les recents, de manera que l'estimació pot quedar-se ancorada en un estat que l'alumne ja ha superat. Perquè l'estimació segueixi el seu estat actual convé aplicar un <strong>oblit gradual de l'evidència antiga</strong> (oblit exponencial): les respostes recents pesen més que les antigues i el sistema recorda, a la pràctica, les últimes 10–20 respostes. En recursos diagnòstics de sessió curta no s'aplica aquest oblit. El mecanisme, els seus valors recomanats i l'extensió que modela explícitament l'aprenentatge són a l'<a href="matematicas_ca.html#s3">explicació matemàtica (§3.5)</a>.</p>
+<h3>13.3. Itineraris per etapes</h3>
+<p>Quan el recurs organitza l'aprenentatge en fases o etapes successives —per exemple, un itinerari que primer treballa una tècnica i després una altra—, convé distingir entre l'estimació global de l'alumne i una estimació local pròpia de cada etapa. La creença acumulada en etapes anteriors no hauria de ser suficient per si sola per decidir si l'alumne supera l'etapa actual: aquesta decisió convé prendre-la amb l'evidència generada dins de la pròpia etapa.</p>
+<p>Per donar una etapa per superada convé exigir, conjuntament, tres condicions: una confiança local suficient (per exemple, que la hipòtesi local més probable superi un \(p_{\min}\) de 0,80), una entropia local prou baixa, i un mínim explícit de rendiment observat en aquesta etapa (per exemple, com a mínim un 60&nbsp;% d'encerts). Cap condició per separat és suficient: una confiança alta amb pocs encerts, o molts encerts amb una estimació encara dispersa, no haurien de donar l'etapa per superada.</p>
+<p>Si l'alumne repeteix una etapa, convé reiniciar l'estimació local d'aquesta etapa en lloc d'arrossegar l'estat anterior, tret que hi hagi una justificació pedagògica explícita en contra. Acabar una etapa tampoc implica necessàriament haver-la superada: el sistema pot proposar recórrer-la de nou o reforçar-la abans d'avançar.</p>
+<p>L'exemple <a href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">itinerari per aïllar la x</a>, esmentat al §3.1, aplica aquest patró: manté una estimació local per etapa a més de la global, i decideix la promoció d'etapa amb l'evidència generada dins d'aquesta.</p>
 </section>
 <section id="s14">
 <h2>14. Reducció esperada d'incertesa</h2>
@@ -751,7 +756,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Avaluació formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprenentatge per al domini; base dels mecanismes de reforç i recuperació.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.9). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.10). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
 <p class="callout">
 El desenvolupament formal dels mecanismes descrits en aquest protocol —inferència bayesiana, model IRT, entropia de Shannon i selecció adaptativa— es troba al document complementari <a href="matematicas_ca.html">Fonaments matemàtics</a>, que inclou fórmules, demostracions i un exemple numèric complet.
 </p>

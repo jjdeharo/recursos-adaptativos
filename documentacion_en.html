@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Protocol for Bayesian adaptive educational systems</h1>
 <p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.9</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.10</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -611,6 +611,11 @@
 <p>The stopping criteria (section 17) assume that the goal is to diagnose and stop. In open practice or reinforcement resources, however, there may be no fixed endpoint: the session continues while the student practises, and the estimated state is understood as an evolving estimate, not as a closed diagnosis. In that mode, entropy and confidence indicate the degree of certainty rather than ending the session, and the two-phase selection strategy remains active throughout the practice.</p>
 <p>With only a few attempts, a single answer can shift the estimate substantially. To avoid communicating unfounded mastery, it is advisable to require a minimum sample per category or dimension before showing high levels of mastery, and to present the estimate as provisional while the evidence remains scarce. This is a presentation decision: it does not change the Bayesian calculation, only how it is reflected in the interface.</p>
 <p>In long practice sessions there is a further nuance: the student learns while practising, and pure Bayesian updating gives the same weight to old responses as to recent ones, so the estimate can stay anchored in a state the student has already moved past. For the estimate to track their current state, it is advisable to apply a <strong>gradual forgetting of old evidence</strong> (exponential forgetting): recent responses weigh more than old ones and the system effectively remembers the last 10–20 responses. In short-session diagnostic resources this forgetting is not applied. The mechanism, its recommended values, and the extension that models learning explicitly are in the <a href="matematicas_en.html#s3">mathematical explanation (§3.5)</a>.</p>
+<h3>13.3. Stage-based pathways</h3>
+<p>When a resource organizes learning into successive phases or stages — for example, a pathway that first works on one technique and then another — it is useful to distinguish between the student's overall estimate and a local estimate specific to each stage. Belief accumulated in previous stages should not by itself be enough to decide whether the student has passed the current stage: that decision is best made with the evidence generated within the stage itself.</p>
+<p>To consider a stage passed, it is advisable to require, jointly, three conditions: sufficient local confidence (for example, the most probable local hypothesis exceeding a \(p_{\min}\) of 0.80), a sufficiently low local entropy, and an explicit minimum of observed performance in that stage (for example, at least 60% correct answers). No single condition is enough on its own: high confidence with few correct answers, or many correct answers with an estimate that is still spread out, should not be enough to consider the stage passed.</p>
+<p>If the student repeats a stage, it is advisable to reset the local estimate for that stage rather than carrying over the previous state, unless there is an explicit pedagogical reason not to. Finishing a stage does not necessarily mean having passed it either: the system may propose going through it again or reinforcing it before moving on.</p>
+<p>The <a href="https://jjdeharo.github.io/bayes-itinerario/" target="_blank" rel="noopener">learning pathway for solving for x</a>, mentioned in §3.1, applies this pattern: it keeps a local estimate per stage in addition to the overall one, and decides stage promotion using the evidence generated within it.</p>
 </section>
 <section id="s14">
 <h2>14. Expected reduction in uncertainty</h2>
@@ -751,7 +756,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Formative assessment.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Mastery learning; basis of the reinforcement and recovery mechanisms.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.9). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.10). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
 <p class="callout">
 The formal development of the mechanisms described in this protocol —Bayesian inference, IRT model, Shannon entropy and adaptive selection— is provided in the companion document <a href="matematicas_en.html">Mathematical Foundations</a>, which includes formulas, proofs and a complete numerical example.
 </p>
