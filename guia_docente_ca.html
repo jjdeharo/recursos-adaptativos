@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Guia Rapida per a Docents</title>
+<script>(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.setAttribute('data-theme','dark');}());</script>
+<style>
+    :root {
+      --primary: #4f46e5;
+      --primary-light: #818cf8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { overflow-x: clip; scrollbar-gutter: stable; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #4f46e5, #7c3aed);
+      color: white;
+      padding: 1.25rem 2rem 1.5rem;
+      text-align: center;
+      max-width: 860px;
+      width: 100%;
+      margin: 1.5rem auto 0;
+      border-radius: 1rem;
+    }
+    .header h1 { font-size: 1.5rem; font-weight: 700; }
+    .header p  { font-size: 0.9rem; opacity: 0.85; margin-top: 0.4rem; }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      margin-bottom: 0.6rem;
+    }
+    .back-link:hover { color: white; text-decoration: underline; }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 2rem 1.25rem 3rem;
+    }
+
+    .toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 2rem;
+      margin-bottom: 2.5rem;
+    }
+    .toc-card h2 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+    }
+    .toc-card ol {
+      margin-left: 1.2rem;
+      font-size: 0.9rem;
+    }
+    .toc-card li { margin-bottom: 0.2rem; }
+    .toc-card a { color: var(--primary); text-decoration: none; }
+    .toc-card a:hover { text-decoration: underline; }
+
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.9rem;
+      padding-bottom: 0.4rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1.4rem;
+      margin-bottom: 0.6rem;
+    }
+    h3:first-of-type { margin-top: 0.6rem; }
+
+    p { margin-bottom: 0.85rem; }
+    p:last-child { margin-bottom: 0; }
+
+    ul, ol {
+      margin-left: 1.4rem;
+      margin-bottom: 0.85rem;
+    }
+    li { margin-bottom: 0.25rem; }
+    li:last-child { margin-bottom: 0; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0 1.2rem;
+      font-size: 0.92rem;
+    }
+    th, td {
+      padding: 0.55rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      color: var(--primary);
+      font-weight: 700;
+      background: var(--code-bg);
+    }
+
+    a { color: var(--primary); }
+
+    blockquote {
+      border-left: 4px solid var(--primary-light);
+      background: #f0f0ff;
+      border-radius: 0 8px 8px 0;
+      padding: 1.2rem 1.5rem;
+      margin: 1rem 0;
+      font-size: 0.93rem;
+      color: #3730a3;
+    }
+    blockquote p { margin-bottom: 0.6rem; }
+    blockquote p:last-child { margin-bottom: 0; }
+    blockquote strong { color: #3730a3; }
+
+    .callout {
+      margin-top: 1.4rem;
+      padding: 0.9rem 1.1rem;
+      background: #f0f4ff;
+      border-left: 3px solid #4a6cf7;
+      border-radius: 0 6px 6px 0;
+      color: var(--text);
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.5rem 0;
+    }
+
+    .site-footer {
+      background: #1e293b;
+      color: #cbd5e1;
+      text-align: center;
+      font-size: 0.82rem;
+      padding: 1.1rem 1.5rem;
+      line-height: 1.8;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto 1.5rem;
+      border-radius: 1rem;
+    }
+    .site-footer a { color: #a5b4fc; text-decoration: none; }
+    .site-footer a:hover { text-decoration: underline; }
+    .site-footer .sep { margin: 0 0.5rem; opacity: 0.4; }
+
+    .lang-switcher {
+      display: flex;
+      gap: 0.3rem;
+      justify-content: flex-end;
+      margin-bottom: 0.75rem;
+    }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
+    .theme-toggle {
+      padding: 0.2rem 0.45rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s;
+      margin-left: 0.4rem;
+      line-height: 1;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.1); }
+
+    [data-theme="dark"] {
+      --primary: #818cf8;
+      --primary-light: #a5b4fc;
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --border: #334155;
+      --code-bg: #162032;
+    }
+    [data-theme="dark"] .site-footer { background: #080d17; color: #94a3b8; }
+    [data-theme="dark"] blockquote { background: #1e293b; color: #e2e8f0; border-left-color: #818cf8; }
+    [data-theme="dark"] blockquote strong { color: #a5b4fc; }
+    [data-theme="dark"] blockquote a { color: #a5b4fc; }
+    [data-theme="dark"] .callout {
+      background: #1e293b;
+      border-left-color: #818cf8;
+      color: #e2e8f0;
+    }
+    [data-theme="dark"] .callout a { color: #a5b4fc; }
+
+    @media (max-width: 600px) {
+      section { padding: 1.25rem 1.1rem; }
+      blockquote { padding: 0.9rem 1rem; }
+    }
+</style>
+</head>
+<body>
+<div class="header"><div class="lang-switcher"><a class="lang-btn" href="guia_docente.html">ES</a><a class="lang-btn" href="guia_docente_en.html">EN</a><a class="lang-btn active" href="guia_docente_ca.html">CA</a><button aria-label="Alterna tema fosc/clar" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
+<a class="back-link" href="index.html">← Inici</a>
+<h1>Guia Rapida per a Docents</h1>
+<p>Com demanar a una IA un recurs adaptatiu per a la teva classe, sense tecnicismes</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versio 1.0</p>
+</div>
+<div class="container">
+<div class="toc-card">
+<h2>Contingut</h2>
+<ol>
+<li><a href="#s1">Com es fa servir (3 passos)</a></li>
+<li><a href="#s2">Que convé dir-li</a></li>
+<li><a href="#s3">Per a que et pot servir (amb exemples)</a></li>
+<li><a href="#s4">L'unic aclariment que no pot faltar</a></li>
+<li><a href="#s5">Altres coses que pots demanar</a></li>
+<li><a href="#s6">Despres de rebre el recurs</a></li>
+</ol>
+</div>
+
+<section id="s0">
+<p>Aquesta guia t'explica com demanar a una IA (ChatGPT, Claude, Gemini...) que crei un recurs educatiu adaptatiu per a la teva classe, <strong>sense necessitat de coneixer la metodologia que hi ha al darrere</strong>. La part tecnica la resol la IA seguint el fitxer <a download="" href="especificacion_operativa_ia_ca.md">especificacion_operativa_ia_ca.md</a>.</p>
+</section>
+
+<section id="s1">
+<h2>1. Com es fa servir (3 passos)</h2>
+<ol>
+<li><strong>Descarrega</strong> el fitxer <a download="" href="especificacion_operativa_ia_ca.md">especificacion_operativa_ia_ca.md</a>.</li>
+<li><strong>Adjunta'l</strong> a la conversa amb la IA (o enganxa'n el contingut).</li>
+<li><strong>Demana el que necessites amb les teves paraules</strong>, com si ho expliquessis a un company o companya de departament.</li>
+</ol>
+<p>Amb aquests tres passos ja pots començar. No cal que continuïs llegint ni que omplis cap plantilla: si expliques el que necessites, la IA hauria de poder crear el programa i preguntar-te nomes les dades imprescindibles que faltin.</p>
+<p>El que ve a continuacio no es un procediment que hagis de seguir pas a pas. Es una guia per ajudar-te a pensar que pots demanar, quines opcions tens i com pots expressar millor la teva idea si vols afinar el recurs.</p>
+<p>La IA et retornara una pagina web que funciona tota sola: la pots obrir en qualsevol navegador i compartir-la amb l'alumnat.</p>
+</section>
+
+<section id="s2">
+<h2>2. Que convé dir-li</h2>
+<p>No hi ha cap formula per omplir. N'hi ha prou que la teva peticio deixi clar, amb les teves paraules:</p>
+<ul>
+<li><strong>el tema i el curs</strong>;</li>
+<li><strong>per a que el vols</strong>: saber el nivell, descobrir per que fallen, detectar mancances, que practiquin, guiar-los pas a pas...;</li>
+<li><strong>que vols veure al final o durant la practica</strong>: quina informacio us ha de donar a tu i a l'alumne.</li>
+</ul>
+<p>Tota la resta (nombre de preguntes, quan acaba, com es calcula el resultat...) ho resol la IA amb valors raonables, i sempre li pots demanar canvis despres.</p>
+</section>
+
+<section id="s3">
+<h2>3. Per a que et pot servir (amb exemples)</h2>
+<p>El que mes condiciona el recurs es <strong>per a que el vols</strong>. Aquestes son les finalitats habituals. Cadascuna inclou un exemple de peticio real, <strong>nomes orientatiu</strong>: no el copiïs tal qual; escriu el teu amb les teves paraules i el teu context.</p>
+<table>
+<thead>
+<tr><th>Si vols...</th><th>Demana a la IA...</th></tr>
+</thead>
+<tbody>
+<tr><td>Saber el nivell de l'alumne</td><td>una prova adaptativa de nivell</td></tr>
+<tr><td>Esbrinar per que falla</td><td>un diagnostic d'errors excloents</td></tr>
+<tr><td>Detectar diversos errors possibles</td><td>un diagnostic d'errors que poden coexistir</td></tr>
+<tr><td>Practicar allo que pitjor porta</td><td>un programa de practica adaptativa</td></tr>
+<tr><td>Aprendre per etapes</td><td>un itinerari guiat pas a pas</td></tr>
+<tr><td>Saber nivell i errors</td><td>una prova combinada de nivell i diagnostic</td></tr>
+</tbody>
+</table>
+
+<h3>Saber en quin nivell es troba cada alumne</h3>
+<p>Una prova curta que s'adapta segons les respostes de l'alumne i acaba dient-te el seu nivell. Util a l'inici d'un tema, al final o per formar grups.</p>
+<p>Un docent de 5e de primaria podria demanar, per exemple:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Vull una prova curta per saber en quin nivell estan els meus alumnes de 5e de primaria en fraccions equivalents, abans de començar la unitat. En acabar, l'alumne i jo hem de veure el seu nivell, fins a quin punt el resultat es fiable i que li convé fer a continuacio.</p>
+</blockquote>
+
+<h3>Descobrir per que falla</h3>
+<p>Quan un alumne falla i sospites que hi ha <strong>una rao concreta</strong> al darrere (una idea equivocada, un metode mal apres), la prova es pot dissenyar per distingir quina de les explicacions possibles es la correcta.</p>
+<p>Per exemple, a fisica de 2n d'ESO:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Els meus alumnes de 2n d'ESO fallen en calor i temperatura i vull esbrinar per que falla cadascun. Nomes una d'aquestes explicacions pot ser certa en cada alumne: o creu que l'objecte mes gran sempre esta mes calent, o confon calor amb temperatura, o en realitat ho entén be. En acabar vull saber quina es l'explicacio mes probable per a aquest alumne i que li hauria d'explicar jo en cada cas.</p>
+</blockquote>
+
+<h3>Detectar que li falta</h3>
+<p>Quan els possibles errors <strong>poden donar-se alhora</strong> (un alumne en pot tenir un, diversos o cap), la prova revisa cada error per separat i et diu quins te.</p>
+<p>Per exemple, amb les operacions amb decimals a 6e de primaria:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Vull una prova per a 6e de primaria que detecti quins errors arrossega cada alumne quan opera amb decimals. En pot tenir diversos alhora: equivocar-se en restar amb portades, no alinear be la coma, o col·locar malament el zero en el quocient. En acabar vull veure, per a cada error, si el te, si no el te o si no ha quedat clar, i que convé reforçar.</p>
+</blockquote>
+
+<h3>Que practiqui i reforci allo que pitjor porta</h3>
+<p>Un entrenador d'exercicis que s'adapta sol: detecta quins tipus d'exercici domina menys l'alumne i li'n proposa mes d'aquests. No te final: l'alumne practica el temps que vulgui.</p>
+<p>Per exemple, per repassar fraccions a 1r d'ESO:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Vull un programa de practica d'operacions amb fraccions per a 1r d'ESO (suma, resta, multiplicacio i divisio) que proposi mes exercicis d'allo que pitjor porti cada alumne. Despres de cada resposta ha de dir si esta be o malament i explicar l'error, amb la possibilitat de demanar una pista. Vull que l'alumne vegi a la pantalla com va en cada tipus d'operacio.</p>
+</blockquote>
+
+<h3>Aprendre pas a pas</h3>
+<p>Un itinerari guiat que ensenya alguna cosa per etapes. L'alumne no passa a la seguent fins que demostra que domina l'actual; si s'encalla, rep ajuda i pot tornar-ho a intentar.</p>
+<p>Per exemple, per introduir les equacions:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Vull un itinerari perque els meus alumnes de 1r d'ESO aprenguin a aïllar la x pas a pas: primer equacions com x + 3 = 7, despres com 2x = 10 i finalment combinades com 2x + 3 = 11. Que no passin d'etapa fins a dominar-la, i que rebin pistes i explicacions si s'encallen. Al final vull veure quines etapes ha superat cadascun i on ha necessitat ajuda.</p>
+</blockquote>
+
+<h3>Saber el nivell i, a mes, quins errors comet</h3>
+<p>Les dues coses en una sola prova: el nivell general de l'alumne i els seus errors concrets.</p>
+<p>Per exemple, amb l'accentuacio:</p>
+<blockquote>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Vull una prova d'accentuacio per a 3r d'ESO que em digui el nivell de cada alumne i, a mes, quins errors concrets te: pot confondre les regles d'agudes i planes, ignorar els hiats, o fallar nomes en l'accent diacritic, i pot tenir diversos d'aquests errors alhora. En acabar vull el seu nivell, l'estat de cada error i una recomanacio: que practicar i que caldria explicar-li.</p>
+</blockquote>
+</section>
+
+<section id="s4">
+<h2>4. L'unic aclariment que no pot faltar</h2>
+<p>Si el teu recurs detecta errors, has de deixar clar a la peticio si:</p>
+<ul>
+<li><strong>nomes una de les explicacions pot ser certa</strong> en cada alumne (competeixen entre elles), o</li>
+<li><strong>pot tenir diversos errors alhora</strong> (s'acumulen).</li>
+</ul>
+<p>Un exemple quotidià: "arriba tard perque ha perdut l'autobus <strong>o</strong> perque s'ha adormit" son explicacions que competeixen (nomes una es la causa). En canvi, "no estudia <strong>i a mes</strong> es distreu a classe" poden ser certes totes dues. Si no ho aclareixes, la IA pot muntar malament el recurs i el diagnostic sortira defectuos.</p>
+</section>
+
+<section id="s5">
+<h2>5. Altres coses que pots demanar</h2>
+<p>Afegeix a la teva peticio, amb les teves paraules, allo que t'importi. Algunes idees:</p>
+<ul>
+<li>Per a alumnat jove o insegur: que comenci amb una pregunta facil i que, de tant en tant, n'inclogui alguna d'assequible perque no es desanimi.</li>
+<li>Si els exercicis tenen diversos passos: que valori les respostes per parts, de manera que un exercici a mitges compti a mitges i no com un error total.</li>
+<li>Un resum final per a tu, a mes del resultat que veu l'alumne.</li>
+<li>Una interficie molt simple, amb lletra gran i botons clars, si l'alumnat te poca soltura digital.</li>
+<li>El recurs en la llengua que necessitis.</li>
+</ul>
+</section>
+
+<section id="s6">
+<h2>6. Despres de rebre el recurs</h2>
+<ul>
+<li><strong>Prova'l tu primer</strong>, responent be i malament expressament, i comprova que allo que diu al final te sentit.</li>
+<li><strong>Demana canvis en llenguatge normal</strong>: "fes-lo mes curt", "les preguntes son massa dificils per al meu curs", "afegeix mes exercicis de divisio", "explica els errors amb exemples". No necessites tecnicismes.</li>
+<li><strong>Desconfia dels diagnostics amb poques preguntes</strong>: el mateix recurs t'avisara quan un resultat sigui provisional; pren-lo com una orientacio, no com una sentencia.</li>
+<li>El resultat <strong>mai substitueix el teu criteri</strong>: es una ajuda per decidir, no una qualificacio.</li>
+</ul>
+<div class="callout">
+<p>Aquesta guia forma part del <a href="documentacion_ca.html">Protocol per a sistemes educatius adaptatius bayesians</a>. Si vols entendre com funciona per dins, alla hi tens tota l'explicacio.</p>
+</div>
+<hr/>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>Com citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guia rapida per a docents — Protocol per a sistemes educatius adaptatius bayesians</em> (versio 1.0). https://jjdeharo.github.io/recursos-adaptativos/</p>
+</section>
+
+</div>
+<footer class="site-footer">
+  © <a href="https://bilateria.org" rel="noopener" target="_blank">Juan Jose de Haro</a>
+<span class="sep">·</span>
+  Contingut: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a>
+<span class="sep">·</span>
+  Codi: <a href="https://www.gnu.org/licenses/agpl-3.0.html" rel="noopener" target="_blank">AGPL-3.0</a>
+<span class="sep">·</span>
+<a href="documentacion_ca.html">Protocol complet</a>
+<span class="sep">·</span>
+<a href="index.html">← Inici</a>
+</footer>
+<script>
+(function () {
+  var themeBtn = document.getElementById('theme-toggle');
+  function applyTheme(stored) {
+    var dark = stored === 'dark' || (stored === null && window.matchMedia('(prefers-color-scheme:dark)').matches);
+    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    if (themeBtn) themeBtn.textContent = stored === null ? '💻' : stored === 'dark' ? '🌙' : '☀️';
+  }
+  window.toggleTheme = function () {
+    var stored = localStorage.getItem('theme');
+    var next = stored === null ? 'dark' : stored === 'dark' ? 'light' : null;
+    if (next === null) { localStorage.removeItem('theme'); } else { localStorage.setItem('theme', next); }
+    applyTheme(next);
+  };
+  applyTheme(localStorage.getItem('theme'));
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function () {
+    if (!localStorage.getItem('theme')) applyTheme(null);
+  });
+})();
+</script>
+</body>
+</html>

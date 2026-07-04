@@ -183,6 +183,22 @@
       justify-content: flex-end;
       margin-bottom: 0.75rem;
     }
+    .lang-btn {
+      padding: 0.2rem 0.55rem;
+      border: 1px solid rgba(255,255,255,0.4);
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      letter-spacing: 0.04em;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .lang-btn.active { background: rgba(255,255,255,0.22); color: white; }
+    .lang-btn:hover:not(.active) { background: rgba(255,255,255,0.1); }
     .theme-toggle {
       padding: 0.2rem 0.45rem;
       border: 1px solid rgba(255,255,255,0.4);
@@ -226,7 +242,7 @@
 </style>
 </head>
 <body>
-<div class="header"><div class="lang-switcher"><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
+<div class="header"><div class="lang-switcher"><a class="lang-btn active" href="guia_docente.html">ES</a><a class="lang-btn" href="guia_docente_en.html">EN</a><a class="lang-btn" href="guia_docente_ca.html">CA</a><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Guía rápida para docentes</h1>
 <p>Cómo pedir a una IA un recurso adaptativo para tu clase, sin tecnicismos</p>
