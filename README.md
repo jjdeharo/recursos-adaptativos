@@ -25,7 +25,7 @@ Para una introducción divulgativa al método, antes de entrar en la documentaci
 
 El modelo pedirá al docente el tema, el curso, el tipo de recurso y la finalidad antes de diseñar nada. El propio documento incluye una plantilla para anticipar esa información.
 
-El resultado es siempre una página web estática autocontenida (HTML + CSS + JS en un único archivo), lista para usar sin servidor.
+El resultado es siempre un recurso web estático (HTML + CSS + JS), listo para usar sin servidor. Puede organizarse en un único archivo o en varios, según convenga para su claridad y mantenimiento.
 
 ---
 
