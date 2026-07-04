@@ -289,7 +289,7 @@
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Protocolo para sistemas educativos adaptativos bayesianos</h1>
 <p>Guía técnica para implementar evaluación adaptativa con inferencia bayesiana y entropía de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.8</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.9</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -336,25 +336,25 @@
 <li>necesidades de refuerzo;</li>
 <li>preparación para avanzar a un nivel superior.</li>
 </ul>
-<p>El sistema debe producir una interpretación pedagógica, no solo una puntuación.</p>
+<p>El sistema produce una interpretación pedagógica, no solo una puntuación.</p>
 </section>
 <section id="s2">
 <h2>2. Principio general</h2>
-<p>El programa debe usar las respuestas del alumno como evidencias para actualizar hipótesis sobre su situación de aprendizaje.</p>
-<p>Cada respuesta debe modificar la estimación del sistema de forma gradual. Una sola respuesta no debe determinar por completo el resultado.</p>
-<p>Una respuesta correcta debe aumentar la plausibilidad de ciertas hipótesis y una respuesta incorrecta debe aumentar la plausibilidad de otras, siempre según las verosimilitudes asociadas a cada pregunta.</p>
-<p>El sistema debe evitar conclusiones tajantes cuando la incertidumbre siga siendo alta.</p>
+<p>El programa usa las respuestas del alumno como evidencias para actualizar hipótesis sobre su situación de aprendizaje.</p>
+<p>Cada respuesta modifica la estimación del sistema de forma gradual. Una sola respuesta no determina por completo el resultado.</p>
+<p>Una respuesta correcta aumenta la plausibilidad de ciertas hipótesis y una respuesta incorrecta aumenta la plausibilidad de otras, siempre según las verosimilitudes asociadas a cada pregunta.</p>
+<p>El sistema evita conclusiones tajantes cuando la incertidumbre sigue siendo alta.</p>
 </section>
 <section id="s3">
 <h2>3. Representación del estado del alumno</h2>
-<p>El estado del alumno debe representarse como una distribución de probabilidades sobre varias hipótesis.</p>
+<p>El estado del alumno se representa como una distribución de probabilidades sobre varias hipótesis.</p>
 <p>Por ejemplo, en un sistema sencillo podrían usarse tres hipótesis:</p>
 <ul>
 <li>nivel básico;</li>
 <li>nivel medio;</li>
 <li>nivel avanzado.</li>
 </ul>
-<p>Pero el sistema no debe asumir obligatoriamente tres niveles. Debe poder adaptarse a más o menos niveles, según el contexto educativo.</p>
+<p>Pero el sistema no asume obligatoriamente tres niveles. Puede adaptarse a más o menos niveles, según el contexto educativo.</p>
 <p>También pueden usarse hipótesis no estrictamente jerárquicas, por ejemplo:</p>
 <ul>
 <li>comprende el concepto;</li>
@@ -384,16 +384,16 @@
 </section>
 <section id="s4">
 <h2>4. Actualización bayesiana</h2>
-<p>El sistema debe actualizar la distribución de probabilidades mediante inferencia bayesiana.</p>
-<p>Para cada hipótesis, debe estimarse la probabilidad de observar la respuesta del alumno si esa hipótesis fuera cierta.</p>
+<p>El sistema actualiza la distribución de probabilidades mediante inferencia bayesiana.</p>
+<p>Para cada hipótesis, se estima la probabilidad de observar la respuesta del alumno si esa hipótesis fuera cierta.</p>
 <p>Esa probabilidad es la verosimilitud.</p>
-<p>Si el alumno acierta una pregunta, el sistema debe usar la probabilidad de acierto bajo cada hipótesis. Si el alumno falla, debe usar la probabilidad de fallo bajo cada hipótesis.</p>
-<p>El resultado de cada actualización debe ser una nueva distribución de probabilidades sobre las hipótesis consideradas.</p>
-<p>El proceso debe repetirse tras cada respuesta.</p>
+<p>Si el alumno acierta una pregunta, el sistema usa la probabilidad de acierto bajo cada hipótesis. Si el alumno falla, usa la probabilidad de fallo bajo cada hipótesis.</p>
+<p>El resultado de cada actualización es una nueva distribución de probabilidades sobre las hipótesis consideradas.</p>
+<p>El proceso se repite tras cada respuesta.</p>
 </section>
 <section id="s5">
 <h2>5. Fórmulas básicas del modelo</h2>
-<p>Aunque el documento debe seguir siendo comprensible para docentes, conviene incluir las fórmulas esenciales para que la IA implemente el sistema de forma coherente.</p>
+<p>Aunque el documento mantiene un lenguaje comprensible para docentes, incluye las fórmulas esenciales para que el sistema se implemente de forma coherente.</p>
 <h3>5.1. Distribución inicial de hipótesis</h3>
 <p>Si hay \(n\) hipótesis y no existe información previa fiable, puede usarse una distribución uniforme:</p>
 <div class="math-block">\[P(H_i)=\frac{1}{n}\]</div>
@@ -405,9 +405,9 @@
 <div class="math-block">\[P(R)=\sum_i P(R\mid H_i)P(H_i)\]</div>
 <p>Donde \(R\) es la respuesta observada, que puede ser acierto, fallo u otro resultado autocorregible previsto por el sistema.</p>
 <h3>5.3. Verosimilitud de acierto y fallo</h3>
-<p>Para cada pregunta \(q\) y cada hipótesis \(H_i\), el sistema debe estimar:</p>
+<p>Para cada pregunta \(q\) y cada hipótesis \(H_i\), el sistema estima:</p>
 <div class="math-block">\[P(\text{acierto}\mid H_i,q)\]</div>
-<p>Si el alumno falla, debe usarse:</p>
+<p>Si el alumno falla, se usa:</p>
 <div class="math-block">\[P(\text{fallo}\mid H_i,q)=1-P(\text{acierto}\mid H_i,q)\]</div>
 <p>Estas probabilidades son las verosimilitudes que alimentan la actualización bayesiana.</p>
 <h3>5.4. Probabilidad mínima de acierto por azar</h3>
@@ -416,9 +416,9 @@
 <p>Donde \(c_q\) es la probabilidad de acierto por azar de la pregunta \(q\), y \(m_q\) es el número de opciones de esa pregunta.</p>
 <p>Por ejemplo, una pregunta de cuatro opciones tiene:</p>
 <div class="math-block">\[c_q=\frac{1}{4}=0{,}25\]</div>
-<p>Esta probabilidad debe pertenecer a cada pregunta, no al test completo.</p>
+<p>Esta probabilidad pertenece a cada pregunta, no al test completo.</p>
 <h3>5.5. Generación logística de verosimilitudes</h3>
-<p>El sistema debe poder generar las verosimilitudes automáticamente. Una opción recomendable es usar una función logística ajustada por azar:</p>
+<p>El sistema puede generar las verosimilitudes automáticamente. Una opción recomendable es usar una función logística ajustada por azar:</p>
 <div class="math-block">\[P(\text{acierto}\mid H_i,q)=c_q+(1-c_q)\cdot\frac{1}{1+e^{-a(\theta_i-b_q)}}\]</div>
 <p>Donde:</p>
 <ul>
@@ -448,18 +448,18 @@
 <h3>5.8. Verosimilitud con crédito parcial</h3>
 <p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1, y la verosimilitud se obtiene interpolando entre la de acierto y la de fallo:</p>
 <div class="math-block">\[L(H_i)=s\,P(\text{acierto}\mid H_i,q)+(1-s)\,P(\text{fallo}\mid H_i,q)\]</div>
-<p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno; si \(s=0{,}5\), la verosimilitud es plana y no modifica la distribución. Esta verosimilitud suave entra en la actualización bayesiana igual que cualquier otra: solo cambia la forma de construirla. La puntuación \(s\) debe calcularse de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios cuyos pesos suman 1. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
+<p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno; si \(s=0{,}5\), la verosimilitud es plana y no modifica la distribución. Esta verosimilitud suave entra en la actualización bayesiana igual que cualquier otra: solo cambia la forma de construirla. La puntuación \(s\) se calcula de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios cuyos pesos suman 1. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Verosimilitudes generadas por el sistema</h2>
 <p>Las verosimilitudes son el elemento central del sistema.</p>
-<p>Para cada pregunta, el sistema debe estimar:</p>
+<p>Para cada pregunta, el sistema estima:</p>
 <ul>
 <li>qué probabilidad tendría de acertarla un alumno situado en cada hipótesis;</li>
 <li>qué probabilidad tendría de fallarla un alumno situado en cada hipótesis.</li>
 </ul>
-<p>El docente no debe tener que rellenar manualmente una tabla de probabilidades. Esa tarea debe hacerla el sistema.</p>
-<p>El docente solo debería aportar información pedagógica comprensible, como:</p>
+<p>El docente no necesita rellenar manualmente una tabla de probabilidades. Esa tarea la hace el sistema.</p>
+<p>El docente aporta información pedagógica comprensible, como:</p>
 <ul>
 <li>número de niveles o hipótesis;</li>
 <li>dificultad relativa de cada pregunta;</li>
@@ -468,7 +468,7 @@
 <li>concepto evaluado;</li>
 <li>posible error conceptual asociado.</li>
 </ul>
-<p>A partir de esa información, el programa debe generar automáticamente las verosimilitudes. Para ello puede usar un modelo generador, preferiblemente una función logística ajustada por azar, y más adelante puede recalibrar los valores con datos reales si dispone de suficientes respuestas.</p>
+<p>A partir de esa información, el programa genera automáticamente las verosimilitudes. Para ello puede usar un modelo generador, preferiblemente una función logística ajustada por azar, y más adelante puede recalibrar los valores con datos reales si dispone de suficientes respuestas.</p>
 <p>Por tanto, el flujo recomendado es:</p>
 <ol>
 <li>El docente diseña o revisa las preguntas y les asigna dificultad y formato.</li>
@@ -476,12 +476,12 @@
 <li>Bayes usa esas probabilidades como verosimilitudes.</li>
 <li>Si se acumulan datos reales, el sistema puede ajustar sus parámetros para mejorar la calibración.</li>
 </ol>
-<p>El criterio docente debe intervenir en la definición de niveles, dificultades, objetivos y conceptos, pero no debe exigir introducir probabilidades numéricas.</p>
+<p>El criterio docente interviene en la definición de niveles, dificultades, objetivos y conceptos, pero no exige introducir probabilidades numéricas.</p>
 </section>
 <section id="s7">
 <h2>7. Verosimilitudes dinámicas por pregunta</h2>
-<p>La aplicación no debe depender de una tabla fija global de verosimilitudes.</p>
-<p>Cada pregunta debe poder tener sus propios parámetros, especialmente:</p>
+<p>La aplicación no depende de una tabla fija global de verosimilitudes.</p>
+<p>Cada pregunta puede tener sus propios parámetros, especialmente:</p>
 <ul>
 <li>dificultad estimada;</li>
 <li>tipo de pregunta;</li>
@@ -491,14 +491,14 @@
 <li>posible error conceptual asociado.</li>
 </ul>
 <p>Esto permite que el sistema funcione con preguntas de distinto tipo dentro de una misma prueba.</p>
-<p>Por ejemplo, una prueba puede incluir preguntas de dos opciones, cuatro opciones, cinco opciones, emparejamiento y respuesta numérica. Cada una debe generar sus propias verosimilitudes.</p>
+<p>Por ejemplo, una prueba puede incluir preguntas de dos opciones, cuatro opciones, cinco opciones, emparejamiento y respuesta numérica. Cada una genera sus propias verosimilitudes.</p>
 </section>
 <section id="s8">
 <h2>8. Dificultad de las preguntas</h2>
-<p>Cada pregunta debe tener una dificultad estimada.</p>
+<p>Cada pregunta tiene una dificultad estimada.</p>
 <p>La dificultad puede expresarse de forma cualitativa, por ejemplo: fácil, media, difícil. También puede expresarse mediante una escala más flexible.</p>
-<p>El sistema no debe asumir que siempre habrá tres dificultades. Debe adaptarse al número de categorías que defina el docente.</p>
-<p>Cuando el docente define la dificultad de forma cualitativa, el sistema debe convertirla a valores numéricos para operar con la función logística. Una convención útil es centrar los valores en cero y separarlos por intervalos iguales:</p>
+<p>El sistema no asume que siempre habrá tres dificultades. Se adapta al número de categorías que defina el docente.</p>
+<p>Cuando el docente define la dificultad de forma cualitativa, el sistema la convierte a valores numéricos para operar con la función logística. Una convención útil es centrar los valores en cero y separarlos por intervalos iguales:</p>
 <table>
 <thead>
 <tr><th>Categorías de dificultad</th><th>Valores numéricos \(b_q\)</th></tr>
@@ -510,11 +510,11 @@
 <tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
 </tbody>
 </table>
-<p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero deben abarcar un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta_{\max}\) automáticamente: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+<p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero abarcan un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta_{\max}\) automáticamente: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
 </section>
 <section id="s9">
 <h2>9. Número variable de niveles e hipótesis</h2>
-<p>El sistema debe admitir distintos números de hipótesis:</p>
+<p>El sistema admite distintos números de hipótesis:</p>
 <ul>
 <li>dos estados: domina / no domina;</li>
 <li>tres niveles: básico / medio / avanzado;</li>
@@ -522,7 +522,7 @@
 <li>hipótesis conceptuales alternativas dentro de una misma dimensión: error A / error B / dominio correcto;</li>
 <li>hipótesis por necesidades, siempre que sean alternativas en la decisión que se modela: refuerzo previo / práctica guiada / consolidación / ampliación.</li>
 </ul>
-<p>El umbral de entropía y los criterios de parada deben adaptarse al número de hipótesis consideradas. No debe usarse el mismo umbral para todos los diseños sin justificación.</p>
+<p>El umbral de entropía y los criterios de parada se adaptan al número de hipótesis consideradas. No conviene usar el mismo umbral para todos los diseños sin justificación.</p>
 <p>Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0,80), un umbral de entropía orientativo asociado a ese nivel de confianza es:</p>
 <div class="math-block">\[H_{\text{stop}}=-p_{\min}\log_2 p_{\min}-(1-p_{\min})\log_2\!\left(\frac{1-p_{\min}}{n-1}\right)\]</div>
 <p>Esta fórmula supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis. Algunos valores orientativos con \(p_{\min}=0{,}80\):</p>
@@ -537,15 +537,15 @@
 <tr><td>5</td><td>1,12</td></tr>
 </tbody>
 </table>
-<p>La fórmula anterior supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis, lo que no siempre ocurre en distribuciones reales. Por ejemplo, con tres hipótesis, las distribuciones (0,80, 0,10, 0,10) y (0,80, 0,19, 0,01) tienen la misma hipótesis máxima pero distinta entropía. Por tanto, el umbral \(H_{\text{stop}}\) debe entenderse como una <strong>aproximación práctica</strong>, no como un equivalente exacto. Conviene saber que, cuando \(H_{\text{stop}}\) se deriva del mismo \(p_{\min}\), la condición de probabilidad máxima ya implica la de entropía (si la hipótesis más probable alcanza \(p_{\min}\), la entropía queda por debajo del umbral): comprobar las dos es inofensivo, pero no añade exigencia. Un control adicional que sí la añade es exigir una separación mínima entre la hipótesis ganadora y la segunda (véase la explicación matemática, §7.4).</p>
-<p>Las hipótesis de una misma distribución deben ser mutuamente excluyentes y cubrir las alternativas relevantes para esa decisión. Si varios errores, lagunas o necesidades pueden coexistir, conviene usar distribuciones separadas por concepto, dimensión o categoría, en lugar de forzarlas dentro de una única lista de hipótesis.</p>
+<p>La fórmula anterior supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis, lo que no siempre ocurre en distribuciones reales. Por ejemplo, con tres hipótesis, las distribuciones (0,80, 0,10, 0,10) y (0,80, 0,19, 0,01) tienen la misma hipótesis máxima pero distinta entropía. Por tanto, el umbral \(H_{\text{stop}}\) se entiende como una <strong>aproximación práctica</strong>, no como un equivalente exacto. Conviene saber que, cuando \(H_{\text{stop}}\) se deriva del mismo \(p_{\min}\), la condición de probabilidad máxima ya implica la de entropía (si la hipótesis más probable alcanza \(p_{\min}\), la entropía queda por debajo del umbral): comprobar las dos es inofensivo, pero no añade exigencia. Un control adicional que sí la añade es exigir una separación mínima entre la hipótesis ganadora y la segunda (véase la explicación matemática, §7.4).</p>
+<p>Las hipótesis de una misma distribución son mutuamente excluyentes y cubren las alternativas relevantes para esa decisión. Si varios errores, lagunas o necesidades pueden coexistir, conviene usar distribuciones separadas por concepto, dimensión o categoría, en lugar de forzarlas dentro de una única lista de hipótesis.</p>
 <p>Cuando las hipótesis no son jerárquicas —categorías alternativas sin relación de orden entre ellas, como distintas estrategias, causas alternativas de un mismo fallo o áreas temáticas sin jerarquía—, la función logística IRT puede no ser el modelo más adecuado, porque asume que existe una escala única de «más o menos nivel». En esos casos conviene definir las verosimilitudes de otra forma: por ejemplo, asignando directamente una probabilidad de acierto alta para las preguntas que diagnostican la hipótesis correcta y una probabilidad más baja para las que la confunden con otras hipótesis. La actualización bayesiana sigue siendo idéntica; solo cambia la forma de generar las verosimilitudes.</p>
 <p>Si, en cambio, varios errores o necesidades <strong>pueden coexistir</strong>, no conviene meterlos en una sola lista de hipótesis nominales. Lo adecuado es usar una dimensión por factor o, si interesa captar sus interacciones, una distribución sobre <strong>perfiles completos</strong> (las combinaciones posibles de esos factores). En ese marco, la evidencia ideal no es solo «acierto» o «fallo», sino también <strong>qué opción ha elegido</strong> el alumno: un distractor puede ser precisamente la señal de un error concreto.</p>
 <p>Para asignar esas probabilidades sin datos empíricos conviene un criterio explícito. Por cada pregunta y cada hipótesis, factor o perfil, estima: «si el alumno tuviera este error o esta combinación de errores, ¿con qué frecuencia acertaría esta pregunta y qué distractor elegiría?». El valor será bajo cuando la pregunta ataca justo el concepto que el error distorsiona, y alto cuando el error no interfiere. Acota cada valor entre un suelo de azar (no menos de \(1/m\), con \(m\) opciones, cuando el fallo procede de responder al azar) y un techo inferior a 1 para el dominio (en torno a 0,90–0,95, dejando margen a descuidos). Hay una única excepción justificada al suelo: si la pregunta es de opción múltiple y uno de los distractores es precisamente la respuesta que produce el error, el alumno es atraído hacia esa opción y su probabilidad de acierto cae por debajo del azar. No hace falta afinar el decimal exacto: basta con que, en las preguntas que discriminan, los perfiles correctos se separen claramente de los que el error hace fallar. La <a href="matematicas.html#s10">formulación matemática (§10)</a> detalla estas variantes y su validación.</p>
 </section>
 <section id="s10">
 <h2>10. Tipos de preguntas admisibles</h2>
-<p>Si el sistema debe funcionar de forma automática, debe usar preguntas autocorregibles.</p>
+<p>Como el sistema funciona de forma automática, usa preguntas autocorregibles.</p>
 <p>Son adecuados, entre otros, estos formatos:</p>
 <ul>
 <li>opción múltiple con una respuesta correcta;</li>
@@ -556,12 +556,12 @@
 <li>respuesta numérica con tolerancia;</li>
 <li>respuesta breve exacta.</li>
 </ul>
-<p>No deben incluirse preguntas abiertas largas si el programa no puede corregirlas automáticamente de forma fiable.</p>
-<p>Las preguntas abiertas pueden ser útiles en una actividad educativa general, pero no deben formar parte del motor adaptativo automático si no existe un mecanismo fiable de corrección o intervención docente.</p>
+<p>No conviene incluir preguntas abiertas largas si el programa no puede corregirlas automáticamente de forma fiable.</p>
+<p>Las preguntas abiertas pueden ser útiles en una actividad educativa general, pero no forman parte del motor adaptativo automático si no existe un mecanismo fiable de corrección o intervención docente.</p>
 </section>
 <section id="s11">
 <h2>11. Probabilidad de acierto por azar</h2>
-<p>En preguntas de opción múltiple, la probabilidad mínima de acierto por azar debe depender del número de opciones de cada pregunta. Esta probabilidad pertenece a cada ítem, no al test completo.</p>
+<p>En preguntas de opción múltiple, la probabilidad mínima de acierto por azar depende del número de opciones de cada pregunta. Esta probabilidad pertenece a cada ítem, no al test completo.</p>
 <p>Ejemplos:</p>
 <ul>
 <li>pregunta de 2 opciones: probabilidad mínima de acierto por azar del 50 %;</li>
@@ -569,24 +569,24 @@
 <li>pregunta de 4 opciones: probabilidad mínima de acierto por azar del 25 %;</li>
 <li>pregunta de 5 opciones: probabilidad mínima de acierto por azar del 20 %.</li>
 </ul>
-<p>Si dentro de una misma prueba hay preguntas con distinto número de opciones, cada pregunta debe usar su propia probabilidad mínima de acierto por azar.</p>
-<p>En selección múltiple con varias respuestas correctas, la probabilidad de acierto por azar puede ser distinta. El sistema debe tratar este caso de forma específica, especialmente si se exige coincidencia exacta con la combinación correcta.</p>
+<p>Si dentro de una misma prueba hay preguntas con distinto número de opciones, cada pregunta usa su propia probabilidad mínima de acierto por azar.</p>
+<p>En selección múltiple con varias respuestas correctas, la probabilidad de acierto por azar puede ser distinta. El sistema trata este caso de forma específica, especialmente si se exige coincidencia exacta con la combinación correcta.</p>
 <p>En respuestas numéricas con tolerancia o respuestas breves exactas, la probabilidad de acierto por azar puede considerarse nula o muy baja, según el diseño.</p>
 <p>Cuando un ítem se corrige por varios componentes con distinto número de opciones —por ejemplo, una tarea con varios pasos—, su probabilidad de acierto por azar no es la de una sola pregunta. En ese caso se calcula como la media ponderada de los azares de cada componente, usando los mismos pesos con que se puntúa la respuesta. Ese valor agregado es el que alimenta la función logística del ítem completo.</p>
 </section>
 <section id="s12">
 <h2>12. Uso de una función logística</h2>
 <p>Cuando proceda, las verosimilitudes pueden generarse mediante una función logística ajustada por azar.</p>
-<p>La idea general es que la probabilidad de acierto debe aumentar cuando el nivel hipotético del alumno supera la dificultad de la pregunta, y debe disminuir cuando la dificultad supera el nivel hipotético del alumno.</p>
-<p>Si se usa este modelo, debe respetarse una condición importante: la probabilidad de acierto no debe ser inferior a la probabilidad de acierto por azar propia de la pregunta.</p>
-<p>Por tanto, una pregunta de cuatro opciones no debería asignar una probabilidad de acierto inferior al 25 %, porque un alumno que responde al azar tiene esa probabilidad de acertar.</p>
+<p>La idea general es que la probabilidad de acierto aumenta cuando el nivel hipotético del alumno supera la dificultad de la pregunta, y disminuye cuando la dificultad supera el nivel hipotético del alumno.</p>
+<p>Si se usa este modelo, se respeta una condición importante: la probabilidad de acierto no es inferior a la probabilidad de acierto por azar propia de la pregunta.</p>
+<p>Por tanto, una pregunta de cuatro opciones no asigna una probabilidad de acierto inferior al 25 %, porque un alumno que responde al azar tiene esa probabilidad de acertar.</p>
 <p>La función logística no sustituye a Bayes. Solo sirve para generar las verosimilitudes que Bayes necesita.</p>
-<p>El sistema debe permitir que esta generación sea ajustable. Por ejemplo, puede existir un parámetro de sensibilidad o discriminación que determine cuánto separa una pregunta entre unas hipótesis y otras.</p>
+<p>El sistema permite que esta generación sea ajustable. Por ejemplo, puede existir un parámetro de sensibilidad o discriminación que determine cuánto separa una pregunta entre unas hipótesis y otras.</p>
 </section>
 <section id="s13">
 <h2>13. Selección adaptativa de la siguiente pregunta o actividad</h2>
-<p>A partir de la estimación actual, el programa debe seleccionar dinámicamente la siguiente pregunta, explicación o actividad.</p>
-<p>La selección debe buscar utilidad pedagógica y puede servir para:</p>
+<p>A partir de la estimación actual, el programa selecciona dinámicamente la siguiente pregunta, explicación o actividad.</p>
+<p>La selección busca utilidad pedagógica y puede servir para:</p>
 <ul>
 <li>confirmar una hipótesis probable;</li>
 <li>distinguir entre hipótesis cercanas;</li>
@@ -597,29 +597,29 @@
 <li>permitir que el alumno demuestre un nivel superior;</li>
 <li>decidir si conviene pasar a ampliación o a refuerzo.</li>
 </ul>
-<p>El sistema no debe limitarse a subir la dificultad tras un acierto y bajarla tras un fallo.</p>
-<p>Debe tener en cuenta: historial de respuestas, conceptos ya evaluados, errores detectados, variedad de contenidos, dificultad relativa de las preguntas, tipo de pregunta, número de opciones de cada pregunta, probabilidad de acierto por azar, y grado de seguridad de la estimación actual.</p>
-<p>Cuando varias preguntas tienen la misma ganancia de información esperada —lo que ocurre frecuentemente cuando comparten los mismos parámetros de dificultad y número de opciones—, la selección entre ellas no debe ser determinista. Se recomienda una <strong>selección aleatoria ponderada</strong>: calcular la ganancia de todas las candidatas, reunir las que están dentro de un margen mínimo del máximo, y elegir entre ellas con una probabilidad proporcional al inverso de las veces que su categoría o concepto ha aparecido ya. Esto combina máxima utilidad informativa con diversidad temática, sin imponer restricciones rígidas. Una selección determinista entre empates produce test sistemáticamente repetitivos entre distintas sesiones.</p>
+<p>El sistema no se limita a subir la dificultad tras un acierto y bajarla tras un fallo.</p>
+<p>Tiene en cuenta: historial de respuestas, conceptos ya evaluados, errores detectados, variedad de contenidos, dificultad relativa de las preguntas, tipo de pregunta, número de opciones de cada pregunta, probabilidad de acierto por azar, y grado de seguridad de la estimación actual.</p>
+<p>Cuando varias preguntas tienen la misma ganancia de información esperada —lo que ocurre frecuentemente cuando comparten los mismos parámetros de dificultad y número de opciones—, la selección entre ellas no es determinista. Se recomienda una <strong>selección aleatoria ponderada</strong>: calcular la ganancia de todas las candidatas, reunir las que están dentro de un margen mínimo del máximo, y elegir entre ellas con una probabilidad proporcional al inverso de las veces que su categoría o concepto ha aparecido ya. Esto combina máxima utilidad informativa con diversidad temática, sin imponer restricciones rígidas. Una selección determinista entre empates produce test sistemáticamente repetitivos entre distintas sesiones.</p>
 <h3>13.1. Diagnóstico inicial y refuerzo posterior</h3>
-<p>En recursos de práctica adaptativa, refuerzo o entrenamiento por tipos, la selección no debe perseguir siempre el mismo objetivo. Al principio conviene diagnosticar; después conviene intervenir sobre lo menos dominado.</p>
+<p>En recursos de práctica adaptativa, refuerzo o entrenamiento por tipos, la selección no persigue siempre el mismo objetivo. Al principio conviene diagnosticar; después conviene intervenir sobre lo menos dominado.</p>
 <p>Se recomienda una estrategia en dos fases:</p>
 <ol>
-<li><strong>Fase diagnóstica inicial.</strong> Mientras existan categorías, conceptos o tipos de problema con menos de una muestra mínima de intentos, el sistema debe priorizarlos. El objetivo es evitar conclusiones basadas en una muestra demasiado pequeña. Dentro de esas categorías, puede elegirse la pregunta con mayor ganancia esperada de información. Un valor por defecto razonable es exigir al menos 2 intentos por categoría. Con muchas categorías, esta fase puede consumir la sesión entera (por ejemplo, 10 categorías con 2 intentos son ya 20 preguntas): conviene agrupar categorías afines en bloques o reducir la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.</li>
-<li><strong>Fase de refuerzo.</strong> Cuando todas las categorías relevantes tengan muestra mínima, el sistema debe priorizar la categoría con menor dominio estimado o mayor necesidad pedagógica. Una vez elegida la categoría, la pregunta concreta no debe ser necesariamente la más difícil. Conviene combinar la ganancia esperada de información con una medida de adecuación de dificultad, de modo que el sistema prefiera ejercicios informativos pero cercanos al nivel estimado del alumno.</li>
+<li><strong>Fase diagnóstica inicial.</strong> Mientras existan categorías, conceptos o tipos de problema con menos de una muestra mínima de intentos, el sistema los prioriza. El objetivo es evitar conclusiones basadas en una muestra demasiado pequeña. Dentro de esas categorías, puede elegirse la pregunta con mayor ganancia esperada de información. Un valor por defecto razonable es exigir al menos 2 intentos por categoría. Con muchas categorías, esta fase puede consumir la sesión entera (por ejemplo, 10 categorías con 2 intentos son ya 20 preguntas): conviene agrupar categorías afines en bloques o reducir la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.</li>
+<li><strong>Fase de refuerzo.</strong> Cuando todas las categorías relevantes tengan muestra mínima, el sistema prioriza la categoría con menor dominio estimado o mayor necesidad pedagógica. Una vez elegida la categoría, la pregunta concreta no es necesariamente la más difícil. Conviene combinar la ganancia esperada de información con una medida de adecuación de dificultad, de modo que el sistema prefiera ejercicios informativos pero cercanos al nivel estimado del alumno.</li>
 </ol>
-<p>Esta separación evita un uso excesivo de la entropía de Shannon. La entropía responde a la pregunta “¿dónde tengo más incertidumbre?”, pero no siempre responde a “¿qué necesita practicar más el alumno?”. En evaluación diagnóstica pura, maximizar la reducción de incertidumbre puede ser el criterio principal. En práctica adaptativa y refuerzo, debe combinarse con una función de utilidad pedagógica que dé prioridad a los contenidos menos dominados.</p>
+<p>Esta separación evita un uso excesivo de la entropía de Shannon. La entropía responde a la pregunta “¿dónde tengo más incertidumbre?”, pero no siempre responde a “¿qué necesita practicar más el alumno?”. En evaluación diagnóstica pura, maximizar la reducción de incertidumbre puede ser el criterio principal. En práctica adaptativa y refuerzo, se combina con una función de utilidad pedagógica que dé prioridad a los contenidos menos dominados.</p>
 <p>En términos operativos, la fase de refuerzo puede usar una puntuación de utilidad como:</p>
 <p><code>utilidad = α · IG_normalizada + (1 − α) · ajuste_de_dificultad</code></p>
 <p>donde <code>ajuste_de_dificultad</code> disminuye cuando la dificultad de la pregunta se aleja mucho del nivel estimado del alumno. Un valor inicial razonable es <code>α = 0.6</code> o <code>0.7</code>, para conservar valor diagnóstico sin convertir el refuerzo en una sucesión de ejercicios demasiado difíciles.</p>
 <h3>13.2. Refuerzo continuo y cautela con poca evidencia</h3>
 <p>Los criterios de parada (sección 17) suponen que el objetivo es diagnosticar y cerrar. En recursos de práctica o refuerzo abierto, en cambio, puede no haber final: la sesión continúa mientras el alumno practica, y el estado estimado se entiende como una estimación viva, no como un diagnóstico cerrado. En ese modo, la entropía y la confianza sirven para informar del grado de seguridad, no para terminar la sesión, y la selección en dos fases se mantiene durante toda la práctica.</p>
 <p>Con pocos intentos, una sola respuesta puede desplazar mucho la estimación. Para no comunicar un dominio infundado, conviene exigir una muestra mínima por categoría o dimensión antes de mostrar niveles altos de dominio, y presentar la estimación como provisional mientras la evidencia sea escasa. Es una decisión de presentación: no cambia el cálculo bayesiano, solo cómo se traduce a la interfaz.</p>
-<p>En sesiones de práctica largas hay un matiz más: el alumno aprende mientras practica, y la actualización bayesiana pura da el mismo peso a las respuestas antiguas que a las recientes, de modo que la estimación puede quedarse anclada en un estado que el alumno ya ha superado. Para que la estimación siga su estado actual conviene aplicar un <strong>olvido gradual de la evidencia antigua</strong> (olvido exponencial): las respuestas recientes pesan más que las antiguas y el sistema recuerda, en la práctica, las últimas 10–20 respuestas. En recursos diagnósticos de sesión corta no debe aplicarse este olvido. El mecanismo, sus valores recomendados y la extensión que modela explícitamente el aprendizaje están en la <a href="matematicas.html#s3">explicación matemática (§3.5)</a>.</p>
+<p>En sesiones de práctica largas hay un matiz más: el alumno aprende mientras practica, y la actualización bayesiana pura da el mismo peso a las respuestas antiguas que a las recientes, de modo que la estimación puede quedarse anclada en un estado que el alumno ya ha superado. Para que la estimación siga su estado actual conviene aplicar un <strong>olvido gradual de la evidencia antigua</strong> (olvido exponencial): las respuestas recientes pesan más que las antiguas y el sistema recuerda, en la práctica, las últimas 10–20 respuestas. En recursos diagnósticos de sesión corta no se aplica este olvido. El mecanismo, sus valores recomendados y la extensión que modela explícitamente el aprendizaje están en la <a href="matematicas.html#s3">explicación matemática (§3.5)</a>.</p>
 </section>
 <section id="s14">
 <h2>14. Reducción esperada de incertidumbre</h2>
-<p>Cuando sea posible, el sistema debe seleccionar la pregunta que más reduzca la incertidumbre esperada.</p>
-<p>Para ello debe estimar, antes de presentar la pregunta:</p>
+<p>Cuando es posible, el sistema selecciona la pregunta que más reduce la incertidumbre esperada.</p>
+<p>Para ello estima, antes de presentar la pregunta:</p>
 <ul>
 <li>qué ocurriría si el alumno acierta;</li>
 <li>qué ocurriría si el alumno falla;</li>
@@ -635,45 +635,45 @@
 <h2>15. Mecanismos de recuperación</h2>
 <p>Cuando la selección de preguntas se realiza por máxima ganancia de información esperada, <strong>la recuperación queda en gran parte integrada</strong> en el propio mecanismo bayesiano: si el alumno inicialmente falla pero después responde correctamente preguntas más difíciles, el posterior se desplaza automáticamente y el sistema selecciona preguntas más exigentes. No suele ser necesaria una lógica de recuperación explícita, pero la recuperación completa no está garantizada si las preguntas están mal calibradas, si hay pocas disponibles en algún nivel, o si el alumno responde al azar.</p>
 <p>Los mecanismos de recuperación explícitos solo son necesarios cuando la selección de preguntas se basa en reglas simples de dificultad (subir tras acierto, bajar tras fallo), porque en ese caso el sistema puede quedar bloqueado en un nivel incorrecto. Si se usa selección por ganancia de información, el riesgo de bloqueo se reduce mucho, porque el sistema reevalúa el posterior tras cada respuesta. Aun así, puede haber bloqueos prácticos si el banco de preguntas es limitado, si las verosimilitudes están mal calibradas o si se detiene la prueba demasiado pronto.</p>
-<p>Lo que sí debe garantizarse en cualquier diseño:</p>
+<p>Lo que sí se garantiza en cualquier diseño:</p>
 <ul>
-<li>El sistema no debe encerrar al alumno de forma irreversible en una categoría inicial.</li>
+<li>El sistema no encierra al alumno de forma irreversible en una categoría inicial.</li>
 <li>Si el alumno falla al principio pero después muestra señales consistentes de dominio, el posterior bayesiano se encargará de reflejar ese cambio.</li>
 <li>Si el alumno empieza con aciertos pero después muestra errores relevantes, el sistema revisará la distribución de probabilidades.</li>
-<li>La adaptación debe ser dinámica en cada respuesta, no solo al inicio o al final.</li>
+<li>La adaptación es dinámica en cada respuesta, no solo al inicio o al final.</li>
 </ul>
 </section>
 <section id="s16">
 <h2>16. Entropía de Shannon como medida de incertidumbre</h2>
-<p>La seguridad razonable debe estimarse mediante la entropía de Shannon aplicada a la distribución de probabilidades de las hipótesis.</p>
+<p>La seguridad razonable se estima mediante la entropía de Shannon aplicada a la distribución de probabilidades de las hipótesis.</p>
 <p>Cuando las probabilidades están muy repartidas, la entropía es alta y el sistema tiene mucha incertidumbre. Cuando una hipótesis concentra la mayor parte de la probabilidad, la entropía es baja y el sistema tiene más seguridad.</p>
-<p>La entropía debe servir para:</p>
+<p>La entropía sirve para:</p>
 <ul>
 <li>decidir si conviene seguir preguntando;</li>
 <li>comparar la incertidumbre antes y después de una pregunta;</li>
 <li>seleccionar preguntas informativas;</li>
 <li>determinar si el diagnóstico final es firme o provisional.</li>
 </ul>
-<p>El umbral de parada debe ajustarse al número de hipótesis consideradas y al grado de precisión deseado.</p>
+<p>El umbral de parada se ajusta al número de hipótesis consideradas y al grado de precisión deseado.</p>
 </section>
 <section id="s17">
 <h2>17. Criterios de finalización</h2>
-<p>El proceso debe terminar cuando haya una seguridad razonable sobre el estado de aprendizaje del alumno o cuando se alcance un límite práctico.</p>
+<p>El proceso termina cuando hay una seguridad razonable sobre el estado de aprendizaje del alumno o cuando se alcanza un límite práctico.</p>
 <p>Los criterios posibles son:</p>
 <ul>
 <li><strong>La entropía cae por debajo del umbral \(H_{\text{stop}}\) y la hipótesis más probable supera \(p_{\min}\).</strong> Cuando \(H_{\text{stop}}\) se deriva del mismo \(p_{\min}\), la segunda condición ya implica la primera; comprobar las dos es inofensivo, y el control adicional real lo aporta exigir separación respecto a la segunda hipótesis (véase §9).</li>
-<li><strong>Se alcanza un número máximo de preguntas.</strong> Conviene distinguir entre un máximo teórico y un máximo práctico. El primero puede estimarse mediante búsqueda minimax sobre el árbol de respuestas posibles; el segundo debe fijarse por usabilidad. En una demo o herramienta educativa breve puede imponerse, por ejemplo, un tope duro de 20 preguntas, mostrando resultado provisional si no se ha convergido antes.</li>
+<li><strong>Se alcanza un número máximo de preguntas.</strong> Conviene distinguir entre un máximo teórico y un máximo práctico. El primero puede estimarse mediante búsqueda minimax sobre el árbol de respuestas posibles; el segundo se fija por usabilidad. En una demo o herramienta educativa breve puede imponerse, por ejemplo, un tope duro de 20 preguntas, mostrando resultado provisional si no se ha convergido antes.</li>
 <li><strong>La mejor pregunta disponible deja de ser útil.</strong> Si, tras un número suficiente de preguntas, la ganancia esperada de información de la mejor candidata cae por debajo de un umbral mínimo, conviene detener la sesión y devolver un diagnóstico provisional en lugar de alargarla artificialmente.</li>
 <li>Ya se han cubierto los conceptos mínimos previstos.</li>
 <li>No quedan preguntas útiles disponibles.</li>
 <li>El coste de seguir preguntando supera la ganancia pedagógica esperada.</li>
 </ul>
-<p>Si la entropía final sigue siendo alta, el sistema debe indicarlo claramente. En ese caso, el resultado debe presentarse como una estimación provisional, no como una conclusión firme.</p>
+<p>Si la entropía final sigue siendo alta, el sistema lo indica claramente. En ese caso, el resultado se presenta como una estimación provisional, no como una conclusión firme.</p>
 </section>
 <section id="s18">
 <h2>18. Resultado final</h2>
-<p>El resultado final debe presentarse como una interpretación pedagógica.</p>
-<p>Debe incluir, cuando proceda:</p>
+<p>El resultado final se presenta como una interpretación pedagógica.</p>
+<p>Incluye, cuando proceda:</p>
 <ul>
 <li>qué parece dominar el alumno;</li>
 <li>qué dificultades muestra;</li>
@@ -684,14 +684,14 @@
 <li>qué grado de seguridad tiene la estimación;</li>
 <li>si el diagnóstico es firme o provisional.</li>
 </ul>
-<p>No debe limitarse a mostrar una puntuación o una etiqueta.</p>
+<p>No se limita a mostrar una puntuación o una etiqueta.</p>
 <p>Cuando dos hipótesis terminan con probabilidades próximas, conviene mostrar la distribución posterior completa (por ejemplo, mediante un diagrama de barras) en lugar de una sola etiqueta ganadora.</p>
 <p>La finalidad del sistema es ayudar a tomar decisiones educativas.</p>
 </section>
 <section id="s19">
 <h2>19. Adaptación al contexto docente</h2>
-<p>El concepto de recurso educativo adaptativo debe entenderse de forma amplia. Un test adaptativo es solo un caso particular. La misma lógica puede aplicarse a explicaciones, prácticas, simuladores, itinerarios, sistemas de pistas, actividades de refuerzo, ampliación o recomendación de recursos. Lo importante es que el recurso tome decisiones pedagógicas a partir de las evidencias que obtiene durante la interacción con el alumno.</p>
-<p>La implementación concreta debe adaptarse al contexto educativo que indique el docente.</p>
+<p>El concepto de recurso educativo adaptativo se entiende de forma amplia. Un test adaptativo es solo un caso particular. La misma lógica puede aplicarse a explicaciones, prácticas, simuladores, itinerarios, sistemas de pistas, actividades de refuerzo, ampliación o recomendación de recursos. Lo importante es que el recurso tome decisiones pedagógicas a partir de las evidencias que obtiene durante la interacción con el alumno.</p>
+<p>La implementación concreta se adapta al contexto educativo que indique el docente.</p>
 <p>Antes de diseñar el sistema, conviene recoger información sobre:</p>
 <ul>
 <li>tema o unidad didáctica;</li>
@@ -703,12 +703,12 @@
 <li>duración máxima;</li>
 <li>tipo de recurso adaptativo deseado (evaluación, práctica, itinerario, tutorial, simulador, juego, recomendador, repaso…);</li>
 <li>finalidad principal (detectar nivel, identificar errores, reforzar, practicar, consolidar, ampliar, guiar, recomendar…);</li>
-<li>qué debe adaptar el sistema (dificultad, tipo de actividad, explicación, ayuda, pistas, ritmo, itinerario…);</li>
+<li>qué aspecto adapta el sistema (dificultad, tipo de actividad, explicación, ayuda, pistas, ritmo, itinerario…);</li>
 <li>tipo de salida esperada (diagnóstico, informe de progreso, ruta de aprendizaje, propuesta de siguiente actividad…);</li>
 <li>formato deseado;</li>
 <li>grado de precisión necesario.</li>
 </ul>
-<p>El sistema debe adaptar sus decisiones a ese contexto.</p>
+<p>El sistema adapta sus decisiones a ese contexto.</p>
 </section>
 <section id="s20">
 <h2>20. Plantilla para el docente</h2>
@@ -717,23 +717,23 @@
 </section>
 <section id="s21">
 <h2>21. Reglas de diseño para la IA</h2>
-<p>Al generar una aplicación o actividad basada en este protocolo, la IA debe seguir estas reglas:</p>
+<p>En síntesis, una implementación fiel a este protocolo cumple estas reglas:</p>
 <ol>
-<li>No crear un recorrido rígido ni un test lineal.</li>
-<li>No limitarse a subir dificultad tras acierto y bajarla tras fallo.</li>
-<li>Representar el estado del alumno mediante probabilidades sobre hipótesis.</li>
-<li>Actualizar esas probabilidades de forma gradual.</li>
-<li>Generar dinámicamente las verosimilitudes, sin exigir al docente que introduzca tablas de probabilidades.</li>
-<li>Tener en cuenta la dificultad de cada pregunta.</li>
-<li>Tener en cuenta el número de opciones de cada pregunta.</li>
-<li>No usar preguntas abiertas largas si no se pueden corregir automáticamente.</li>
-<li>Seleccionar preguntas por utilidad pedagógica e información esperada.</li>
-<li>Usar entropía de Shannon para medir incertidumbre.</li>
-<li>Permitir recuperación ante estimaciones iniciales equivocadas.</li>
-<li>Presentar el resultado como interpretación pedagógica.</li>
-<li>Indicar cuándo la estimación es provisional.</li>
-<li>Adaptarse al contexto proporcionado por el docente.</li>
-<li>Evitar detalles técnicos innecesarios si el usuario solo necesita metodología.</li>
+<li>No crea un recorrido rígido ni un test lineal.</li>
+<li>No se limita a subir dificultad tras acierto y bajarla tras fallo.</li>
+<li>Representa el estado del alumno mediante probabilidades sobre hipótesis.</li>
+<li>Actualiza esas probabilidades de forma gradual.</li>
+<li>Genera dinámicamente las verosimilitudes, sin exigir al docente que introduzca tablas de probabilidades.</li>
+<li>Tiene en cuenta la dificultad de cada pregunta.</li>
+<li>Tiene en cuenta el número de opciones de cada pregunta.</li>
+<li>No usa preguntas abiertas largas si no se pueden corregir automáticamente.</li>
+<li>Selecciona preguntas por utilidad pedagógica e información esperada.</li>
+<li>Usa entropía de Shannon para medir incertidumbre.</li>
+<li>Permite recuperación ante estimaciones iniciales equivocadas.</li>
+<li>Presenta el resultado como interpretación pedagógica.</li>
+<li>Indica cuándo la estimación es provisional.</li>
+<li>Se adapta al contexto proporcionado por el docente.</li>
+<li>Evita detalles técnicos innecesarios si el usuario solo necesita metodología.</li>
 </ol>
 </section>
 <section id="s22">
@@ -743,7 +743,7 @@
 <section id="s23">
 <h2>23. Alcance y límites</h2>
 <p>Este protocolo no sustituye al criterio docente.</p>
-<p>El sistema puede ayudar a orientar decisiones, pero sus resultados deben interpretarse con prudencia, especialmente cuando:</p>
+<p>El sistema puede ayudar a orientar decisiones, pero conviene interpretar sus resultados con prudencia, especialmente cuando:</p>
 <ul>
 <li>hay pocas preguntas;</li>
 <li>las preguntas no están bien calibradas;</li>
@@ -754,7 +754,7 @@
 </ul>
 <p>El valor principal del enfoque está en hacer explícita la incertidumbre y en adaptar la actividad a las evidencias disponibles.</p>
 <p>Cuando el resultado vaya a usarse para decisiones, conviene acompañarlo de comprobaciones de fiabilidad que no requieren datos empíricos: un <strong>índice de ajuste del patrón</strong> de cada alumno (detecta respuestas incoherentes con la dificultad, que harían el diagnóstico poco fiable aunque la confianza sea alta) y una <strong>validación del diseño por simulación</strong> (estima, antes de aplicar el test, en qué medida el banco separa los niveles). Ambas se describen en los <a href="matematicas.html#s11">fundamentos matemáticos (§11.7–§11.8)</a>; son una capa opcional, no un paso obligatorio, y miden fiabilidad bajo el modelo, no validez empírica.</p>
-<p>En recursos de aprendizaje prolongados —tutoriales, práctica adaptativa, refuerzo o ampliación—, el estado del alumno puede cambiar durante la propia sesión. En esos casos, el posterior no debe interpretarse solo como diagnóstico de un estado fijo, sino como una estimación dinámica que puede combinar evidencias recientes, ayudas utilizadas, progreso observado y cambios en el desempeño. El mecanismo de olvido exponencial descrito en los <a href="matematicas.html#s3">fundamentos matemáticos (§3.5)</a> concreta esta idea haciendo que las respuestas recientes pesen más que las antiguas.</p>
+<p>En recursos de aprendizaje prolongados —tutoriales, práctica adaptativa, refuerzo o ampliación—, el estado del alumno puede cambiar durante la propia sesión. En esos casos, el posterior no se interpreta solo como diagnóstico de un estado fijo, sino como una estimación dinámica que puede combinar evidencias recientes, ayudas utilizadas, progreso observado y cambios en el desempeño. El mecanismo de olvido exponencial descrito en los <a href="matematicas.html#s3">fundamentos matemáticos (§3.5)</a> concreta esta idea haciendo que las respuestas recientes pesen más que las antiguas.</p>
 </section>
 <section id="s24">
 <h2>24. Referencias</h2>
@@ -764,7 +764,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Evaluación formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprendizaje para el dominio; base de los mecanismos de refuerzo y recuperación.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.8). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.9). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
 <p class="callout">
 El desarrollo formal de los mecanismos descritos en este protocolo —inferencia bayesiana, modelo IRT, entropía de Shannon y selección adaptativa— se encuentra en el documento complementario <a href="matematicas.html">Fundamentos matemáticos</a>, que incluye fórmulas, demostraciones y un ejemplo numérico completo.
 </p>
