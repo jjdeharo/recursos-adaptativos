@@ -35,6 +35,7 @@ Adjunta este documento a la IA y usa este prompt:
 
 - El recurso no debe ser lineal si la finalidad exige adaptación.
 - Cada respuesta del alumno debe modificar el estado estimado del sistema.
+- Interpreta cada respuesta como evidencia parcial sobre una o varias hipótesis, no como prueba directa de conocimiento.
 - La adaptación puede afectar a:
   - la siguiente pregunta;
   - la dificultad;
