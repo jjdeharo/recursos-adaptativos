@@ -27,6 +27,8 @@ El modelo pedirá al docente el tema, el curso, el tipo de recurso y la finalida
 
 El resultado es siempre un recurso web estático (HTML + CSS + JS), listo para usar sin servidor. Puede organizarse en un único archivo o en varios, según convenga para su claridad y mantenimiento.
 
+La calidad del recurso no depende solo del algoritmo. También depende de cómo estén definidas las hipótesis, categorías, dificultades, conceptos y errores, y de que el banco tenga cobertura suficiente y <strong>redundancia local</strong>: varias preguntas alternativas en cada zona relevante. Si esa base está mal conformada o una categoría solo tiene un ítem útil, la adaptación puede sesgarse o volverse repetitiva aunque la regla de selección sea correcta.
+
 ---
 
 ## Documentación matemática
