@@ -498,7 +498,7 @@
 <button aria-label="Cerrar" class="lightbox-btn" data-act="close" type="button">&times;</button>
 </div>
 <div class="lightbox-stage">
-<img alt="" src=""/>
+<img alt="" draggable="false" src=""/>
 </div>
 </div>
 <script>
@@ -582,13 +582,23 @@
   }, { passive: false });
 
   var down = null, moved = false;
+  function endPointer(id) {
+    lb.classList.remove('grabbing');
+    if (id != null && lb.hasPointerCapture && lb.hasPointerCapture(id)) {
+      try { lb.releasePointerCapture(id); } catch (_) {}
+    }
+    down = null;
+  }
+  lb.addEventListener('dragstart', function (e) { e.preventDefault(); });
   lb.addEventListener('pointerdown', function (e) {
+    if (e.button && e.button !== 0) return;
     if (e.target.closest('.lightbox-toolbar')) return;
     down = { x: e.clientX, y: e.clientY, sl: lb.scrollLeft, st: lb.scrollTop, onImg: e.target === img };
     moved = false;
     if (zoomedNow() && e.target === img) {
       lb.classList.add('grabbing');
-      lb.setPointerCapture(e.pointerId);
+      try { lb.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault();
     }
   });
   lb.addEventListener('pointermove', function (e) {
@@ -601,11 +611,11 @@
     }
   });
   lb.addEventListener('pointerup', function (e) {
-    lb.classList.remove('grabbing');
-    var d = down; down = null;
-    if (!d || moved) return;
-    if (e.target.closest('.lightbox-toolbar')) return;
-    if (e.target === img) {
+    var d = down, wasMoved = moved;
+    endPointer(e.pointerId);
+    if (!d || wasMoved) return;
+    if (e.target.closest && e.target.closest('.lightbox-toolbar')) return;
+    if (d.onImg) {
       if (zoomedNow()) applyWidth(fitW);
       else {
         var r = lb.getBoundingClientRect();
@@ -615,6 +625,7 @@
       close();
     }
   });
+  lb.addEventListener('pointercancel', function (e) { endPointer(e.pointerId); });
 
   if (trigger) {
     trigger.addEventListener('click', open);
