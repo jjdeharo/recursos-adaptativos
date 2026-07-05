@@ -165,7 +165,87 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      cursor: zoom-in;
+      transition: transform 0.15s, box-shadow 0.15s;
     }
+    .guide-figure img:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 34px rgba(15, 23, 42, 0.16);
+    }
+    .guide-figure figcaption {
+      margin-top: 0.5rem;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(15, 23, 42, 0.9);
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+    .lightbox.open { display: block; }
+    .lightbox-stage {
+      min-height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      box-sizing: border-box;
+    }
+    .lightbox.zoomed .lightbox-stage {
+      display: block;
+      padding: 0;
+    }
+    .lightbox img {
+      display: block;
+      max-width: 100%;
+      max-height: calc(100vh - 3rem);
+      width: auto;
+      height: auto;
+      margin: 0 auto;
+      border-radius: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      cursor: zoom-in;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-user-drag: none;
+    }
+    .lightbox.zoomed img {
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+      cursor: grab;
+    }
+    .lightbox.grabbing img { cursor: grabbing; }
+    .lightbox-toolbar {
+      position: fixed;
+      top: 0.9rem;
+      right: 0.9rem;
+      display: flex;
+      gap: 0.4rem;
+      z-index: 2;
+    }
+    .lightbox-btn {
+      min-width: 2.4rem;
+      height: 2.4rem;
+      padding: 0 0.7rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1.3rem;
+      font-family: inherit;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .lightbox-btn:hover { background: rgba(255, 255, 255, 0.3); }
+    .lightbox-btn.reset { font-size: 0.85rem; font-weight: 600; }
 
     hr {
       border: none;
@@ -276,7 +356,8 @@
 <section id="s0">
 <p>Esta guía te explica cómo pedir a una IA (ChatGPT, Claude, Gemini…) que cree un recurso educativo adaptativo para tu clase, <strong>sin necesidad de conocer la metodología que hay detrás</strong>. De la parte técnica se encarga la IA siguiendo el archivo <a download="" href="especificacion_operativa_ia.md">especificacion_operativa_ia.md</a>.</p>
 <figure class="guide-figure">
-<img alt="Vista previa de la guía rápida para docentes en español" loading="lazy" src="img/guia_es.webp"/>
+<img alt="Vista previa de la guía rápida para docentes en español" aria-label="Ampliar la infografía" class="zoomable" loading="lazy" role="button" src="img/guia_es.webp" tabindex="0"/>
+<figcaption>Pulsa la imagen para ampliarla</figcaption>
 </figure>
 </section>
 
@@ -409,6 +490,148 @@
 <span class="sep">·</span>
 <a href="index.html">← Inicio</a>
 </footer>
+<div aria-label="Infografía ampliada" aria-modal="true" class="lightbox" id="lightbox" role="dialog">
+<div class="lightbox-toolbar">
+<button aria-label="Alejar" class="lightbox-btn" data-act="out" type="button">&minus;</button>
+<button aria-label="Ajustar a la pantalla" class="lightbox-btn reset" data-act="reset" type="button">Ajustar</button>
+<button aria-label="Acercar" class="lightbox-btn" data-act="in" type="button">+</button>
+<button aria-label="Cerrar" class="lightbox-btn" data-act="close" type="button">&times;</button>
+</div>
+<div class="lightbox-stage">
+<img alt="" src=""/>
+</div>
+</div>
+<script>
+(function () {
+  var lb = document.getElementById('lightbox');
+  if (!lb) return;
+  var img = lb.querySelector('img');
+  var toolbar = lb.querySelector('.lightbox-toolbar');
+  var trigger = document.querySelector('.guide-figure img.zoomable');
+  var lastFocus = null;
+  var fitW = 0, curW = 0, minW = 0, maxW = 0;
+
+  function zoomedNow() { return lb.classList.contains('zoomed'); }
+  function centerAnchor() { return [lb.clientWidth / 2, lb.clientHeight / 2]; }
+
+  function measureFit() {
+    lb.classList.remove('zoomed');
+    img.style.width = '';
+    fitW = img.clientWidth || img.naturalWidth;
+    curW = fitW;
+    minW = fitW;
+    maxW = Math.max(img.naturalWidth, fitW) * 3;
+  }
+
+  function applyWidth(w, ax, ay) {
+    var old = curW || fitW;
+    w = Math.max(minW, Math.min(maxW, w));
+    var ratio = old ? w / old : 1;
+    curW = w;
+    if (w <= fitW + 0.5) {
+      lb.classList.remove('zoomed');
+      img.style.width = '';
+    } else {
+      lb.classList.add('zoomed');
+      img.style.width = w + 'px';
+      if (ax != null) {
+        lb.scrollLeft = (lb.scrollLeft + ax) * ratio - ax;
+        lb.scrollTop = (lb.scrollTop + ay) * ratio - ay;
+      }
+    }
+  }
+  function zoomBy(f, ax, ay) { applyWidth((curW || fitW) * f, ax, ay); }
+
+  function open() {
+    lastFocus = document.activeElement;
+    img.src = trigger.currentSrc || trigger.src;
+    img.alt = trigger.alt;
+    lb.classList.add('open');
+    lb.classList.remove('zoomed');
+    img.style.width = '';
+    document.body.style.overflow = 'hidden';
+    lb.scrollTop = lb.scrollLeft = 0;
+    if (img.complete && img.naturalWidth) measureFit();
+    else img.addEventListener('load', measureFit, { once: true });
+    var c = toolbar.querySelector('[data-act="close"]');
+    if (c) c.focus();
+  }
+  function close() {
+    lb.classList.remove('open', 'zoomed', 'grabbing');
+    img.style.width = '';
+    img.removeAttribute('src');
+    document.body.style.overflow = '';
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+
+  toolbar.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-act]');
+    if (!btn) return;
+    var act = btn.getAttribute('data-act'), c = centerAnchor();
+    if (act === 'in') zoomBy(1.4, c[0], c[1]);
+    else if (act === 'out') zoomBy(1 / 1.4, c[0], c[1]);
+    else if (act === 'reset') applyWidth(fitW);
+    else if (act === 'close') close();
+  });
+
+  lb.addEventListener('wheel', function (e) {
+    if (!lb.classList.contains('open')) return;
+    e.preventDefault();
+    var r = lb.getBoundingClientRect();
+    zoomBy(e.deltaY < 0 ? 1.15 : 1 / 1.15, e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+
+  var down = null, moved = false;
+  lb.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('.lightbox-toolbar')) return;
+    down = { x: e.clientX, y: e.clientY, sl: lb.scrollLeft, st: lb.scrollTop, onImg: e.target === img };
+    moved = false;
+    if (zoomedNow() && e.target === img) {
+      lb.classList.add('grabbing');
+      lb.setPointerCapture(e.pointerId);
+    }
+  });
+  lb.addEventListener('pointermove', function (e) {
+    if (!down) return;
+    var dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    if (zoomedNow() && down.onImg) {
+      lb.scrollLeft = down.sl - dx;
+      lb.scrollTop = down.st - dy;
+    }
+  });
+  lb.addEventListener('pointerup', function (e) {
+    lb.classList.remove('grabbing');
+    var d = down; down = null;
+    if (!d || moved) return;
+    if (e.target.closest('.lightbox-toolbar')) return;
+    if (e.target === img) {
+      if (zoomedNow()) applyWidth(fitW);
+      else {
+        var r = lb.getBoundingClientRect();
+        applyWidth(Math.max(img.naturalWidth, fitW * 2), e.clientX - r.left, e.clientY - r.top);
+      }
+    } else {
+      close();
+    }
+  });
+
+  if (trigger) {
+    trigger.addEventListener('click', open);
+    trigger.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+  }
+  document.addEventListener('keydown', function (e) {
+    if (!lb.classList.contains('open')) return;
+    var c = centerAnchor();
+    if (e.key === 'Escape') close();
+    else if (e.key === '+' || e.key === '=') zoomBy(1.4, c[0], c[1]);
+    else if (e.key === '-') zoomBy(1 / 1.4, c[0], c[1]);
+    else if (e.key === '0') applyWidth(fitW);
+  });
+})();
+</script>
 <script>
 (function () {
   var themeBtn = document.getElementById('theme-toggle');
