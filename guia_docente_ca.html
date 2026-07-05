@@ -258,7 +258,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Guia Rapida per a Docents</h1>
 <p>Com demanar a una IA un recurs adaptatiu per a la teva classe, sense tecnicismes</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versio 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versio 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -267,7 +267,7 @@
 <li><a href="#s1">Com es fa servir (3 passos)</a></li>
 <li><a href="#s2">Que convé dir-li</a></li>
 <li><a href="#s3">Per a que et pot servir (amb exemples)</a></li>
-<li><a href="#s4">L'unic aclariment que no pot faltar</a></li>
+<li><a href="#s4">Com descriure els errors</a></li>
 <li><a href="#s5">Altres coses que pots demanar</a></li>
 <li><a href="#s6">Despres de rebre el recurs</a></li>
 </ol>
@@ -305,18 +305,18 @@
 
 <section id="s3">
 <h2>3. Per a que et pot servir (amb exemples)</h2>
-<p>El que mes condiciona el recurs es <strong>per a que el vols</strong>. Aquestes son les finalitats habituals. Cadascuna inclou un exemple de peticio real, <strong>nomes orientatiu</strong>: no el copiïs tal qual; escriu el teu amb les teves paraules i el teu context.</p>
+<p>El que mes condiciona el recurs es <strong>per a que el vols</strong>. Aquestes son les finalitats habituals, amb allo que la IA et donara en cada cas. <strong>No has de nomenar ni demanar un tipus de recurs concret</strong>: descriu-li el teu objectiu amb les teves paraules i la IA tria el format adequat. Cada finalitat inclou a mes un exemple de peticio real, <strong>nomes orientatiu</strong>: no el copiïs tal qual; escriu el teu amb el teu context.</p>
 <table>
 <thead>
-<tr><th>Si vols...</th><th>Demana a la IA...</th></tr>
+<tr><th>Si vols...</th><th>El recurs que et donara la IA</th></tr>
 </thead>
 <tbody>
-<tr><td>Saber el nivell de l'alumne</td><td>una prova adaptativa de nivell</td></tr>
-<tr><td>Esbrinar per que falla</td><td>un diagnostic d'errors excloents</td></tr>
-<tr><td>Detectar diversos errors possibles</td><td>un diagnostic d'errors que poden coexistir</td></tr>
-<tr><td>Practicar allo que pitjor porta</td><td>un programa de practica adaptativa</td></tr>
-<tr><td>Aprendre per etapes</td><td>un itinerari guiat pas a pas</td></tr>
-<tr><td>Saber nivell i errors</td><td>una prova combinada de nivell i diagnostic</td></tr>
+<tr><td>Saber el nivell de l'alumne</td><td>una prova que s'adapta i estima el seu nivell</td></tr>
+<tr><td>Esbrinar per que falla</td><td>una prova que distingeix entre les possibles explicacions de l'error</td></tr>
+<tr><td>Detectar diversos errors possibles</td><td>una prova que revisa per separat cada error possible</td></tr>
+<tr><td>Practicar allo que pitjor porta</td><td>un entrenador que insisteix en allo que menys domina</td></tr>
+<tr><td>Aprendre per etapes</td><td>un itinerari que avança quan domina cada etapa</td></tr>
+<tr><td>Saber nivell i errors</td><td>una prova que dona el nivell i a mes els errors concrets</td></tr>
 </tbody>
 </table>
 
@@ -329,9 +329,9 @@
 
 <h3>Descobrir per que falla</h3>
 <p>Quan un alumne falla i sospites que hi ha <strong>una rao concreta</strong> al darrere (una idea equivocada, un metode mal apres), la prova es pot dissenyar per distingir quina de les explicacions possibles es la correcta.</p>
-<p>Per exemple, a fisica de 2n d'ESO:</p>
+<p>Per exemple, a llengua de 2n d'ESO:</p>
 <blockquote>
-<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Els meus alumnes de 2n d'ESO fallen en calor i temperatura i vull esbrinar per que falla cadascun. Nomes una d'aquestes explicacions pot ser certa en cada alumne: o creu que l'objecte mes gran sempre esta mes calent, o confon calor amb temperatura, o en realitat ho entén be. En acabar vull saber quina es l'explicacio mes probable per a aquest alumne i que li hauria d'explicar jo en cada cas.</p>
+<p>Llegeix el document adjunt i implementa el recurs seguint les regles operatives aplicables. Els meus alumnes de 2n d'ESO fallen a identificar el subjecte d'una oracio i vull esbrinar per que falla cadascun. Nomes una d'aquestes explicacions pot ser certa en cada alumne: o creu que el subjecte es sempre el primer que apareix a l'oracio, o l'identifica pel significat (de qui o de que es parla) sense comprovar la concordança amb el verb, o en realitat ho fa be. En acabar vull saber quina es l'explicacio mes probable per a aquest alumne i que li hauria d'explicar jo en cada cas.</p>
 </blockquote>
 
 <h3>Detectar que li falta</h3>
@@ -364,13 +364,10 @@
 </section>
 
 <section id="s4">
-<h2>4. L'unic aclariment que no pot faltar</h2>
-<p>Si el teu recurs detecta errors, has de deixar clar a la peticio si:</p>
-<ul>
-<li><strong>nomes una de les explicacions pot ser certa</strong> en cada alumne (competeixen entre elles), o</li>
-<li><strong>pot tenir diversos errors alhora</strong> (s'acumulen).</li>
-</ul>
-<p>Un exemple quotidià: "arriba tard perque ha perdut l'autobus <strong>o</strong> perque s'ha adormit" son explicacions que competeixen (nomes una es la causa). En canvi, "no estudia <strong>i a mes</strong> es distreu a classe" poden ser certes totes dues. Si no ho aclareixes, la IA pot muntar malament el recurs i el diagnostic sortira defectuos.</p>
+<h2>4. Com descriure els errors</h2>
+<p>Si el teu recurs detecta errors, hi ha un matis que convé que quedi reflectit: si en cada alumne <strong>nomes una explicacio pot ser certa</strong> (competeixen entre elles) o si <strong>pot tenir diversos errors alhora</strong> (s'acumulen).</p>
+<p>No necessites cap terme tecnic ni un aclariment especial: normalment la IA ho dedueix de com expliques el problema. N'hi ha prou amb descriure els errors amb naturalitat, com en els exemples anteriors ("nomes una d'aquestes explicacions pot ser certa" davant de "pot tenir diversos errors alhora").</p>
+<p>Un exemple quotidià: "arriba tard perque ha perdut l'autobus <strong>o</strong> perque s'ha adormit" son explicacions que competeixen (nomes una es la causa). En canvi, "no estudia <strong>i a mes</strong> es distreu a classe" poden ser certes totes dues. Si dubtes que la IA ho hagi entes be, digues-l'hi de forma explicita o comprova-ho en provar el recurs.</p>
 </section>
 
 <section id="s5">
@@ -397,7 +394,7 @@
 <p>Aquesta guia forma part del <a href="documentacion_ca.html">Protocol per a sistemes educatius adaptatius bayesians</a>. Si vols entendre com funciona per dins, alla hi tens tota l'explicacio.</p>
 </div>
 <hr/>
-<p style="font-size:0.85rem;color:var(--muted);"><strong>Com citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guia rapida per a docents — Protocol per a sistemes educatius adaptatius bayesians</em> (versio 1.0). https://jjdeharo.github.io/recursos-adaptativos/</p>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>Com citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guia rapida per a docents — Protocol per a sistemes educatius adaptatius bayesians</em> (versio 1.1). https://jjdeharo.github.io/recursos-adaptativos/</p>
 </section>
 
 </div>

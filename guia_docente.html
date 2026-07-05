@@ -258,7 +258,7 @@
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Guía rápida para docentes</h1>
 <p>Cómo pedir a una IA un recurso adaptativo para tu clase, sin tecnicismos</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -267,7 +267,7 @@
 <li><a href="#s1">Cómo se usa (3 pasos)</a></li>
 <li><a href="#s2">Qué conviene decirle</a></li>
 <li><a href="#s3">Para qué puede servirte (con ejemplos)</a></li>
-<li><a href="#s4">La única aclaración que no puede faltar</a></li>
+<li><a href="#s4">Cómo describir los errores</a></li>
 <li><a href="#s5">Otras cosas que puedes pedir</a></li>
 <li><a href="#s6">Después de recibir el recurso</a></li>
 </ol>
@@ -305,18 +305,18 @@
 
 <section id="s3">
 <h2>3. Para qué puede servirte (con ejemplos)</h2>
-<p>Lo que más condiciona el recurso es <strong>para qué lo quieres</strong>. Estas son las finalidades habituales; cada una lleva un ejemplo de petición real, <strong>solo orientativo</strong>: no lo copies tal cual, escribe la tuya con tus palabras y tu contexto.</p>
+<p>Lo que más condiciona el recurso es <strong>para qué lo quieres</strong>. Estas son las finalidades habituales, con lo que la IA te dará en cada caso. <strong>No tienes que nombrar ni pedir un tipo de recurso concreto</strong>: descríbele tu objetivo con tus palabras y la IA elige el formato adecuado. Cada finalidad lleva además un ejemplo de petición real, <strong>solo orientativo</strong>: no lo copies tal cual, escribe la tuya con tu contexto.</p>
 <table>
 <thead>
-<tr><th>Si quieres...</th><th>Pide a la IA...</th></tr>
+<tr><th>Si quieres...</th><th>El recurso que te dará la IA</th></tr>
 </thead>
 <tbody>
-<tr><td>Saber el nivel del alumno</td><td>una prueba adaptativa de nivel</td></tr>
-<tr><td>Averiguar por qué falla</td><td>un diagnóstico de errores excluyentes</td></tr>
-<tr><td>Detectar varios fallos posibles</td><td>un diagnóstico de errores que pueden coexistir</td></tr>
-<tr><td>Practicar lo que peor lleva</td><td>un programa de práctica adaptativa</td></tr>
-<tr><td>Aprender por etapas</td><td>un itinerario guiado paso a paso</td></tr>
-<tr><td>Saber nivel y errores</td><td>una prueba combinada de nivel y diagnóstico</td></tr>
+<tr><td>Saber el nivel del alumno</td><td>una prueba que se adapta y estima su nivel</td></tr>
+<tr><td>Averiguar por qué falla</td><td>una prueba que distingue entre las posibles explicaciones del error</td></tr>
+<tr><td>Detectar varios fallos posibles</td><td>una prueba que revisa por separado cada fallo posible</td></tr>
+<tr><td>Practicar lo que peor lleva</td><td>un entrenador que insiste en lo que menos domina</td></tr>
+<tr><td>Aprender por etapas</td><td>un itinerario que avanza cuando domina cada etapa</td></tr>
+<tr><td>Saber nivel y errores</td><td>una prueba que da el nivel y además los fallos concretos</td></tr>
 </tbody>
 </table>
 
@@ -329,9 +329,9 @@
 
 <h3>Descubrir por qué falla</h3>
 <p>Cuando un alumno falla y sospechas que hay <strong>una razón concreta</strong> detrás (una idea equivocada, un método mal aprendido), la prueba puede diseñarse para distinguir cuál de las explicaciones posibles es la verdadera.</p>
-<p>Por ejemplo, en física de 2.º de ESO:</p>
+<p>Por ejemplo, en lengua de 2.º de ESO:</p>
 <blockquote>
-<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Mis alumnos de 2.º de ESO fallan en calor y temperatura y quiero averiguar por qué falla cada uno. Solo una de estas explicaciones puede ser cierta en cada alumno: o cree que el objeto más grande siempre está más caliente, o confunde calor con temperatura, o en realidad lo entiende bien. Al terminar quiero saber cuál es la explicación más probable para ese alumno y qué debería explicarle yo en cada caso.</p>
+<p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables. Mis alumnos de 2.º de ESO fallan al identificar el sujeto de una oración y quiero averiguar por qué falla cada uno. Solo una de estas explicaciones puede ser cierta en cada alumno: o cree que el sujeto es siempre lo primero que aparece en la oración, o lo identifica por el significado (de quién o de qué se habla) sin comprobar la concordancia con el verbo, o en realidad lo hace bien. Al terminar quiero saber cuál es la explicación más probable para ese alumno y qué debería explicarle yo en cada caso.</p>
 </blockquote>
 
 <h3>Detectar qué le falta</h3>
@@ -364,13 +364,10 @@
 </section>
 
 <section id="s4">
-<h2>4. La única aclaración que no puede faltar</h2>
-<p>Si tu recurso detecta errores, tienes que dejar claro en tu petición si:</p>
-<ul>
-<li><strong>solo una de las explicaciones puede ser cierta</strong> en cada alumno (compiten entre sí), o</li>
-<li><strong>puede tener varios fallos a la vez</strong> (se acumulan).</li>
-</ul>
-<p>Un ejemplo cotidiano: «llega tarde porque ha perdido el bus <strong>o</strong> porque se ha dormido» son explicaciones que compiten (solo una es la causa). En cambio, «no estudia <strong>y además</strong> se distrae en clase» pueden ser verdad las dos a la vez. Si no lo aclaras, la IA puede montar el recurso mal y el diagnóstico saldrá defectuoso.</p>
+<h2>4. Cómo describir los errores</h2>
+<p>Si tu recurso detecta errores, hay un matiz que conviene que quede reflejado: si en cada alumno <strong>solo una explicación puede ser cierta</strong> (compiten entre sí) o si <strong>puede tener varios fallos a la vez</strong> (se acumulan).</p>
+<p>No necesitas ningún término técnico ni una aclaración especial: normalmente la IA lo deduce de cómo cuentas el problema. Basta con describir los errores con naturalidad, como en los ejemplos anteriores («solo una de estas explicaciones puede ser cierta» frente a «puede tener varios a la vez»).</p>
+<p>Un ejemplo cotidiano: «llega tarde porque ha perdido el bus <strong>o</strong> porque se ha dormido» son explicaciones que compiten (solo una es la causa). En cambio, «no estudia <strong>y además</strong> se distrae en clase» pueden ser verdad las dos a la vez. Si dudas de que la IA lo haya entendido bien, díselo de forma explícita o compruébalo al probar el recurso.</p>
 </section>
 
 <section id="s5">
@@ -397,7 +394,7 @@
 <p>Esta guía forma parte del <a href="documentacion.html">Protocolo para sistemas educativos adaptativos bayesianos</a>. Si quieres entender cómo funciona por dentro, ahí está toda la explicación.</p>
 </div>
 <hr/>
-<p style="font-size:0.85rem;color:var(--muted);"><strong>Cómo citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guía rápida para docentes — Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.0). https://jjdeharo.github.io/recursos-adaptativos/</p>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>Cómo citar (APA 7):</strong> de Haro, J. J. (2026). <em>Guía rápida para docentes — Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.1). https://jjdeharo.github.io/recursos-adaptativos/</p>
 </section>
 
 </div>

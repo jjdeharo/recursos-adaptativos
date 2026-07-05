@@ -258,7 +258,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Quick Guide for Teachers</h1>
 <p>How to ask an AI for an adaptive resource for your class, without technical jargon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.0</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.1</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -267,7 +267,7 @@
 <li><a href="#s1">How to use it (3 steps)</a></li>
 <li><a href="#s2">What it helps to tell the AI</a></li>
 <li><a href="#s3">What you can use it for (with examples)</a></li>
-<li><a href="#s4">The one clarification that cannot be omitted</a></li>
+<li><a href="#s4">How to describe the errors</a></li>
 <li><a href="#s5">Other things you can ask for</a></li>
 <li><a href="#s6">After receiving the resource</a></li>
 </ol>
@@ -305,18 +305,18 @@
 
 <section id="s3">
 <h2>3. What you can use it for (with examples)</h2>
-<p>What most determines the resource is <strong>what you want it for</strong>. These are the usual purposes. Each one includes a real request as an example, <strong>for guidance only</strong>: do not copy it word for word; write your own version with your own context.</p>
+<p>What most determines the resource is <strong>what you want it for</strong>. These are the usual purposes, together with what the AI will give you in each case. <strong>You do not have to name or ask for a specific type of resource</strong>: describe your goal in your own words and the AI chooses the right format. Each purpose also includes a real request as an example, <strong>for guidance only</strong>: do not copy it word for word; write your own version with your own context.</p>
 <table>
 <thead>
-<tr><th>If you want to...</th><th>Ask the AI for...</th></tr>
+<tr><th>If you want to...</th><th>What the AI will give you</th></tr>
 </thead>
 <tbody>
-<tr><td>Know the student's level</td><td>an adaptive level test</td></tr>
-<tr><td>Find out why they fail</td><td>a diagnosis of mutually exclusive errors</td></tr>
-<tr><td>Detect several possible errors</td><td>a diagnosis of errors that can coexist</td></tr>
-<tr><td>Practise what they struggle with most</td><td>an adaptive practice program</td></tr>
-<tr><td>Learn in stages</td><td>a guided step-by-step pathway</td></tr>
-<tr><td>Know both level and errors</td><td>a combined level-and-diagnosis test</td></tr>
+<tr><td>Know the student's level</td><td>a test that adapts and estimates their level</td></tr>
+<tr><td>Find out why they fail</td><td>a test that tells apart the possible explanations of the error</td></tr>
+<tr><td>Detect several possible errors</td><td>a test that checks each possible mistake separately</td></tr>
+<tr><td>Practise what they struggle with most</td><td>a trainer that insists on what they master least</td></tr>
+<tr><td>Learn in stages</td><td>a pathway that advances once each stage is mastered</td></tr>
+<tr><td>Know both level and errors</td><td>a test that gives the level and also the specific mistakes</td></tr>
 </tbody>
 </table>
 
@@ -329,9 +329,9 @@
 
 <h3>Find out why they fail</h3>
 <p>When a student fails and you suspect there is <strong>one specific reason</strong> behind it (a misconception, an incorrect method they learned), the test can be designed to distinguish which explanation is the right one.</p>
-<p>For example, in lower-secondary physics:</p>
+<p>For example, in a lower-secondary language class:</p>
 <blockquote>
-<p>Read the attached document and implement the resource following the relevant operational rules. My lower-secondary students struggle with heat and temperature, and I want to find out why each one fails. Only one of these explanations can be true for each student: either they think the bigger object is always hotter, or they confuse heat with temperature, or they actually understand it. At the end I want to know which explanation is most likely for that student and what I should explain in each case.</p>
+<p>Read the attached document and implement the resource following the relevant operational rules. My lower-secondary students struggle to identify the subject of a sentence, and I want to find out why each one fails. Only one of these explanations can be true for each student: either they think the subject is always whatever comes first in the sentence, or they identify it by meaning (who or what the sentence is about) without checking agreement with the verb, or they actually do it correctly. At the end I want to know which explanation is most likely for that student and what I should explain in each case.</p>
 </blockquote>
 
 <h3>Detect what they are missing</h3>
@@ -364,13 +364,10 @@
 </section>
 
 <section id="s4">
-<h2>4. The one clarification that cannot be omitted</h2>
-<p>If your resource detects errors, your request must make clear whether:</p>
-<ul>
-<li><strong>only one of the explanations can be true</strong> for each student (they compete with each other), or</li>
-<li><strong>the student can have several mistakes at the same time</strong> (they accumulate).</li>
-</ul>
-<p>An everyday example: "they are late because they missed the bus <strong>or</strong> because they overslept" are competing explanations (only one is the cause). By contrast, "they do not study <strong>and also</strong> get distracted in class" can both be true. If you do not clarify this, the AI may build the resource incorrectly and the diagnosis will be flawed.</p>
+<h2>4. How to describe the errors</h2>
+<p>If your resource detects errors, there is a nuance worth getting across: whether for each student <strong>only one explanation can be true</strong> (they compete with each other) or the student <strong>can have several mistakes at the same time</strong> (they accumulate).</p>
+<p>You do not need any technical term or a special clarification: the AI usually works this out from how you describe the problem. It is enough to describe the errors naturally, as in the earlier examples ("only one of these explanations can be true" versus "the student can have several at once").</p>
+<p>An everyday example: "they are late because they missed the bus <strong>or</strong> because they overslept" are competing explanations (only one is the cause). By contrast, "they do not study <strong>and also</strong> get distracted in class" can both be true. If you are unsure the AI has understood it correctly, tell it explicitly or check when you try the resource.</p>
 </section>
 
 <section id="s5">
@@ -397,7 +394,7 @@
 <p>This guide is part of the <a href="documentacion_en.html">Protocol for Bayesian adaptive educational systems</a>. If you want to understand how it works inside, the full explanation is there.</p>
 </div>
 <hr/>
-<p style="font-size:0.85rem;color:var(--muted);"><strong>How to cite (APA 7):</strong> de Haro, J. J. (2026). <em>Quick guide for teachers — Protocol for Bayesian adaptive educational systems</em> (version 1.0). https://jjdeharo.github.io/recursos-adaptativos/</p>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>How to cite (APA 7):</strong> de Haro, J. J. (2026). <em>Quick guide for teachers — Protocol for Bayesian adaptive educational systems</em> (version 1.1). https://jjdeharo.github.io/recursos-adaptativos/</p>
 </section>
 
 </div>
