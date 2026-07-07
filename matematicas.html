@@ -214,7 +214,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.6</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.7</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -364,6 +364,23 @@
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>Un valor alto de \(a\) produce una curva más escarpada: la pregunta discrimina mejor entre alumnos cerca de su dificultad, pero aporta poca información a alumnos claramente por encima o por debajo. Un valor bajo produce una curva más suave: la pregunta es útil en un rango más amplio de niveles, pero discrimina menos.</p>
 <p>Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, <strong>\(a = 1.5\) es un punto de partida razonable</strong>.</p>
+<p><strong>Discriminación efectiva y mezcla de formatos.</strong> La pendiente máxima depende del producto \(a\,(1 - c_q)\), no de \(a\) por separado. Conviene por eso distinguir la <strong>discriminación efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —la que realmente gobierna cuánto separa la pregunta entre niveles— de la discriminación nominal \(a\). Cuando todas las preguntas comparten el mismo número de opciones, y por tanto el mismo \(c_q\), ambas son proporcionales y basta fijar \(a\). Pero si el banco mezcla formatos con distinto \(c_q\) (por ejemplo, verdadero/falso con \(c_q = 0.5\) junto a ítems de 4 opciones con \(c_q = 0.25\)), mantener \(a\) constante hace que la pendiente varíe <em>solo por el formato</em>: una pregunta de verdadero/falso bien construida discriminaría la mitad que una abierta equivalente, un sesgo puramente mecánico y no didáctico.</p>
+<p>Para evitarlo se fija la discriminación efectiva objetivo \(a_{\text{ef}}\) y se despeja la nominal:</p>
+<div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
+<p>Así cada pregunta conserva la misma pendiente en su punto de inflexión con independencia del número de opciones. Tomando \(a_{\text{ef}} = 1.25\) como objetivo común:</p>
+<table>
+<thead>
+<tr><th>Formato</th><th>\(c_q\)</th><th>\(a = a_{\text{ef}} / (1 - c_q)\)</th><th>Pendiente efectiva \(a_{\text{ef}}\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Abierta (sin azar)</td><td>0</td><td>1.25</td><td>1.25</td></tr>
+<tr><td>5 opciones</td><td>0.20</td><td>1.5625</td><td>1.25</td></tr>
+<tr><td>4 opciones</td><td>0.25</td><td>≈1.667</td><td>1.25</td></tr>
+<tr><td>3 opciones</td><td>1/3</td><td>1.875</td><td>1.25</td></tr>
+<tr><td>Verdadero/falso</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
+</tbody>
+</table>
+<p>De este modo \(a\) no se fija de forma arbitraria: se calcula a partir de una discriminación efectiva objetivo y del pseudoazar de cada pregunta. Conviene aplicar esta regla <strong>siempre</strong>, no solo cuando un mismo test mezcla formatos. Dos preguntas —o dos recursos distintos— con el mismo \(a\) nominal pero distinto número de opciones tienen en realidad discriminaciones efectivas diferentes y no son comparables: con \(a = 1.5\), una pregunta de 3 opciones (\(c_q = 1/3\)) rinde \(a_{\text{ef}} = 1.0\), mientras que una de 4 (\(c_q = 1/4\)) rinde \(a_{\text{ef}} = 1.125\). Fijar \(a_{\text{ef}}\) y derivar \(a\) en cada caso las iguala. Como objetivo se recomienda \(a_{\text{ef}} = 1.25\): dado que \(c_q \leq 0.5\) en cualquier ítem de dos o más opciones, la \(a\) nominal derivada nunca supera \(2.5\) —el caso extremo, verdadero/falso, da exactamente \(a = 2.5\)— y se mantiene así dentro del rango habitual en psicometría (0.5–2.5). Un objetivo mayor lo desbordaría: \(a_{\text{ef}} = 1.5\) daría \(a = 3.0\) en verdadero/falso. Los ejemplos numéricos de este documento usan \(a = 1.5\) directamente con fines ilustrativos.</p>
 <h3>4.5. La probabilidad de fallo</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>Esta es la verosimilitud que entra en la actualización bayesiana cuando el alumno falla.</p>
@@ -794,7 +811,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
 <p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

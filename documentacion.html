@@ -289,7 +289,7 @@
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Protocolo para sistemas educativos adaptativos bayesianos</h1>
 <p>Guía técnica para implementar evaluación adaptativa con inferencia bayesiana y entropía de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.11</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.12</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -436,6 +436,7 @@
 </ul>
 <p>Esta fórmula no sustituye a Bayes. Solo genera las verosimilitudes que Bayes necesita.</p>
 <p>El parámetro \(a\) controla la pendiente de la curva logística. Un valor alto hace que la función discrimine más entre hipótesis próximas; un valor bajo produce transiciones más suaves. Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, <strong>un valor de 1.0 a 1.5 es un punto de partida razonable</strong>; 1.5 es una buena elección por defecto.</p>
+<p>Ahora bien, cuánto separa realmente una pregunta entre niveles no depende solo de \(a\), sino del producto \(a\,(1-c_q)\): el suelo de azar «aplana» la parte alta de la curva. Por eso conviene fijar una discriminación efectiva objetivo \(a_{\text{ef}}\) (por defecto 1.25, elegido para que la \(a\) derivada no supere 2.5 ni siquiera en verdadero/falso, donde \(c_q = 0.5\)) y calcular \(a\) en cada pregunta como \(a = a_{\text{ef}} / (1 - c_q)\). Esto no es solo para pruebas que mezclan formatos: conviene aplicarlo <strong>siempre</strong>, porque garantiza que preguntas con distinto número de opciones —e incluso recursos distintos entre sí— tengan la misma capacidad real de discriminar. Con \(a\) fijo, una pregunta de 3 opciones (\(c_q = 1/3\)) discriminaría menos que una de 4 (\(c_q = 1/4\)) aunque ambas usaran \(a = 1.5\). En <a href="matematicas.html#s4">la formulación matemática (§4.4)</a> se detalla esta relación.</p>
 <h3>5.6. Entropía de Shannon</h3>
 <p>La incertidumbre del sistema se mide mediante:</p>
 <div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
@@ -770,7 +771,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Evaluación formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprendizaje para el dominio; base de los mecanismos de refuerzo y recuperación.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.11). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.12). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
 <p class="callout">
 El desarrollo formal de los mecanismos descritos en este protocolo —inferencia bayesiana, modelo IRT, entropía de Shannon y selección adaptativa— se encuentra en el documento complementario <a href="matematicas.html">Fundamentos matemáticos</a>, que incluye fórmulas, demostraciones y un ejemplo numérico completo.
 </p>

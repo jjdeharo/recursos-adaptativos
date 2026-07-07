@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.8**
+**Versión 1.9**
 
 ## Propósito
 
@@ -82,9 +82,14 @@ Esto debe hacerse después de cada interacción relevante.
 `P(acierto | H_i, q) = c_q + (1 - c_q) / (1 + exp(-a * (theta_i - b_q)))`
 
 - Usa por defecto:
-  - `a = 1.5`
+  - `a_ef = 1.25` (discriminación efectiva objetivo)
+  - `a = a_ef / (1 - c_q)`
   - `c_q = 1 / m_q` si hay azar
   - `c_q = 0` si no lo hay
+- No fijes `a` directamente: fija la discriminación efectiva objetivo `a_ef = 1.25` y calcula `a` por pregunta con `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
+  - Hazlo **siempre**, aunque todas las preguntas tengan el mismo número de opciones. Lo que importa es la discriminación efectiva `a * (1 - c_q)`, no `a`. Un `a` fijo con distintos `c_q` produce discriminaciones reales distintas y no comparables (por ejemplo, `a=1.5` fijo da `a_ef=1.0` con 3 opciones pero `a_ef=1.125` con 4).
+  - `a_ef = 1.25` garantiza que `a` se mantenga dentro del rango habitual en psicometría (0.5–2.5) para cualquier formato de 2 o más opciones: el caso extremo, verdadero/falso (`c_q=0.5`), da exactamente `a = 2.5`.
+  - Valores que debes obtener: abierta (`c_q=0`) → `a=1.25`; 5 opciones (`c_q=0.20`) → `a=1.5625`; 4 opciones (`c_q=0.25`) → `a≈1.667`; 3 opciones (`c_q=1/3`) → `a=1.875`; verdadero/falso (`c_q=0.5`) → `a=2.5`.
 - Si el alumno falla:
 
 `P(fallo | H_i, q) = 1 - P(acierto | H_i, q)`
@@ -303,7 +308,7 @@ Si dos hipótesis terminan con probabilidades próximas, muestra la distribució
 Si el docente no especifica parámetros:
 
 - `n = 3` hipótesis o niveles;
-- `a = 1.5`;
+- discriminación efectiva objetivo `a_ef = 1.25`; calcula siempre `a = 1.25 / (1 - c_q)` por pregunta (con `c_q = 0` da `a = 1.25`; máximo `a = 2.5` en verdadero/falso);
 - `p_min = 0.80`;
 - mínimo de preguntas: entre `4` y `6`;
 - mínimo de diagnóstico por categoría en práctica adaptativa: `2` intentos;

@@ -36,7 +36,7 @@ La calidad del recurso no depende solo del algoritmo. También depende de cómo 
 Los fundamentos matemáticos detallados del sistema están disponibles en [`matematicas.html`](https://jjdeharo.github.io/recursos-adaptativos/matematicas.html) e incluyen:
 
 - Derivación completa de la regla de Bayes aplicada al estado del alumno
-- Modelo IRT 3PL con análisis del parámetro de discriminación y la curva característica del ítem
+- Modelo IRT 3PL con análisis del parámetro de discriminación (incluida la discriminación efectiva $a\,(1-c_q)$ para igualar formatos con distinto azar) y la curva característica del ítem
 - Entropía de Shannon: propiedades y ejemplos numéricos
 - Ganancia esperada de información: desarrollo paso a paso y conexión con la información mutua
 - Derivación del umbral de parada $H_{\text{stop}}$

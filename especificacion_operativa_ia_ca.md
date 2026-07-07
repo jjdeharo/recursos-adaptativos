@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.8**
+**Versió 1.9**
 
 ## Propòsit
 
@@ -81,9 +81,14 @@ Això s'ha de fer després de cada interacció rellevant.
 `P(encert | H_i, q) = c_q + (1 - c_q) / (1 + exp(-a * (theta_i - b_q)))`
 
 - Utilitza per defecte:
-  - `a = 1.5`
+  - `a_ef = 1.25` (discriminació efectiva objectiu)
+  - `a = a_ef / (1 - c_q)`
   - `c_q = 1 / m_q` si hi ha atzar
   - `c_q = 0` si no n'hi ha
+- No fixis `a` directament: fixa la discriminació efectiva objectiu `a_ef = 1.25` i calcula `a` per pregunta amb `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
+  - Fes-ho **sempre**, encara que totes les preguntes tinguin el mateix nombre d'opcions. El que importa és la discriminació efectiva `a * (1 - c_q)`, no `a`. Un `a` fix amb `c_q` diferents produeix discriminacions reals diferents i no comparables (per exemple, `a=1.5` fix dona `a_ef=1.0` amb 3 opcions però `a_ef=1.125` amb 4).
+  - `a_ef = 1.25` garanteix que `a` es mantingui dins del rang habitual en psicometria (0.5–2.5) per a qualsevol format de 2 o més opcions: el cas extrem, vertader/fals (`c_q=0.5`), dona exactament `a = 2.5`.
+  - Valors que has d'obtenir: oberta (`c_q=0`) → `a=1.25`; 5 opcions (`c_q=0.20`) → `a=1.5625`; 4 opcions (`c_q=0.25`) → `a≈1.667`; 3 opcions (`c_q=1/3`) → `a=1.875`; vertader/fals (`c_q=0.5`) → `a=2.5`.
 - Si l'alumne falla:
 
 `P(error | H_i, q) = 1 - P(encert | H_i, q)`
@@ -302,7 +307,7 @@ Si dues hipòtesis acaben amb probabilitats properes, mostra la distribució pos
 Si el docent no especifica paràmetres:
 
 - `n = 3` hipòtesis o nivells;
-- `a = 1.5`;
+- discriminació efectiva objectiu `a_ef = 1.25`; calcula sempre `a = 1.25 / (1 - c_q)` per pregunta (amb `c_q = 0` dona `a = 1.25`; màxim `a = 2.5` en vertader/fals);
 - `p_min = 0.80`;
 - mínim de preguntes: entre `4` i `6`;
 - mínim de diagnòstic per categoria en pràctica adaptativa: `2` intents;

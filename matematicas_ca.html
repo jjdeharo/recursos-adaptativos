@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.6</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.7</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -362,6 +362,23 @@
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>Un valor alt de \(a\) produeix una corba més escarpada: la pregunta discrimina millor entre alumnes a prop de la dificultat, però aporta poca informació a alumnes clarament per sobre o per sota. Un valor baix produeix una corba més suau: la pregunta és útil en un rang més ampli de nivells, però discrimina menys.</p>
 <p>Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, <strong>\(a = 1.5\) és un punt de partida raonable</strong>.</p>
+<p><strong>Discriminació efectiva i barreja de formats.</strong> El pendent màxim depèn del producte \(a\,(1 - c_q)\), no de \(a\) per separat. Convé per això distingir la <strong>discriminació efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —la que realment governa quant separa la pregunta entre nivells— de la discriminació nominal \(a\). Quan totes les preguntes comparteixen el mateix nombre d'opcions, i per tant el mateix \(c_q\), totes dues són proporcionals i n'hi ha prou de fixar \(a\). Però si el banc barreja formats amb \(c_q\) diferent (per exemple, vertader/fals amb \(c_q = 0.5\) al costat d'ítems de 4 opcions amb \(c_q = 0.25\)), mantenir \(a\) constant fa que el pendent variï <em>només pel format</em>: una pregunta de vertader/fals ben construïda discriminaria la meitat que una oberta equivalent, un biaix purament mecànic i sense sentit didàctic.</p>
+<p>Per evitar-ho es fixa la discriminació efectiva objectiu \(a_{\text{ef}}\) i s'aïlla la nominal:</p>
+<div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
+<p>Així cada pregunta conserva el mateix pendent en el seu punt d'inflexió amb independència del nombre d'opcions. Prenent \(a_{\text{ef}} = 1.25\) com a objectiu comú:</p>
+<table>
+<thead>
+<tr><th>Format</th><th>\(c_q\)</th><th>\(a = a_{\text{ef}} / (1 - c_q)\)</th><th>Pendent efectiu \(a_{\text{ef}}\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Oberta (sense atzar)</td><td>0</td><td>1.25</td><td>1.25</td></tr>
+<tr><td>5 opcions</td><td>0.20</td><td>1.5625</td><td>1.25</td></tr>
+<tr><td>4 opcions</td><td>0.25</td><td>≈1.667</td><td>1.25</td></tr>
+<tr><td>3 opcions</td><td>1/3</td><td>1.875</td><td>1.25</td></tr>
+<tr><td>Vertader/fals</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
+</tbody>
+</table>
+<p>D'aquesta manera \(a\) no es fixa de manera arbitrària: es calcula a partir d'una discriminació efectiva objectiu i del pseudoatzar de cada pregunta. Convé aplicar aquesta regla <strong>sempre</strong>, no només quan un mateix test barreja formats. Dues preguntes —o dos recursos diferents— amb el mateix \(a\) nominal però diferent nombre d'opcions tenen en realitat discriminacions efectives diferents i no són comparables: amb \(a = 1.5\), una pregunta de 3 opcions (\(c_q = 1/3\)) rendeix \(a_{\text{ef}} = 1.0\), mentre que una de 4 (\(c_q = 1/4\)) rendeix \(a_{\text{ef}} = 1.125\). Fixar \(a_{\text{ef}}\) i derivar \(a\) en cada cas les iguala. Com a objectiu es recomana \(a_{\text{ef}} = 1.25\): atès que \(c_q \leq 0.5\) en qualsevol ítem de dues o més opcions, la \(a\) nominal derivada mai no supera \(2.5\) —el cas extrem, vertader/fals, dona exactament \(a = 2.5\)— i es manté així dins del rang habitual en psicometria (0.5–2.5). Un objectiu més gran el desbordaria: \(a_{\text{ef}} = 1.5\) donaria \(a = 3.0\) en vertader/fals. Els exemples numèrics d'aquest document fan servir \(a = 1.5\) directament amb finalitats il·lustratives.</p>
 <h3>4.5. La probabilitat de fallada</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>Aquesta és la versemblança que entra a l'actualització bayesiana quan l'alumne falla.</p>
@@ -792,7 +809,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

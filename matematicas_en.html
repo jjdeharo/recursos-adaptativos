@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.6</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.7</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -362,6 +362,23 @@
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>A high value of \(a\) produces a steeper curve: the question discriminates better between students close to its difficulty, but provides little information to students clearly above or below it. A lower value produces a smoother curve: the question is useful over a wider range of levels, but is less discriminating.</p>
 <p>The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, <strong>\(a = 1.5\) is a reasonable starting point</strong>.</p>
+<p><strong>Effective discrimination and mixed formats.</strong> The maximum slope depends on the product \(a\,(1 - c_q)\), not on \(a\) alone. It is therefore useful to distinguish the <strong>effective discrimination</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —which actually governs how much the question separates between levels— from the nominal discrimination \(a\). When all questions share the same number of options, and therefore the same \(c_q\), both are proportional and it is enough to fix \(a\). But if the bank mixes formats with different \(c_q\) (for example, true/false with \(c_q = 0.5\) alongside 4-option items with \(c_q = 0.25\)), keeping \(a\) constant makes the slope vary <em>by format alone</em>: a well-constructed true/false question would discriminate half as much as an equivalent open question, a purely mechanical bias with no pedagogical meaning.</p>
+<p>To avoid this, fix the target effective discrimination \(a_{\text{ef}}\) and solve for the nominal one:</p>
+<div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
+<p>This way each question keeps the same slope at its inflection point regardless of the number of options. Taking \(a_{\text{ef}} = 1.25\) as the common target:</p>
+<table>
+<thead>
+<tr><th>Format</th><th>\(c_q\)</th><th>\(a = a_{\text{ef}} / (1 - c_q)\)</th><th>Effective slope \(a_{\text{ef}}\)</th></tr>
+</thead>
+<tbody>
+<tr><td>Open (no guessing)</td><td>0</td><td>1.25</td><td>1.25</td></tr>
+<tr><td>5 options</td><td>0.20</td><td>1.5625</td><td>1.25</td></tr>
+<tr><td>4 options</td><td>0.25</td><td>≈1.667</td><td>1.25</td></tr>
+<tr><td>3 options</td><td>1/3</td><td>1.875</td><td>1.25</td></tr>
+<tr><td>True/false</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
+</tbody>
+</table>
+<p>In this way \(a\) is not set arbitrarily: it is computed from a target effective discrimination and the pseudo-guessing of each question. This rule should be applied <strong>always</strong>, not only when a single test mixes formats. Two questions —or two different resources— with the same nominal \(a\) but a different number of options actually have different effective discriminations and are not comparable: with \(a = 1.5\), a 3-option question (\(c_q = 1/3\)) yields \(a_{\text{ef}} = 1.0\), while a 4-option one (\(c_q = 1/4\)) yields \(a_{\text{ef}} = 1.125\). Fixing \(a_{\text{ef}}\) and deriving \(a\) in each case makes them equal. The recommended target is \(a_{\text{ef}} = 1.25\): since \(c_q \leq 0.5\) for any item with two or more options, the derived nominal \(a\) never exceeds \(2.5\) —the extreme case, true/false, gives exactly \(a = 2.5\)— and thus stays within the usual psychometric range (0.5–2.5). A larger target would overshoot it: \(a_{\text{ef}} = 1.5\) would give \(a = 3.0\) for true/false. The numerical examples in this document use \(a = 1.5\) directly for illustration.</p>
 <h3>4.5. The probability of failure</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>This is the likelihood that enters Bayesian updating when the learner answers incorrectly.</p>
@@ -792,7 +809,7 @@
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.6). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
 <p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

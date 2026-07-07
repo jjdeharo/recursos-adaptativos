@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.8**
+**Version 1.9**
 
 ## Purpose
 
@@ -81,9 +81,14 @@ This must be done after each relevant interaction.
 `P(correct | H_i, q) = c_q + (1 - c_q) / (1 + exp(-a * (theta_i - b_q)))`
 
 - Use by default:
-  - `a = 1.5`
+  - `a_ef = 1.25` (target effective discrimination)
+  - `a = a_ef / (1 - c_q)`
   - `c_q = 1 / m_q` if guessing is possible
   - `c_q = 0` if it is not
+- Do not set `a` directly: fix the target effective discrimination `a_ef = 1.25` and compute `a` per question as `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
+  - Do this **always**, even if all questions have the same number of options. What matters is the effective discrimination `a * (1 - c_q)`, not `a`. A fixed `a` with different `c_q` produces different, non-comparable real discriminations (for example, a fixed `a=1.5` gives `a_ef=1.0` with 3 options but `a_ef=1.125` with 4).
+  - `a_ef = 1.25` guarantees that `a` stays within the usual psychometric range (0.5–2.5) for any format with 2 or more options: the extreme case, true/false (`c_q=0.5`), gives exactly `a = 2.5`.
+  - Values you should obtain: open (`c_q=0`) → `a=1.25`; 5 options (`c_q=0.20`) → `a=1.5625`; 4 options (`c_q=0.25`) → `a≈1.667`; 3 options (`c_q=1/3`) → `a=1.875`; true/false (`c_q=0.5`) → `a=2.5`.
 - If the learner fails:
 
 `P(incorrect | H_i, q) = 1 - P(correct | H_i, q)`
@@ -302,7 +307,7 @@ If two hypotheses end with close probabilities, show the full posterior distribu
 If the teacher does not specify parameters:
 
 - `n = 3` hypotheses or levels;
-- `a = 1.5`;
+- target effective discrimination `a_ef = 1.25`; always compute `a = 1.25 / (1 - c_q)` per question (with `c_q = 0` it gives `a = 1.25`; maximum `a = 2.5` for true/false);
 - `p_min = 0.80`;
 - minimum number of questions: between `4` and `6`;
 - minimum diagnostic sample per category in adaptive practice: `2` attempts;

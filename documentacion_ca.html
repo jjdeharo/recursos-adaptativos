@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.11</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.12</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -425,6 +425,7 @@
 </ul>
 <p>Aquesta fórmula no substitueix Bayes. Només genera les versemblances que Bayes necessita.</p>
 <p>El paràmetre \(a\) controla el pendent de la corba logística. Un valor alt fa que la funció discrimini més entre hipòtesis properes; un valor baix produeix transicions més suaus. Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, <strong>un valor de 1.0 a 1.5 és un punt de partida raonable</strong>; 1.5 és una bona elecció per defecte.</p>
+<p>Ara bé, quant separa realment una pregunta entre nivells no depèn només de \(a\), sinó del producte \(a\,(1-c_q)\): el sòl d'atzar «aplana» la part alta de la corba. Per això convé fixar una discriminació efectiva objectiu \(a_{\text{ef}}\) (per defecte 1.25, triat perquè la \(a\) derivada no superi 2.5 ni tan sols en vertader/fals, on \(c_q = 0.5\)) i calcular \(a\) en cada pregunta com \(a = a_{\text{ef}} / (1 - c_q)\). Això no és només per a proves que barregen formats: convé aplicar-ho <strong>sempre</strong>, perquè garanteix que preguntes amb diferent nombre d'opcions —i fins i tot recursos diferents entre si— tinguin la mateixa capacitat real de discriminar. Amb \(a\) fix, una pregunta de 3 opcions (\(c_q = 1/3\)) discriminaria menys que una de 4 (\(c_q = 1/4\)) encara que totes dues fessin servir \(a = 1.5\). A <a href="matematicas_ca.html#s4">la formulació matemàtica (§4.4)</a> es detalla aquesta relació.</p>
 <h3>5.6. Entropia de Shannon</h3>
 <p>La incertesa del sistema es mesura mitjançant:</p>
 <div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
@@ -759,7 +760,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Avaluació formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprenentatge per al domini; base dels mecanismes de reforç i recuperació.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.11). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.12). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
 <p class="callout">
 El desenvolupament formal dels mecanismes descrits en aquest protocol —inferència bayesiana, model IRT, entropia de Shannon i selecció adaptativa— es troba al document complementari <a href="matematicas_ca.html">Fonaments matemàtics</a>, que inclou fórmules, demostracions i un exemple numèric complet.
 </p>
