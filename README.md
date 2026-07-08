@@ -21,7 +21,7 @@ Para una introducción divulgativa al método, antes de entrar en la documentaci
 2. Adjúntalo a cualquier modelo de IA (Claude, GPT-4, Gemini…)
 3. Escribe el prompt:
 
-   > Lee el documento adjunto e implementa el recurso siguiendo exactamente sus reglas operativas.
+   > Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables al tipo de recurso solicitado.
 
 El modelo pedirá al docente el tema, el curso, el tipo de recurso y la finalidad antes de diseñar nada. El propio documento incluye una plantilla para anticipar esa información.
 

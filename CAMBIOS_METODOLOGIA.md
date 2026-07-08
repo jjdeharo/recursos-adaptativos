@@ -2,6 +2,94 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-08 (noche) — Coherencia editorial menor (prompt, ejemplo §9, nota de 2 intentos)
+
+- **Prompt de entrada unificado.** README decía «siguiendo exactamente sus reglas operativas» y la guía docente «…aplicables»; ambos se alinean con la forma canónica de la especificación: «…siguiendo las reglas operativas aplicables al tipo de recurso solicitado» (README + 6 ejemplos de la guía docente, ES/CA/EN).
+- **Ejemplo fronterizo de §9 aclarado.** «refuerzo previo / práctica guiada / consolidación / ampliación» se presentaba como hipótesis no jerárquicas; se añade que también pueden verse como ordinales (grados de apoyo) y cuándo tratarlas de una u otra forma (protocolo §9, ES/CA/EN).
+- **Nota reforzada sobre los 2 intentos.** Se explicita que `2` es el mínimo defendible, no cómodo: con olvido activo la marginal por categoría es volátil (especificación, fase diagnóstica, ES/CA/EN).
+- Origen: hallazgo 2.6 del `INFORME_REVISION.md` (editorial menor; el punto de los 2 intentos ya estaba advertido y solo se reforzó).
+
+**Con esto quedan atendidos los 11 hallazgos del `INFORME_REVISION.md` (1.1–1.4, 2.1–2.6, 3.2).**
+
+## 2026-07-08 (noche) — Referencias a modelos estándar (politómicos y de diagnóstico cognitivo)
+
+- **Añadidas 4 referencias** a los fundamentos §12 (ES/CA/EN): Samejima (1969, GRM) y Masters (1982, PCM) para crédito parcial; Junker & Sijtsma (2001) y de la Torre (2009) para diagnóstico cognitivo DINA/DINO.
+- **§4.8:** se explicita que la verosimilitud geométrica es una aproximación más simple frente a los modelos politómicos canónicos (GRM/PCM), y por qué no se adoptan (requieren estimar parámetros por categoría con datos que no hay).
+- **§10.4:** se explicita que la distribución sobre perfiles `2^k` es formalmente un modelo de diagnóstico cognitivo de clases latentes, y que la variante «error → distractor» es la lógica DINA/DINO; esa literatura contiene las técnicas de calibración que §10.4 deja fuera de alcance.
+- El protocolo (§22) ya delega la bibliografía completa a los fundamentos, así que no requería cambio.
+- Origen: hallazgo 2.5 del `INFORME_REVISION.md` (verificado: ninguna de las 4 referencias aparecía en ningún documento; no son errores, son huecos que debilitan la revisabilidad; gravedad baja/académica).
+
+## 2026-07-08 (noche) — Advertencia sobre el exponente `J` del crédito parcial
+
+- **Añadida la advertencia simétrica sobre `L ∝ p^{sJ}(1−p)^{(1−s)J}`.** Esa forma equivale a tratar la respuesta como `J` ensayos de Bernoulli independientes con la misma `p_i` del ítem completo (el coeficiente binomial se cancela en la normalización), así que solo es razonable si los componentes son de dificultad parecida. Si difieren claramente (lo habitual en tareas por pasos, con componentes saturados que discriminan poco), sobrecuenta la evidencia frente al modelo por componentes; en caso de duda, usar `J` menor que el número real de componentes (más conservador).
+- El texto ya recomendaba multiplicar por componente cuando se conocen; ahora se explicita también el supuesto que hace válido el atajo con `J`.
+- Editado: especificación «Respuestas con crédito parcial» y fundamentos §4.8 (ES/CA/EN).
+- Origen: hallazgo 2.4 del `INFORME_REVISION.md` (objeción verificada: matemáticamente correcta —es el núcleo binomial— y la advertencia era un hueco real; gravedad baja).
+
+## 2026-07-08 (noche) — Mejoras pedagógicas: etiquetado, azar en vivo, accesibilidad y privacidad
+
+Añadida guía operativa (antes ausente) en la especificación para cinco puntos pedagógicos:
+
+- **Efecto etiquetado (nivel):** en la vista del alumno, la recomendación y el siguiente paso deben tener más peso visual que la etiqueta de nivel; formular en términos de tarea, no de rasgo; la etiqueta de nivel con probabilidad se reserva para la vista docente.
+- **Comunicación de errores diagnosticados:** presentarlos al alumno como hipótesis a comprobar juntos, no como sentencia (sobre todo en primaria).
+- **Azar/ansiedad durante la sesión:** person-fit y rachas inverosímiles también en vivo, no solo al cierre; el recurso debería poder pausar y reconducir con tacto en lugar de seguir consumiendo banco.
+- **Accesibilidad mínima por defecto** (aunque no se pida): contraste, navegación por teclado, no depender solo del color, texto redimensionable, sin límite de tiempo por defecto.
+- **Privacidad por defecto:** no sacar datos del alumno del navegador (el recurso estático sin backend ya lo garantiza); si se pide persistencia, advertir sobre protección de datos de menores y preferir exportación local.
+- Editado: especificación «Resultado final», «Validación y fiabilidad» y «Restricciones de implementación» (ES/CA/EN).
+- Origen: hallazgo 3.2 del `INFORME_REVISION.md` (los cinco puntos verificados como huecos reales: la especificación no decía nada de accesibilidad ni privacidad, y el person-fit solo se aplicaba «al cerrar»).
+
+## 2026-07-08 (noche) — Alcance de las evidencias y efecto de las pistas
+
+- **Acotado el alcance de las evidencias en el protocolo §2.1.** Antes prometía que el sistema interpreta «respuestas, tiempos, elecciones, ayudas usadas…» como evidencias, pero ningún documento define verosimilitud para tiempos ni ayudas. Ahora se aclara que la maquinaria modela acierto/fallo, crédito parcial (`s`) y opción elegida; tiempos y uso de ayudas se observan y pueden informar el resultado, pero no tienen verosimilitud definida (extensiones fuera de alcance).
+- **Definido el efecto de las pistas dentro de un ítem** (antes §15 y «Recuperación y refuerzo» recomendaban dar pistas sin decir cómo afectan a la evidencia): un acierto tras una pista no es acierto pleno; se registra como crédito parcial con `s < 1`, tanto menor cuanto más determinante sea la pista, reutilizando la verosimilitud geométrica del crédito parcial (§4.8).
+- Editado: protocolo §2.1 y §15 (ES/CA/EN); especificación «Recuperación y refuerzo» (ES/CA/EN).
+- Origen: hallazgo 2.3 del `INFORME_REVISION.md` (objeción verificada: real en sus dos partes; «tiempo» solo aparecía como confound en §11 y «ayudas usadas» solo como campo del resultado).
+- **Traducción añadida (hueco detectado al aplicar 2.3, no del informe):** la subsección §2.1 «Dimensión epistemológica» del protocolo solo existía en ES; se ha traducido e insertado (con su entrada de índice y ancla `s2b`) en `documentacion_ca.html` y `documentacion_en.html`. Los tres documentos quedan con 23 secciones idénticas.
+
+## 2026-07-08 (noche) — El «factor 2» y la comparabilidad entre recursos dependen de `n`
+
+- **Acotada la afirmación de comparabilidad entre recursos.** El factor 2 (`θ_max = 2·b_max`) mantiene la *proporción* para todo `n`, pero el margen absoluto entre el nivel extremo y el ítem más difícil es `(n−1)/2`, que depende de `n`. Por tanto la probabilidad de que el nivel máximo acierte el ítem más difícil, `P = c + (1−c)·σ(a·(n−1)/2)`, no es constante: ≈ 0.65 (abierta) / 0.77 (4 opciones) con `n=2`, frente a ≈ 0.88–0.97 con `n≥3`. La comparabilidad de confianzas y velocidades de convergencia del invariante `a_ef·Δθ` solo es estricta **entre recursos con el mismo `n`**.
+- **Recomendación añadida:** con `n=2` (domina / no domina) los ítems extremos confirman débilmente; conviene compensar con más preguntas o definir la escala desde una probabilidad objetivo `P*` (fórmula ya presente en §8.2).
+- Editado: fundamentos §8.3 (matiz + tabla de `P` por `n`) (ES/CA/EN); especificación «Estado del alumno» (acotación del invariante) (ES/CA/EN); protocolo §8 (nota sobre `n=2`) (ES/CA/EN). Corregida la palabra «garantiza» → «mantiene la proporción» en §8.3.
+- Origen: hallazgo 1.4 del `INFORME_REVISION.md` (objeción verificada numéricamente: tabla de `P` reproducida exactamente).
+
+## 2026-07-08 (noche) — Coherencia: §11.1 y §10.4 dejan de presentar `a = 1.5` como defecto
+
+- **Fundamentos §11.1 (calibración inicial)** presentaba `a = 1.5` como «valor por defecto contrastado respaldado por la literatura», contradiciendo la regla v2.0 (fijar `a_ef = 1.25` y derivar `a = a_ef/(1-c_q)` por ítem, «siempre», §4.4) y el propio registro de cambios. Reescrito para mantener el respaldo bibliográfico pero dejando claro que el defecto operativo es `a_ef = 1.25` con `a` derivada, no `a = 1.5` fijo.
+- **Encontrada y corregida la misma cita desactualizada en §10.4** (calibración de la matriz nominal), que el informe no señalaba: `(a = 1,5, c_q ≈ 1/m_q)` → `(a_ef = 1,25 con la a derivada por ítem, c_q ≈ 1/m_q)`.
+- Las demás apariciones de `a = 1.5` en los fundamentos (§4.4, ejemplos numéricos de §4.8, §8.4, §9) son ilustrativas y §4.4 ya las declara como tales: se mantienen.
+- Editado solo en fundamentos (ES/CA/EN); protocolo y especificación no presentaban `a = 1.5` como defecto.
+- Origen: hallazgo 2.1 del `INFORME_REVISION.md` (objeción verificada como cierta y necesaria; incoherencia editorial real, gravedad media).
+
+## 2026-07-08 (noche) — Criterio de separación Δ_min en la especificación operativa
+
+- **Añadido el criterio de separación a la especificación operativa** (antes solo estaba en fundamentos §7.4 y protocolo §9/§17): `P(ganadora) − P(segunda) ≥ Δ_min`. Se deja de presentar la pareja `H ≤ H_stop` + `max(p_i) ≥ p_min` como el cierre «firme», porque es redundante cuando `H_stop` se deriva del mismo `p_min`.
+- **Corregida una imprecisión que arrastraban los propios fundamentos/protocolo:** la separación NO «añade exigencia» de forma incondicional. Como `P(segunda) ≤ 1 − P(ganadora)`, exigir `max(p_i) ≥ p_min` ya fuerza una separación `≥ 2·p_min − 1`. Con `p_min = 0.80` eso es `≥ 0.60`, de modo que un `Δ_min` de 0.3–0.4 (el valor que sugería el informe) sería igual de redundante. La separación solo añade algo si `Δ_min > 2·p_min − 1`.
+- **Encuadre corregido:** la separación es útil como **alternativa a un `p_min` alto**, no como añadido. Con muchas hipótesis, donde exigir `max ≥ 0.80` es poco práctico, se cierra con un `max` moderado (p. ej. `≥ 0.50`) **y** `Δ_min ≥ 0.3–0.4`. Con `n = 2`, separación y `p_min` son equivalentes (`sep = 2·max − 1`).
+- Editados: «Criterio de parada» de la especificación operativa (ES/CA/EN); protocolo §9 y §17 de la documentación (ES/CA/EN); fundamentos §7.4 (ES/CA/EN).
+- Origen: hallazgo 2.2 del `INFORME_REVISION.md` (verificada la objeción: correcta en el hueco de coherencia; se añadió el matiz de que Δ_min=0.3–0.4 con p_min=0.80 es inerte, que el informe no recogía).
+
+## 2026-07-08 (noche) — Techo de dominio en el caso ordinal y matiz del invariante
+
+- **Reformulado el invariante de comparabilidad.** `a_ef · Δtheta = 2.5` iguala la **pendiente máxima** de la ICC, no «la fuerza máxima de una actualización». La fuerza de la evidencia de un fallo la fija la razón de verosimilitudes entre hipótesis adyacentes, que en el lado del fallo tiende a `e^(a·Δtheta)` con la `a` **nominal** (`= a_ef/(1-c)`), no con `a_ef`: con `Δtheta = 2`, la LR de fallo es ≈ 12 (abierta), ≈ 28 (4 opciones) y ≈ 148 (verdadero/falso). La redacción anterior daba una garantía que el diseño no ofrece.
+- **Nuevo techo de dominio en el caso ordinal 3PL:** `P(acierto) ≤ 0.90–0.95` (`P(fallo) ≥ 0.05–0.10`) para toda hipótesis. Corrige una asimetría de la metodología: el caso nominal ya imponía «techo de dominio, nunca 1», pero el 3PL ordinal dejaba `P(acierto) → 1` en ítems fáciles, fuente de actualizaciones casi deterministas. El techo modela el descuido (*slip*), que el 3PL puro no contempla; con él, la LR de fallo en V/F fácil cae de ≈ 148 a ≈ 1 entre niveles altos.
+- Editados: «Estado del alumno» (invariante) y «Verosimilitudes» (techo) de la especificación operativa (ES/CA/EN); protocolo §4.4 de la documentación (ES/CA/EN); fundamentos §8.2 (matiz + techo, con referencia al techo nominal §10.5) (ES/CA/EN).
+- Origen: hallazgo 1.3 del `INFORME_REVISION.md`.
+
+## 2026-07-08 (noche) — Prior de factores de error no uniforme
+
+- **El prior uniforme deja de recomendarse para factores de error binarios.** Un uniforme sobre los `2^k` perfiles (o sobre `{presente, ausente}` de cada factor) equivale a asumir `P(error) = 0.5` a priori para cada error, lo que no es neutral: es una afirmación fuerte sobre la prevalencia y sesga las primeras preguntas hacia el falso positivo (errores inexistentes mostrados como «indeterminados» o «probables»). La regla del uniforme se mantiene para hipótesis de nivel.
+- **Nuevo valor por defecto para factores de error:** `P(error) ≈ 0.2–0.3`, que el recurso aplica automáticamente; el docente puede ajustar la prevalencia de su grupo si lo desea, pero no está obligado (coherente con el criterio de no forzar la intervención del docente).
+- Editados: «Estado del alumno» (matiz de la regla del uniforme) y «Verosimilitudes» (nuevo prior de factores) de la especificación operativa (ES/CA/EN); protocolo §5.1 de la documentación (ES/CA/EN).
+- Origen: hallazgo 1.2 del `INFORME_REVISION.md`.
+
+## 2026-07-08 (noche) — Criterio de superación de etapa
+
+- **Se abandona el umbral fijo de «60 % de aciertos» como mínimo de rendimiento por etapa.** Bajo selección adaptativa por máxima ganancia de información, la tasa de acierto de todos los alumnos tiende por diseño hacia `(1+c)/2` (≈ 50-62 % según el formato), de modo que un umbral fijo puede bloquear la promoción de alumnos que sí dominan la etapa y su efecto depende del formato de las preguntas.
+- **Nuevo criterio: rendimiento medido sobre evidencia no seleccionada por máxima información.** Se recomienda exigir el acierto de 1-2 ítems «de salida» de dificultad representativa elegidos sin criterio informativo (opción preferente), o comprobar la consistencia con el modelo mediante el ajuste de persona `l_z` (§11.7) aplicado como criterio de etapa.
+- Actualizados «Itinerarios por etapas» de la especificación operativa (ES/CA/EN) y el protocolo §13.3 de la documentación (ES/CA/EN). Corregido de paso el desliz «muy seguida» → «muy segura» en el protocolo §13.3.
+- Origen: hallazgo 1.1 del `INFORME_REVISION.md`.
+
 ## 2026-07-08 (tarde) — Escala θ fija
 
 - Versiones unificadas a `2.0` en los tres documentos (especificación operativa, protocolo y fundamentos matemáticos), en ES/CA/EN.

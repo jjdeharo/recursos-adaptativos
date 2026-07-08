@@ -48,7 +48,7 @@ Attach this document to the AI and use the following prompt:
 ## Learner State
 
 - Represent the learner's state as a probability distribution over `n` hypotheses.
-- If there is no reliable prior information, use a uniform distribution.
+- If there is no reliable prior information, use a uniform distribution. This rule holds for **level** hypotheses; not for binary **error factors**. A uniform prior over the `2^k` profiles (or over `{present, absent}` for each factor) amounts to claiming that each error has a 50 % prior probability of being present: it is not neutral, it is a strong claim about its prevalence, and it biases the first few questions toward false positives (errors the student does not have shown as "indeterminate" or "probable"). For error factors, start from a moderate informative prior; see "Likelihoods".
 - If the hypotheses are hierarchical, assign them ordered, centred `theta` values.
 - If the teacher does not set values, use a symmetric scale centred at 0.
 - The `theta` scale is fixed and depends only on the number of hypotheses, not on the question bank. With `n` hierarchical hypotheses, use values centred on `0` with intervals of `2`: `theta_i = 2 * (i - 1) - (n - 1)`, so that `theta` runs over `{-(n-1), ..., +(n-1)}` and `theta_max = n - 1`. Examples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -58,7 +58,8 @@ Attach this document to the AI and use the following prompt:
 - If the teacher gives numeric `b_q` values outside the interval, clamp them to the interval.
 - Never recompute `theta` from the extremes of the bank. A single atypically hard or easy question must not redefine the scale: if you stretch `theta` to accommodate it, you saturate the likelihoods of the rest of the bank (all probabilities pinned to `c_q` or to `1`) and the posterior makes overconfident jumps on a single answer.
 - If most of the bank's difficulties fell outside the interval, do not stretch the scale: review the definition of levels and difficulties with the teacher, because the design is inconsistent.
-- Comparability invariant: with `a_ef = 1.25` and intervals of `2` between adjacent hypotheses, the product `a_ef * Δtheta = 2.5` sets the maximum strength of an update, whatever `n` is (as `n` grows so does `theta_max`, but the spacing between adjacent hypotheses stays the same). Keep this invariant across resources so that confidences and convergence speeds remain comparable.
+- Comparability invariant: with `a_ef = 1.25` and intervals of `2` between adjacent hypotheses, the product `a_ef * Δtheta = 2.5` equalizes the **maximum slope** of the ICC across formats, whatever `n` is (as `n` grows so does `theta_max`, but the spacing between adjacent hypotheses stays the same). Keep this invariant across resources so that confidences and convergence speeds remain comparable. That comparability is strict only between resources with the same number of hypotheses `n`: with the fixed scale, the margin between the extreme level and the hardest item is `(n - 1) / 2`, so with `n = 2` (mastered / not mastered) the extreme items confirm weakly (the probability that the top level answers the hardest item correctly is ≈ 0.65 for open, ≈ 0.77 for 4 options) and it is advisable to compensate with more questions or to define the scale from a target probability `P*`.
+- The invariant equalizes the slope, **not the maximum strength of the evidence**. On a failure, the `(1 - c)` factor cancels in the ratio and the likelihood ratio between adjacent hypotheses tends to `e^(a * Δtheta)` with the **nominal** `a` (`= a_ef / (1 - c)`), not with `a_ef`. That is why a failure on an easy low-guessing item carries far more evidence than the same failure on an open question: with `Δtheta = 2`, the failure likelihood ratio is ≈ 12 for open (`c = 0`), ≈ 28 for 4 options (`c = 0.25`), and ≈ 148 for true/false (`c = 0.5`). To avoid these near-deterministic posterior jumps, apply the mastery ceiling of the ordinal case (see "Likelihoods").
 
 ## Bayesian Update
 
@@ -95,6 +96,7 @@ This must be done after each relevant interaction.
   - Do this **always**, even if all questions have the same number of options. This rule equalizes the ICC's maximum slope; it does not guarantee that every format provides the same expected information. A fixed `a` with different `c_q` produces different and non-comparable real slopes (for example, fixed `a=1.5` gives `a_ef=1.0` with 3 options but `a_ef=1.125` with 4). Information-gain selection will still favor the items that provide more evidence.
   - `a_ef = 1.25` guarantees that `a` stays within the usual psychometric range (0.5–2.5) for any format with 2 or more options: the extreme case, true/false (`c_q=0.5`), gives exactly `a = 2.5`.
   - Values you should obtain: open (`c_q=0`) → `a=1.25`; 5 options (`c_q=0.20`) → `a=1.5625`; 4 options (`c_q=0.25`) → `a≈1.667`; 3 options (`c_q=1/3`) → `a=1.875`; true/false (`c_q=0.5`) → `a=2.5`.
+- Apply a **mastery ceiling** in the ordinal case too: bound `P(success | H_i, q) <= 0.95` (equivalently, `P(failure) >= 0.05`) for every hypothesis, including the highest level on easy items. The pure 3PL lets `P(success) → 1` on easy low-guessing items, so a single failure drives the posterior almost deterministically (with `c = 0.5` the failure likelihood ratio between adjacent levels reaches ≈ 148, against ≈ 12 for open). The ceiling models slip, which the 3PL does not account for, and aligns the ordinal case with the nominal one, which already imposes `0.9`–`0.95`, never `1`. Use `0.90` to be more conservative.
 - If the learner fails:
 
 `P(incorrect | H_i, q) = 1 - P(correct | H_i, q)`
@@ -102,6 +104,7 @@ This must be done after each relevant interaction.
 - If the hypotheses are not hierarchical, distinguish two cases.
 - If they are **mutually exclusive alternatives** (for example, strategy A / strategy B / correct mastery), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
 - If the errors or needs **can coexist**, do not force them into a single nominal distribution. Model one dimension per factor (`longer-decimal`, `zero-ignoring`, etc.) or, equivalently, a distribution over **full profiles** (`2^k` combinations for `k` factors).
+- **Prior over error factors: not uniform.** Conceptual errors are usually a minority, so assign each factor a low prior probability of being present (by default `P(error) ≈ 0.2`–`0.3`) rather than the uniform `0.5`. A uniform prior here is not neutral: it assumes each student has each error with probability `0.5` and produces false positives in the first few questions. The resource applies this default automatically; the teacher may adjust their group's prevalence if they wish, but is not required to.
 - In that multifactorial case, each question should define how each profile responds. The minimum is a probability of success by profile; better still is an option-level distribution `P(R = r | profile, q)` so that the chosen distractor carries evidence, not only correct/incorrect.
 - If you start from simple factors, assign each value by asking: "if the student had this error, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
 - Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis or mastery profile around `0.9`–`0.95`, never `1`.
@@ -121,6 +124,7 @@ This must be done after each relevant interaction.
 - Use this `L(H_i)` in the Bayesian update instead of choosing between `P(correct)` and `P(incorrect)`. Normalisation and the rest of the process remain unchanged.
 - Edge cases: `s = 1` is equivalent to full credit; `s = 0` to full failure. An `s = 0.5` is not necessarily neutral: it favors the hypotheses for which the item predicts an intermediate score.
 - If the item has `J` approximately independent components and `s` is the weighted fraction of correct components, you can preserve the strength of the evidence with `L(H_i) = P(correct | H_i, q)^(sJ) * P(incorrect | H_i, q)^((1 - s)J)`.
+- Careful: the exponent `J` treats the response as `J` independent trials with the **same** probability `p_i` of the whole item, so it is only reasonable if the components are of **similar difficulty**. If they differ clearly in difficulty (the usual case in step-by-step tasks), this form **overcounts** the evidence relative to the per-component model; when in doubt, use a `J` smaller than the real number of components (more conservative evidence).
 - If you have separate evidence by component, prefer multiplying the component likelihoods instead of reducing everything to a single `s`.
 - Define how `s` is calculated in an explicit, self-correctable way: weighted sum of sub-criteria, fraction of correct steps, proximity to the numerical solution, etc. Weights must sum to `1`.
 - Do not treat a response that admits degrees as binary: diagnostic information is lost.
@@ -175,7 +179,7 @@ Select the candidate with the highest expected information gain when the main pu
 
 In adaptive practice or reinforcement resources with multiple categories, problem types, or concepts, use a two-phase selection:
 
-1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase. If there are many categories, this phase can consume the session (with `10` categories and `2` attempts that is already `20` questions): group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.
+1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase. Bear in mind that `2` is the defensible minimum, not a comfortable value: with active forgetting the per-category marginal is volatile, so raise the minimum sample if the bank allows. If there are many categories, this phase can consume the session (with `10` categories and `2` attempts that is already `20` questions): group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.
 2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is to combine information gain with difficulty appropriateness, penalising questions too far from the working zone.
 
 Do not use Shannon entropy as the sole permanent criterion when the main purpose is to practise or reinforce. Shannon indicates where there is the most diagnostic uncertainty; reinforcement must also attend — and preferably give priority — to what the learner has least mastered.
@@ -220,7 +224,13 @@ If using `p_min`, calculate the indicative threshold:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-After the minimum number of questions has been met, a firm diagnostic close should ideally verify both conditions: `H <= H_stop` and `max(p_i) >= p_min`. If the session closes due to the maximum, an exhausted bank, or low marginal utility without meeting them, present the result as provisional.
+After the minimum number of questions has been met, check the diagnostic's confidence. When `H_stop` is derived from the same `p_min`, the condition `max(p_i) >= p_min` already implies `H <= H_stop`: checking both is harmless but **redundant**, it adds no requirement. The control that does add something different is the **separation** from the second hypothesis:
+
+`P(winner) - P(second) >= Δ_min`
+
+However, the separation only adds a requirement if `Δ_min > 2 * p_min - 1`. With `p_min = 0.80`, requiring `max(p_i) >= p_min` already forces a separation `>= 0.60`, so a `Δ_min` of 0.3–0.4 would be as redundant as the entropy. That is why separation is useful mainly **as an alternative to a high `p_min`, not as an addition**: when there are many hypotheses and requiring `max(p_i) >= 0.80` is impractical, close with a moderate `max(p_i)` (for example `>= 0.50`) **and** `Δ_min >= 0.3–0.4`, which requires the winner to be clearly ahead of the second even if the remaining mass is spread out. With `n = 2`, separation and `p_min` are equivalent (`sep = 2 * max - 1`).
+
+If the session closes due to the maximum number of questions, an exhausted bank, or low marginal utility without reaching the chosen confidence criterion, present the result as provisional.
 
 Minimum rules:
 
@@ -251,12 +261,19 @@ To consider a stage passed, it is advisable to require at least:
 
 - sufficient local confidence;
 - sufficiently low local entropy;
-- and an explicit minimum of observed performance in that stage.
+- and an explicit minimum of observed performance in that stage, measured on evidence that is **not** selected by maximum information.
+
+Be careful with the raw percentage of correct answers as a criterion: if within the stage you select items by maximum information gain, every learner's success rate tends by design toward `(1+c)/2` (≈ 50 % with no guessing, ≈ 62 % with four options), so a fixed threshold such as "60 % correct" may block learners who do master the stage, and its effect depends on the item format. To measure performance in a comparable way, use one of these two routes:
+
+- **Exit items (recommended):** require passing 1-2 items of difficulty representative of the stage goal, selected **without** an informative criterion (not by maximum IG). By fixing the difficulty, a correct answer does inform about mastery.
+- **Model consistency:** require that the observed rate not fall well below the rate expected under the local-mastery hypothesis (this is the `l_z` person-fit statistic from the foundations applied as a stage criterion).
+
+The resource itself applies all of this automatically, from the difficulties it already knows: it does not require the teacher to understand the methodology or to configure anything, unless they choose to.
 
 Reasonable example:
 
 - `p_min = 0.80`
-- minimum of `60 %` correct responses in the stage
+- passing 1-2 exit items of representative difficulty, instead of a fixed percentage-correct threshold
 
 If the learner repeats a stage:
 
@@ -278,6 +295,7 @@ Completing a stage does not necessarily imply having passed it.
   - extend;
   - increase complexity;
   - reduce assistance.
+- Effect of hints on the evidence: if the learner answers correctly **after a hint**, do not record it as a full success in the Bayesian update. A hint raises that item's probability of success, so treat it as partial credit with `s < 1` (the smaller the more decisive the hint; if the hint practically gives the answer, the evidence of mastery is almost nil) and apply the geometric partial-credit likelihood. Response times and the use of aids may be recorded for information, but this version defines no likelihood for them: they do not by themselves alter the update.
 
 ## Final Output
 
@@ -303,6 +321,10 @@ Do not return only a score or label.
 
 If two hypotheses end with close probabilities, show the full posterior distribution (for example, a bar chart), not just the winning label.
 
+In the student's view, the pedagogical recommendation and the next step should carry **more visual weight** than the level label. Phrase the result in terms of a task ("it would help you to practise X before Y"), not of a trait ("you are basic level"): the literature on expectations indicates that the trait label carries more risk. The level label with its probability is better reserved for the teacher's view.
+
+If the model diagnoses a specific error (for example, "confuses mass with weight", with its probability), communicate it to the student as a **hypothesis to check together**, not as a verdict ("let's check whether…"), especially in primary school. The error label with its probability is appropriate for the teacher's view.
+
 ## Implementation Constraints
 
 - The interface must be comprehensible to both learners and teachers.
@@ -310,6 +332,8 @@ If two hypotheses end with close probabilities, show the full posterior distribu
 - If visible formulae are used, accompany them with a readable interpretation.
 - Avoid depending on a backend unless one has been requested.
 - Avoid long open-ended questions without reliable automatic correction.
+- Minimum accessibility by default, even if the teacher does not ask for it: sufficient contrast, keyboard navigation, not conveying information through colour alone, resizable text, and no time limit by default (unless the design requires it and warns about it).
+- Privacy by default: do not send the student's data outside the browser. The static resource without a backend already guarantees this and is the preferred option when handling minors' data. If persistence of results is requested, warn about data protection and prefer local export (for example, downloading a file) over uploading them to a server.
 
 ## Recommended Default Values
 
@@ -341,6 +365,7 @@ If the teacher does not specify parameters:
 These checks are not part of the mandatory flow: they are an optional layer that increases the honesty of the diagnosis without requiring empirical data. Apply them when the purpose is diagnostic and the result will be used to make decisions.
 
 - **Individual pattern fit (person-fit).** When closing a session, assess whether the response pattern is coherent with the estimated level. Compute the standardized index `l_z` from the probabilities of a correct answer that the model assigns to the answered questions under the most probable hypothesis. If `l_z` is strongly negative (as a rough guide, `< -2`), flag the diagnosis as unreliable even if the posterior is high: it usually indicates responses inconsistent with difficulty, slips, or guessing. It is a caution signal, not a formal test; with few questions it is only indicative.
+- **Detecting random answering or anxiety during the session (not only at close).** Do not wait until the close to compute the fit: if during the session the person-fit or an implausible streak (failing easy questions and getting hard ones right, or answering too fast) suggests random answering or anxiety, the resource should be able to **pause and redirect** ("you seem to be going very fast, shall we continue calmly?") instead of continuing to consume the bank. Do it tactfully, without accusing, and resume normally.
 - **Design separability (Monte Carlo).** As a property of the test (not of the student), estimate how reliably the bank distinguishes the levels: generate synthetic respondents located at the `theta` of each hypothesis, run the test on them reusing the same adaptive selection and the same stopping criterion, and build the confusion matrix (true level versus diagnosed). Present it as reliability under the model, never as empirical validity: the respondents come from the model itself, so it measures whether the design discriminates the levels, not whether the parameters reflect reality. **This validation is a tool for the resource's author, not for students: it must not be shown in the student interface.** Implement it in a separate file or utility that the author can run when designing or reviewing the test, not in the material the student receives.
 
 See `matematicas.html §11.7–§11.8` for the formulas and the full framing.

@@ -48,7 +48,7 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 ## Estat de l'alumne
 
 - Representa l'estat de l'alumne com una distribució de probabilitat sobre `n` hipòtesis.
-- Si no hi ha informació prèvia fiable, utilitza una distribució uniforme.
+- Si no hi ha informació prèvia fiable, utilitza una distribució uniforme. Aquesta regla val per a hipòtesis de **nivell**; per a **factors d'error** binaris, no. Un prior uniforme sobre els `2^k` perfils (o sobre `{present, absent}` de cada factor) equival a afirmar que cada error té un 50 % de probabilitat a priori d'estar present: no és neutre, és una afirmació forta sobre la seva prevalença i esbiaixa les primeres preguntes cap al fals positiu (errors que l'alumne no té mostrats com a «indeterminats» o «probables»). Per a factors d'error, parteix d'un prior informatiu moderat; vegeu «Versemblances».
 - Si les hipòtesis són jeràrquiques, assigna-les valors `theta` ordenats i centrats.
 - Si el docent no fixa valors, utilitza una escala simètrica centrada en 0.
 - L'escala `theta` és fixa i depèn només del nombre d'hipòtesis, no del banc de preguntes. Amb `n` hipòtesis jeràrquiques, fes servir valors centrats en `0` amb intervals de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, és a dir, `theta` recorre `{-(n-1), ..., +(n-1)}` i `theta_max = n - 1`. Exemples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -58,7 +58,8 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 - Si el docent dona valors numèrics de `b_q` fora de l'interval, retalla'ls (clamp) a l'interval.
 - No recalculis mai `theta` a partir dels extrems del banc. Una sola pregunta atípicament difícil o fàcil no ha de redefinir l'escala: si estires `theta` per acomodar-la, satures les versemblances de la resta del banc (totes les probabilitats queden enganxades a `c_q` o a `1`) i el posterior fa salts sobreconfiats amb una sola resposta.
 - Si la majoria de les dificultats del banc quedés fora de l'interval, no estiris l'escala: revisa amb el docent la definició de nivells i dificultats, perquè el disseny és incoherent.
-- Invariant de comparabilitat: amb `a_ef = 1.25` i intervals de `2` entre hipòtesis adjacents, el producte `a_ef * Δtheta = 2.5` determina la força màxima d'una actualització, sigui quin sigui `n` (en créixer `n` creix `theta_max`, però l'espaiat entre hipòtesis adjacents es manté). Mantén aquest invariant entre recursos perquè les confiances i velocitats de convergència siguin comparables.
+- Invariant de comparabilitat: amb `a_ef = 1.25` i intervals de `2` entre hipòtesis adjacents, el producte `a_ef * Δtheta = 2.5` iguala la **pendent màxima** de la ICC entre formats, sigui quin sigui `n` (en créixer `n` creix `theta_max`, però l'espaiat entre hipòtesis adjacents es manté). Mantén aquest invariant entre recursos perquè les confiances i velocitats de convergència siguin comparables. Aquesta comparabilitat és estricta només entre recursos amb el mateix nombre d'hipòtesis `n`: amb l'escala fixa, el marge entre el nivell extrem i l'ítem més difícil és `(n - 1) / 2`, de manera que amb `n = 2` (domina / no domina) els ítems extrems confirmen feblement (probabilitat que el nivell alt encerti l'ítem més difícil ≈ 0.65 en oberta, ≈ 0.77 en 4 opcions) i convé compensar amb més preguntes o definir l'escala des d'una probabilitat objectiu `P*`.
+- L'invariant iguala la pendent, **no la força màxima de l'evidència**. En una fallada, el factor `(1 - c)` es cancel·la en el quocient i la raó de versemblances entre hipòtesis adjacents tendeix a `e^(a * Δtheta)` amb la `a` **nominal** (`= a_ef / (1 - c)`), no amb `a_ef`. Per això una fallada en un ítem fàcil de baix atzar aporta molta més evidència que la mateixa fallada en una pregunta oberta: amb `Δtheta = 2`, la raó de versemblança de fallada és ≈ 12 en oberta (`c = 0`), ≈ 28 en 4 opcions (`c = 0.25`) i ≈ 148 en vertader/fals (`c = 0.5`). Per evitar aquests salts de posterior gairebé deterministes, aplica el sostre de domini del cas ordinal (vegeu «Versemblances»).
 
 ## Actualització bayesiana
 
@@ -95,6 +96,7 @@ Això s'ha de fer després de cada interacció rellevant.
   - Fes-ho **sempre**, encara que totes les preguntes tinguin el mateix nombre d'opcions. Aquesta regla iguala el pendent màxim de la ICC, no garanteix que tots els formats aportin la mateixa informació esperada. Un `a` fix amb `c_q` diferents produeix pendents reals diferents i no comparables (per exemple, `a=1.5` fix dona `a_ef=1.0` amb 3 opcions però `a_ef=1.125` amb 4). La selecció per guany d'informació continuarà afavorint els ítems que aportin més evidència.
   - `a_ef = 1.25` garanteix que `a` es mantingui dins del rang habitual en psicometria (0.5–2.5) per a qualsevol format de 2 o més opcions: el cas extrem, vertader/fals (`c_q=0.5`), dona exactament `a = 2.5`.
   - Valors que has d'obtenir: oberta (`c_q=0`) → `a=1.25`; 5 opcions (`c_q=0.20`) → `a=1.5625`; 4 opcions (`c_q=0.25`) → `a≈1.667`; 3 opcions (`c_q=1/3`) → `a=1.875`; vertader/fals (`c_q=0.5`) → `a=2.5`.
+- Aplica un **sostre de domini** també en el cas ordinal: acota `P(encert | H_i, q) <= 0.95` (equivalentment, `P(fallada) >= 0.05`) per a tota hipòtesi, inclòs el nivell més alt en ítems fàcils. El 3PL pur deixa que `P(encert) → 1` en ítems fàcils de baix atzar, de manera que una sola fallada dispara el posterior gairebé de manera determinista (amb `c = 0.5` la raó de versemblança d'una fallada entre nivells adjacents arriba a ≈ 148, davant de ≈ 12 en oberta). El sostre modela el descuit (*slip*), que el 3PL no preveu, i alinea el cas ordinal amb el nominal, que ja imposa `0.9`–`0.95`, mai `1`. Fes servir `0.90` si vols ser més conservador.
 - Si l'alumne falla:
 
 `P(error | H_i, q) = 1 - P(encert | H_i, q)`
@@ -102,6 +104,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Si les hipòtesis no són jeràrquiques, distingeix dos casos.
 - Si són **alternatives excloents** (per exemple, estratègia A / estratègia B / domini correcte), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
 - Si els errors o necessitats **poden coexistir**, no els forcis dins d'una sola distribució nominal. Modela una dimensió per factor (`error llarg`, `error del zero`, etc.) o, de manera equivalent, una distribució sobre **perfils complets** (`2^k` combinacions possibles de `k` factors).
+- **Prior dels factors d'error: no uniforme.** Els errors conceptuals solen ser minoritaris, així que assigna a cada factor una probabilitat a priori baixa d'estar present (per defecte `P(error) ≈ 0.2`–`0.3`) en lloc de l'uniforme `0.5`. Un prior uniforme aquí no és neutre: parteix que cada alumne té cada error amb probabilitat `0.5` i produeix falsos positius en les primeres preguntes. El recurs aplica aquest valor per defecte de manera automàtica; el docent pot ajustar la prevalença del seu grup si ho vol, però no hi està obligat.
 - En aquest cas multifactorial, cada pregunta ha de definir com respon cada perfil. El mínim és una probabilitat d'encert per perfil; encara millor és una distribució per opció `P(R = r | perfil, q)` per aprofitar quin distractor ha triat l'alumne, i no només encert/error.
 - Si parteixes de factors simples, assigna cada valor responent: «si l'alumne tingués aquest error, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que l'error distorsiona; alt si l'error no interfereix.
 - Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi o perfil de domini al voltant de `0.9`–`0.95`, mai `1`.
@@ -121,6 +124,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Utilitza aquesta `L(H_i)` en l'actualització bayesiana en lloc de triar entre `P(encert)` i `P(error)`. La normalització i la resta del procés no canvien.
 - Casos límit: `s = 1` equival a encert ple; `s = 0` a error ple. Un `s = 0.5` no és necessàriament neutre: afavoreix les hipòtesis per a les quals l'ítem prediu una puntuació intermèdia.
 - Si l'ítem té `J` components aproximadament independents i `s` és la fracció ponderada de components correctes, pots conservar la força de l'evidència fent servir `L(H_i) = P(encert | H_i, q)^(sJ) * P(error | H_i, q)^((1 - s)J)`.
+- Compte: l'exponent `J` tracta la resposta com a `J` assajos independents amb la **mateixa** probabilitat `p_i` de l'ítem complet, així que només és raonable si els components són de **dificultat semblant**. Si difereixen clarament en dificultat (l'habitual en tasques per passos), aquesta forma **sobrecompta** l'evidència davant del model per components; en cas de dubte, fes servir un `J` menor que el nombre real de components (evidència més conservadora).
 - Si tens evidència separada per component, és preferible multiplicar les versemblances de cada component en comptes de reduir-ho tot a una sola `s`.
 - Defineix com es calcula `s` de manera explícita i autocorregible: suma ponderada de subcriteris, fracció de passos correctes, proximitat a la solució numèrica, etc. Els pesos han de sumar `1`.
 - No tractis com a binària una resposta que admet graus: perds informació diagnòstica.
@@ -175,7 +179,7 @@ Selecciona la candidata amb un guany esperat d'informació més gran quan la fin
 
 En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de problema o conceptes, utilitza una selecció en dues fases:
 
-1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase. Si hi ha moltes categories, aquesta fase pot consumir la sessió (amb `10` categories i `2` intents ja són `20` preguntes): agrupa categories afins en blocs o redueix la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.
+1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase. Tingues present que `2` és el mínim defensable, no un valor còmode: amb oblit actiu la marginal per categoria és volàtil, així que apuja la mostra mínima si el banc ho permet. Si hi ha moltes categories, aquesta fase pot consumir la sessió (amb `10` categories i `2` intents ja són `20` preguntes): agrupa categories afins en blocs o redueix la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.
 2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és combinar guany d'informació amb adequació de dificultat, penalitzant preguntes massa allunyades de la zona de treball.
 
 No facis servir l'entropia de Shannon com a únic criteri permanent quan la finalitat principal sigui practicar o reforçar. Shannon indica on hi ha més incertesa diagnòstica; el reforç ha d'atendre també, i preferentment, allò que l'alumne domina menys.
@@ -220,7 +224,13 @@ Si fas servir `p_min`, calcula el llindar orientatiu:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-Després de complir el mínim de preguntes, un tancament diagnòstic ferm ha de comprovar preferentment totes dues condicions: `H <= H_stop` i `max(p_i) >= p_min`. Si es tanca per màxim, banc exhaurit o utilitat marginal baixa sense complir-les, presenta el resultat com a provisional.
+Després de complir el mínim de preguntes, comprova la confiança del diagnòstic. Quan `H_stop` es deriva del mateix `p_min`, la condició `max(p_i) >= p_min` ja implica `H <= H_stop`: comprovar totes dues és inofensiu però **redundant**, no afegeix exigència. El control que sí aporta alguna cosa diferent és la **separació** respecte a la segona hipòtesi:
+
+`P(guanyadora) - P(segona) >= Δ_min`
+
+Ara bé, la separació només afegeix exigència si `Δ_min > 2 * p_min - 1`. Amb `p_min = 0.80`, exigir `max(p_i) >= p_min` ja força una separació `>= 0.60`, de manera que un `Δ_min` de 0.3–0.4 seria tan redundant com l'entropia. Per això la separació és útil sobretot **com a alternativa a un `p_min` alt, no com a afegit**: quan hi ha moltes hipòtesis i exigir `max(p_i) >= 0.80` és poc pràctic, tanca amb un `max(p_i)` moderat (per exemple `>= 0.50`) **i** `Δ_min >= 0.3–0.4`, que exigeix que la guanyadora vagi clarament per davant de la segona encara que la massa restant estigui repartida. Amb `n = 2`, separació i `p_min` són equivalents (`sep = 2 * max - 1`).
+
+Si es tanca per màxim de preguntes, banc exhaurit o utilitat marginal baixa sense assolir el criteri de confiança triat, presenta el resultat com a provisional.
 
 Regles mínimes:
 
@@ -251,12 +261,19 @@ Per donar una etapa per superada, convé exigir almenys:
 
 - confiança local suficient;
 - entropia local suficientment baixa;
-- i un mínim explícit de rendiment observat en aquesta etapa.
+- i un mínim explícit de rendiment observat en aquesta etapa, mesurat sobre evidència **no** seleccionada per màxima informació.
+
+Compte amb el percentatge brut d'encerts com a criteri: si dins de l'etapa tries els ítems per màxima guany d'informació, la taxa d'encert de tots els alumnes tendeix per disseny cap a `(1+c)/2` (≈ 50 % sense atzar, ≈ 62 % amb quatre opcions), de manera que un llindar fix com «60 % d'encerts» pot bloquejar alumnes que sí que dominen l'etapa i el seu efecte depèn del format de les preguntes. Per mesurar el rendiment de manera comparable, fes servir una d'aquestes dues vies:
+
+- **Ítems de sortida (recomanat):** exigeix encertar 1-2 ítems de dificultat representativa de l'objectiu de l'etapa, seleccionats **sense** criteri informatiu (no per màxima IG). En fixar la dificultat, l'encert sí que informa sobre el domini.
+- **Consistència amb el model:** exigeix que la taxa observada no quedi gaire per sota de l'esperada sota la hipòtesi de domini local (és l'ajust de persona `l_z` dels fonaments aplicat com a criteri d'etapa).
+
+Tot això ho aplica el mateix recurs de manera automàtica, a partir de les dificultats que ja coneix: no requereix que el docent conegui la metodologia ni configuri res, llevat que ho vulgui fer.
 
 Exemple raonable:
 
 - `p_min = 0.80`
-- mínim del `60 %` d'encerts a l'etapa
+- encert de 1-2 ítems de sortida de dificultat representativa, en lloc d'un llindar fix de percentatge d'encerts
 
 Si l'alumne repeteix una etapa:
 
@@ -278,6 +295,7 @@ Acabar una etapa no implica necessàriament haver-la superada.
   - ampliar;
   - augmentar la complexitat;
   - reduir l'ajuda.
+- Efecte de les pistes en l'evidència: si l'alumne encerta **després d'una pista**, no ho registris com a encert ple en l'actualització bayesiana. Una pista puja la probabilitat d'encert d'aquell ítem, així que tracta'l com a crèdit parcial amb `s < 1` (tant menor com més determinant sigui la pista; si la pista pràcticament dóna la resposta, l'evidència de domini és gairebé nul·la) i aplica la versemblança geomètrica del crèdit parcial. Els temps de resposta i l'ús d'ajudes es poden registrar a títol informatiu, però aquesta versió no defineix versemblança per a ells: no alteren per si sols l'actualització.
 
 ## Resultat final
 
@@ -303,6 +321,10 @@ No retornis només una nota o etiqueta.
 
 Si dues hipòtesis acaben amb probabilitats properes, mostra la distribució posterior completa (per exemple, un diagrama de barres), no només l'etiqueta guanyadora.
 
+En la vista de l'alumne, la recomanació pedagògica i el pas següent han de tenir **més pes visual** que l'etiqueta de nivell. Formula el resultat en termes de tasca («et convé practicar X abans que Y»), no de tret («ets nivell bàsic»): la literatura sobre expectatives indica que l'etiqueta de tret té més risc. L'etiqueta de nivell amb la seva probabilitat convé reservar-la per a la vista docent.
+
+Si el model diagnostica un error concret (per exemple, «confon massa amb pes», amb la seva probabilitat), comunica-l'hi a l'alumne com una **hipòtesi a comprovar junts**, no com una sentència («comprovem si…»), especialment a primària. L'etiqueta d'error amb la seva probabilitat és apropiada per a la vista docent.
+
 ## Restriccions d'implementació
 
 - La interfície ha de ser comprensible per a l'alumnat i el professorat.
@@ -310,6 +332,8 @@ Si dues hipòtesis acaben amb probabilitats properes, mostra la distribució pos
 - Si fas servir fórmules visibles, acompanya-les d'una interpretació llegible.
 - Evita dependre d'un backend si no s'ha demanat.
 - Evita preguntes obertes llargues sense correcció automàtica fiable.
+- Accessibilitat mínima per defecte, encara que el docent no la demani: contrast suficient, navegació per teclat, no transmetre informació només mitjançant el color, text redimensionable i sense límit de temps per defecte (llevat que el disseny ho requereixi i s'avisi).
+- Privacitat per defecte: no enviïs les dades de l'alumne fora del navegador. El recurs estàtic sense backend ja ho garanteix i és l'opció preferent en tractar dades de menors. Si es demana persistència de resultats, adverteix sobre la protecció de dades i prefereix l'exportació local (per exemple, descarregar un fitxer) en lloc de pujar-les a un servidor.
 
 ## Valors per defecte recomanats
 
@@ -341,6 +365,7 @@ Si el docent no especifica paràmetres:
 Aquestes comprovacions no formen part del flux obligatori: són una capa opcional que augmenta l'honestedat del diagnòstic sense requerir dades empíriques. Aplica-les quan la finalitat sigui diagnòstica i el resultat s'hagi d'usar per decidir.
 
 - **Ajust del patró individual (person-fit).** En tancar una sessió, avalua si el patró de respostes és coherent amb el nivell estimat. Calcula l'índex estandarditzat `l_z` a partir de les probabilitats d'encert que el model assigna a les preguntes respostes sota la hipòtesi més probable. Si `l_z` és molt negatiu (orientativament `< -2`), marca el diagnòstic com a poc fiable encara que el posterior sigui alt: sol indicar respostes incoherents amb la dificultat, descuits o atzar. És un senyal de cautela, no una prova formal; amb poques preguntes és només orientatiu.
+- **Detecció d'atzar o ansietat durant la sessió (no només al tancament).** No esperis al tancament per calcular l'ajust: si durant la sessió el person-fit o una ratxa inversemblant (fallar preguntes fàcils i encertar-ne de difícils, o respondre massa de pressa) suggereixen resposta a l'atzar o ansietat, el recurs hauria de poder **pausar i reconduir** («sembla que vas molt de pressa, seguim amb calma?») en lloc de continuar consumint banc. Fes-ho amb tacte, sense acusar, i reprèn amb normalitat.
 - **Separabilitat del disseny (Monte Carlo).** Com a propietat del test (no de l'alumne), estima amb quina fiabilitat el banc distingeix els nivells: genera respondents sintètics situats en el `theta` de cada hipòtesi, fes-los el test reutilitzant la mateixa selecció adaptativa i el mateix criteri d'aturada, i construeix la matriu de confusió (nivell real enfront de diagnosticat). Presenta-la com a fiabilitat sota el model, mai com a validesa empírica: els respondents surten del propi model, així que mesura si el disseny discrimina els nivells, no si els paràmetres reflecteixen la realitat. **Aquesta validació és una eina del creador del recurs, no de l'alumnat: no s'ha de mostrar en la interfície de l'alumne.** Implementa-la en un fitxer o utilitat a part que l'autor pugui executar en dissenyar o revisar el test, no en el material que rep l'alumne.
 
 Consulta `matematicas.html §11.7–§11.8` per a les fórmules i l'enquadrament complet.

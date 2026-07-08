@@ -49,7 +49,7 @@ Adjunta este documento a la IA y usa este prompt:
 ## Estado del alumno
 
 - Representa el estado del alumno como una distribución de probabilidad sobre `n` hipótesis.
-- Si no hay información previa fiable, usa distribución uniforme.
+- Si no hay información previa fiable, usa distribución uniforme. Esta regla vale para hipótesis de **nivel**; para **factores de error** binarios, no. Un prior uniforme sobre los `2^k` perfiles (o sobre `{presente, ausente}` de cada factor) equivale a afirmar que cada error tiene un 50 % de probabilidad a priori de estar presente: no es neutral, es una afirmación fuerte sobre su prevalencia y sesga las primeras preguntas hacia el falso positivo (errores que el alumno no tiene mostrados como «indeterminados» o «probables»). Para factores de error, parte de un prior informativo moderado; véase «Verosimilitudes».
 - Si las hipótesis son jerárquicas, asígnales valores `theta` ordenados y centrados.
 - Si el docente no fija valores, usa una escala simétrica centrada en 0.
 - La escala `theta` es fija y depende solo del número de hipótesis, no del banco de preguntas. Con `n` hipótesis jerárquicas, usa valores centrados en `0` con intervalos de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, es decir, `theta` recorre `{-(n-1), ..., +(n-1)}` y `theta_max = n - 1`. Ejemplos: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -59,7 +59,8 @@ Adjunta este documento a la IA y usa este prompt:
 - Si el docente da valores numéricos de `b_q` fuera del intervalo, recórtalos (clamp) al intervalo.
 - No recalcules nunca `theta` a partir de los extremos del banco. Una sola pregunta atípicamente difícil o fácil no debe redefinir la escala: si estiras `theta` para acomodarla, saturas las verosimilitudes del resto del banco (todas las probabilidades quedan pegadas a `c_q` o a `1`) y el posterior da saltos sobreconfiados con una sola respuesta.
 - Si la mayoría de las dificultades del banco quedara fuera del intervalo, no estires la escala: revisa con el docente la definición de niveles y dificultades, porque el diseño es incoherente.
-- Invariante de comparabilidad: con `a_ef = 1.25` e intervalos de `2` entre hipótesis adyacentes, el producto `a_ef * Δtheta = 2.5` determina la fuerza máxima de una actualización, sea cual sea `n` (al crecer `n` crece `theta_max`, pero el espaciado entre hipótesis adyacentes se mantiene). Mantén este invariante entre recursos para que las confianzas y velocidades de convergencia sean comparables.
+- Invariante de comparabilidad: con `a_ef = 1.25` e intervalos de `2` entre hipótesis adyacentes, el producto `a_ef * Δtheta = 2.5` iguala la **pendiente máxima** de la ICC entre formatos, sea cual sea `n` (al crecer `n` crece `theta_max`, pero el espaciado entre hipótesis adyacentes se mantiene). Mantén este invariante entre recursos para que las confianzas y velocidades de convergencia sean comparables. Esa comparabilidad es estricta solo entre recursos con el mismo número de hipótesis `n`: con la escala fija, el margen entre el nivel extremo y el ítem más difícil es `(n - 1) / 2`, así que con `n = 2` (domina / no domina) los ítems extremos confirman débilmente (probabilidad de que el nivel alto acierte el ítem más difícil ≈ 0.65 en abierta, ≈ 0.77 en 4 opciones) y conviene compensar con más preguntas o definir la escala desde una probabilidad objetivo `P*`.
+- El invariante iguala la pendiente, **no la fuerza máxima de la evidencia**. En un fallo, el factor `(1 - c)` se cancela en el cociente y la razón de verosimilitudes entre hipótesis adyacentes tiende a `e^(a * Δtheta)` con la `a` **nominal** (`= a_ef / (1 - c)`), no con `a_ef`. Por eso un fallo en un ítem fácil de bajo azar aporta mucha más evidencia que el mismo fallo en una pregunta abierta: con `Δtheta = 2`, la razón de verosimilitud de fallo es ≈ 12 en abierta (`c = 0`), ≈ 28 en 4 opciones (`c = 0.25`) y ≈ 148 en verdadero/falso (`c = 0.5`). Para evitar esos saltos de posterior casi deterministas, aplica el techo de dominio del caso ordinal (véase «Verosimilitudes»).
 
 ## Actualización bayesiana
 
@@ -96,6 +97,7 @@ Esto debe hacerse después de cada interacción relevante.
   - Hazlo **siempre**, aunque todas las preguntas tengan el mismo número de opciones. Esta regla iguala la pendiente máxima de la ICC, no garantiza que todos los formatos aporten la misma información esperada. Un `a` fijo con distintos `c_q` produce pendientes reales distintas y no comparables (por ejemplo, `a=1.5` fijo da `a_ef=1.0` con 3 opciones pero `a_ef=1.125` con 4). La selección por ganancia de información seguirá favoreciendo los ítems que aporten más evidencia.
   - `a_ef = 1.25` garantiza que `a` se mantenga dentro del rango habitual en psicometría (0.5–2.5) para cualquier formato de 2 o más opciones: el caso extremo, verdadero/falso (`c_q=0.5`), da exactamente `a = 2.5`.
   - Valores que debes obtener: abierta (`c_q=0`) → `a=1.25`; 5 opciones (`c_q=0.20`) → `a=1.5625`; 4 opciones (`c_q=0.25`) → `a≈1.667`; 3 opciones (`c_q=1/3`) → `a=1.875`; verdadero/falso (`c_q=0.5`) → `a=2.5`.
+- Aplica un **techo de dominio** también en el caso ordinal: acota `P(acierto | H_i, q) <= 0.95` (equivalentemente, `P(fallo) >= 0.05`) para toda hipótesis, incluido el nivel más alto en ítems fáciles. El 3PL puro deja que `P(acierto) → 1` en ítems fáciles de bajo azar, de modo que un solo fallo dispara el posterior casi de forma determinista (con `c = 0.5` la razón de verosimilitud de un fallo entre niveles adyacentes llega a ≈ 148, frente a ≈ 12 en abierta). El techo modela el descuido (*slip*), que el 3PL no contempla, y alinea el caso ordinal con el nominal, que ya impone `0.9`–`0.95`, nunca `1`. Usa `0.90` si quieres ser más conservador.
 - Si el alumno falla:
 
 `P(fallo | H_i, q) = 1 - P(acierto | H_i, q)`
@@ -103,6 +105,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Si las hipótesis no son jerárquicas, distingue dos casos.
 - Si son **alternativas excluyentes** (por ejemplo, estrategia A / estrategia B / dominio correcto), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
 - Si los errores o necesidades **pueden coexistir**, no los metas en una sola distribución nominal. Modela una dimensión por factor (`error largo`, `error cero`, etc.) o, de forma equivalente, una distribución sobre **perfiles completos** (`2^k` combinaciones posibles de `k` factores).
+- **Prior de los factores de error: no uniforme.** Los errores conceptuales suelen ser minoritarios, así que asigna a cada factor una probabilidad a priori baja de estar presente (por defecto `P(error) ≈ 0.2`–`0.3`) en lugar del uniforme `0.5`. Un prior uniforme aquí no es neutral: parte de que cada alumno tiene cada error con probabilidad `0.5` y produce falsos positivos en las primeras preguntas. El recurso aplica este valor por defecto de forma automática; el docente puede ajustar la prevalencia de su grupo si lo desea, pero no está obligado.
 - En ese caso multifactorial, cada pregunta debe definir cómo responde cada perfil. Lo mínimo es una probabilidad de acierto por perfil; mejor aún, una distribución por opción `P(R = r | perfil, q)` para aprovechar qué distractor ha elegido el alumno, no solo si acertó o falló.
 - Si partes de factores simples, asigna cada valor respondiendo: «si el alumno tuviera este error, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
 - Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis o perfil de dominio en torno a `0.9`–`0.95`, nunca `1`.
@@ -122,6 +125,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Usa esta `L(H_i)` en la actualización bayesiana en lugar de elegir entre `P(acierto)` y `P(fallo)`. La normalización y el resto del proceso no cambian.
 - Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno. Un `s = 0.5` no es necesariamente neutro: favorece las hipótesis para las que el ítem predice una puntuación intermedia.
 - Si el ítem tiene `J` componentes aproximadamente independientes y `s` es la fracción ponderada de componentes correctos, puedes conservar la fuerza de la evidencia usando `L(H_i) = P(acierto | H_i, q)^(sJ) * P(fallo | H_i, q)^((1 - s)J)`.
+- Cuidado: el exponente `J` trata la respuesta como `J` ensayos independientes con la **misma** probabilidad `p_i` del ítem completo, así que solo es razonable si los componentes son de **dificultad parecida**. Si difieren claramente en dificultad (lo habitual en tareas por pasos), esta forma **sobrecuenta** la evidencia frente al modelo por componentes; en caso de duda, usa un `J` menor que el número real de componentes (evidencia más conservadora).
 - Si tienes evidencia separada por componente, es preferible multiplicar las verosimilitudes de cada componente en lugar de reducir todo a una sola `s`.
 - Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
 - No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
@@ -176,7 +180,7 @@ Selecciona la candidata con mayor ganancia esperada de información cuando la fi
 
 En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
 
-1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase. Si hay muchas categorías, esta fase puede consumir la sesión (con `10` categorías y `2` intentos son ya `20` preguntas): agrupa categorías afines en bloques o reduce la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.
+1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase. Ten presente que `2` es el mínimo defendible, no un valor cómodo: con olvido activo la marginal por categoría es volátil, así que sube la muestra mínima si el banco lo permite. Si hay muchas categorías, esta fase puede consumir la sesión (con `10` categorías y `2` intentos son ya `20` preguntas): agrupa categorías afines en bloques o reduce la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.
 2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es combinar ganancia de información con adecuación de dificultad, penalizando preguntas demasiado alejadas de la zona de trabajo.
 
 No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
@@ -221,7 +225,13 @@ Si usas `p_min`, calcula el umbral orientativo:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-Tras cumplir el mínimo de preguntas, un cierre diagnóstico firme debe comprobar preferentemente ambas condiciones: `H <= H_stop` y `max(p_i) >= p_min`. Si se cierra por máximo, banco agotado o utilidad marginal baja sin cumplirlas, presenta el resultado como provisional.
+Tras cumplir el mínimo de preguntas, comprueba la confianza del diagnóstico. Cuando `H_stop` se deriva del mismo `p_min`, la condición `max(p_i) >= p_min` ya implica `H <= H_stop`: comprobar las dos es inofensivo pero **redundante**, no añade exigencia. El control que sí aporta algo distinto es la **separación** respecto a la segunda hipótesis:
+
+`P(ganadora) - P(segunda) >= Δ_min`
+
+Ahora bien, la separación solo añade exigencia si `Δ_min > 2 * p_min - 1`. Con `p_min = 0.80`, exigir `max(p_i) >= p_min` ya fuerza una separación `>= 0.60`, así que un `Δ_min` de 0.3–0.4 sería tan redundante como la entropía. Por eso la separación es útil sobre todo **como alternativa a un `p_min` alto, no como añadido**: cuando hay muchas hipótesis y exigir `max(p_i) >= 0.80` es poco práctico, cierra con un `max(p_i)` moderado (por ejemplo `>= 0.50`) **y** `Δ_min >= 0.3–0.4`, que exige que la ganadora vaya claramente por delante de la segunda aunque la masa restante esté repartida. Con `n = 2`, separación y `p_min` son equivalentes (`sep = 2 * max - 1`).
+
+Si se cierra por máximo de preguntas, banco agotado o utilidad marginal baja sin alcanzar el criterio de confianza elegido, presenta el resultado como provisional.
 
 Reglas mínimas:
 
@@ -252,12 +262,19 @@ Para dar una etapa por superada, conviene exigir al menos:
 
 - confianza local suficiente;
 - entropía local suficientemente baja;
-- y un mínimo explícito de rendimiento observado en esa etapa.
+- y un mínimo explícito de rendimiento observado en esa etapa, medido sobre evidencia **no** seleccionada por máxima información.
+
+Cuidado con el porcentaje bruto de aciertos como criterio: si dentro de la etapa eliges los ítems por máxima ganancia de información, la tasa de acierto de todos los alumnos tiende por diseño hacia `(1+c)/2` (≈ 50 % sin azar, ≈ 62 % con cuatro opciones), así que un umbral fijo como «60 % de aciertos» puede bloquear a alumnos que sí dominan la etapa y su efecto depende del formato de las preguntas. Para medir el rendimiento de forma comparable, usa una de estas dos vías:
+
+- **Ítems de salida (recomendado):** exige acertar 1-2 ítems de dificultad representativa del objetivo de la etapa, seleccionados **sin** criterio informativo (no por máxima IG). Al fijar la dificultad, el acierto sí informa sobre el dominio.
+- **Consistencia con el modelo:** exige que la tasa observada no quede muy por debajo de la esperada bajo la hipótesis de dominio local (es el ajuste de persona `l_z` de los fundamentos aplicado como criterio de etapa).
+
+Todo esto lo aplica el propio recurso de forma automática, a partir de las dificultades que ya conoce: no requiere que el docente conozca la metodología ni configure nada, salvo que quiera hacerlo.
 
 Ejemplo razonable:
 
 - `p_min = 0.80`
-- mínimo de `60 %` de aciertos en la etapa
+- acierto de 1-2 ítems de salida de dificultad representativa, en lugar de un umbral fijo de porcentaje de aciertos
 
 Si el alumno repite una etapa:
 
@@ -279,6 +296,7 @@ Terminar una etapa no implica necesariamente haberla superado.
   - ampliar;
   - aumentar complejidad;
   - reducir ayuda.
+- Efecto de las pistas en la evidencia: si el alumno acierta **después de una pista**, no lo registres como acierto pleno en la actualización bayesiana. Una pista sube la probabilidad de acierto de ese ítem, así que trátalo como crédito parcial con `s < 1` (tanto menor cuanto más determinante sea la pista; si la pista prácticamente da la respuesta, la evidencia de dominio es casi nula) y aplica la verosimilitud geométrica del crédito parcial. Los tiempos de respuesta y el uso de ayudas pueden registrarse a título informativo, pero esta versión no define verosimilitud para ellos: no alteran por sí solos la actualización.
 
 ## Resultado final
 
@@ -304,6 +322,10 @@ No devuelvas solo una nota o etiqueta.
 
 Si dos hipótesis terminan con probabilidades próximas, muestra la distribución posterior completa (por ejemplo, un diagrama de barras), no solo la etiqueta ganadora.
 
+En la vista del alumno, la recomendación pedagógica y el siguiente paso deben tener **más peso visual** que la etiqueta de nivel. Formula el resultado en términos de tarea («te conviene practicar X antes de Y»), no de rasgo («eres nivel básico»): la literatura sobre expectativas indica que la etiqueta de rasgo tiene más riesgo. La etiqueta de nivel con su probabilidad conviene reservarla para la vista docente.
+
+Si el modelo diagnostica un error concreto (por ejemplo, «confunde masa con peso», con su probabilidad), comunícaselo al alumno como una **hipótesis a comprobar juntos**, no como una sentencia («comprobemos si…»), especialmente en primaria. La etiqueta de error con su probabilidad es apropiada para la vista docente.
+
 ## Restricciones de implementación
 
 - La interfaz debe ser comprensible para alumnado y profesorado.
@@ -311,6 +333,8 @@ Si dos hipótesis terminan con probabilidades próximas, muestra la distribució
 - Si usas fórmulas visibles, acompáñalas de interpretación legible.
 - Evita depender de backend si no se ha pedido.
 - Evita preguntas abiertas largas sin corrección automática fiable.
+- Accesibilidad mínima por defecto, aunque el docente no la pida: contraste suficiente, navegación por teclado, no transmitir información solo mediante el color, texto redimensionable y sin límite de tiempo por defecto (salvo que el diseño lo requiera y se avise).
+- Privacidad por defecto: no envíes los datos del alumno fuera del navegador. El recurso estático sin backend ya lo garantiza y es la opción preferente al tratar datos de menores. Si se pide persistencia de resultados, advierte sobre la protección de datos y prefiere la exportación local (por ejemplo, descargar un archivo) frente a subirlos a un servidor.
 
 ## Valores por defecto recomendados
 
@@ -342,6 +366,7 @@ Si el docente no especifica parámetros:
 Estas comprobaciones no forman parte del flujo obligatorio: son una capa opcional que aumenta la honestidad del diagnóstico sin requerir datos empíricos. Aplícalas cuando la finalidad sea diagnóstica y el resultado vaya a usarse para decidir.
 
 - **Ajuste del patrón individual (person-fit).** Al cerrar una sesión, evalúa si el patrón de respuestas es coherente con el nivel estimado. Calcula el índice estandarizado `l_z` a partir de las probabilidades de acierto que el modelo asigna a las preguntas respondidas bajo la hipótesis más probable. Si `l_z` es muy negativo (orientativamente `< -2`), marca el diagnóstico como poco fiable aunque el posterior sea alto: suele indicar respuestas incoherentes con la dificultad, descuidos o azar. Es señal de cautela, no prueba formal; con pocas preguntas es solo orientativo.
+- **Detección de azar o ansiedad durante la sesión (no solo al cierre).** No esperes al cierre para calcular el ajuste: si durante la sesión el person-fit o una racha inverosímil (fallar preguntas fáciles y acertar difíciles, o responder demasiado rápido) sugieren respuesta al azar o ansiedad, el recurso debería poder **pausar y reconducir** («parece que vas muy rápido, ¿seguimos con calma?») en lugar de seguir consumiendo banco. Hazlo con tacto, sin acusar, y reanuda con normalidad.
 - **Separabilidad del diseño (Monte Carlo).** Como propiedad del test (no del alumno), estima con qué fiabilidad el banco distingue los niveles: genera respondentes sintéticos situados en el `theta` de cada hipótesis, hazles el test reutilizando la misma selección adaptativa y el mismo criterio de parada, y construye la matriz de confusión (nivel real frente a diagnosticado). Preséntala como fiabilidad bajo el modelo, nunca como validez empírica: los respondentes salen del propio modelo, así que mide si el diseño discrimina los niveles, no si los parámetros reflejan la realidad. **Esta validación es una herramienta del creador del recurso, no del alumnado: no debe mostrarse en la interfaz del alumno.** Impleméntala en un archivo o utilidad aparte que el autor pueda ejecutar al diseñar o revisar el test, no en el material que recibe el alumno.
 
 Consulta `matematicas.html §11.7–§11.8` para las fórmulas y el encuadre completo.
