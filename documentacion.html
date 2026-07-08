@@ -400,7 +400,7 @@
 </section>
 <section id="s5">
 <h2>5. Fórmulas básicas del modelo</h2>
-<p>Aunque el documento mantiene un lenguaje comprensible para docentes, incluye las fórmulas esenciales para que el sistema se implemente de forma coherente.</p>
+<p>Aunque el documento mantiene un lenguaje comprensible para docentes, incluye las fórmulas esenciales para que el sistema se implemente de forma coherente. Su desarrollo formal, las derivaciones y los ejemplos numéricos están en los <a href="matematicas.html">Fundamentos matemáticos</a>, que son la referencia canónica; aquí se recogen en su forma mínima.</p>
 <h3>5.1. Distribución inicial de hipótesis</h3>
 <p>Si hay \(n\) hipótesis y no existe información previa fiable, puede usarse una distribución uniforme:</p>
 <div class="math-block">\[P(H_i)=\frac{1}{n}\]</div>
@@ -410,7 +410,7 @@
 <div class="math-block">\[P(H_i\mid R)=\frac{P(R\mid H_i)P(H_i)}{P(R)}\]</div>
 <p>El denominador se calcula sumando sobre todas las hipótesis:</p>
 <div class="math-block">\[P(R)=\sum_i P(R\mid H_i)P(H_i)\]</div>
-<p>Donde \(R\) es la respuesta observada, que puede ser acierto, fallo u otro resultado autocorregible previsto por el sistema.</p>
+<p>Donde \(R\) es la respuesta observada, que puede ser acierto, fallo u otro resultado autocorregible previsto por el sistema. La derivación completa está en <a href="matematicas.html#s3">Fundamentos §3</a>.</p>
 <h3>5.3. Verosimilitud de acierto y fallo</h3>
 <p>Para cada pregunta \(q\) y cada hipótesis \(H_i\), el sistema estima:</p>
 <div class="math-block">\[P(\text{acierto}\mid H_i,q)\]</div>
@@ -443,20 +443,16 @@
 <p>Donde \(p_i\) es la probabilidad actual de cada hipótesis.</p>
 <p>La entropía máxima, cuando todas las hipótesis son igual de probables, es:</p>
 <div class="math-block">\[H_{\max}=\log_2(n)\]</div>
-<p>Este valor ayuda a ajustar el umbral de parada al número de hipótesis consideradas.</p>
+<p>Este valor ayuda a ajustar el umbral de parada al número de hipótesis consideradas. Véase <a href="matematicas.html#s5">Fundamentos §5</a>.</p>
 <h3>5.7. Ganancia esperada de información</h3>
 <p>Para seleccionar la siguiente pregunta, el sistema puede estimar la reducción esperada de incertidumbre:</p>
 <div class="math-block">\[IG(q)=H(\text{antes})-\left[P(A)\,H(\text{después de acierto})+P(F)\,H(\text{después de fallo})\right]\]</div>
 <p>Donde \(P(A)\) es la probabilidad total esperada de acierto y \(P(F)\) la probabilidad total esperada de fallo, calculadas mediante la ley de la probabilidad total:</p>
 <div class="math-block">\[P(A)=\sum_i P(H_i)\cdot P(\text{acierto}\mid H_i,q)\]</div>
 <div class="math-block">\[P(F)=1-P(A)\]</div>
-<p>Las distribuciones posteriores al acierto y al fallo se calculan aplicando Bayes antes de obtener la respuesta real:</p>
-<div class="math-block">\[P(H_i\mid\text{acierto})=\frac{P(\text{acierto}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{fallo})=\frac{P(\text{fallo}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
-<p>Cuando sea posible, la pregunta más útil será la que produzca mayor reducción esperada de entropía.</p>
+<p>Las distribuciones posteriores al acierto y al fallo se calculan aplicando Bayes (§5.2) antes de obtener la respuesta real, y con ellas las entropías esperadas de cada escenario. Cuando sea posible, la pregunta más útil será la que produzca mayor reducción esperada de entropía. El desarrollo completo, con la formulación como información mutua, está en <a href="matematicas.html#s6">Fundamentos §6</a>.</p>
 <h3>5.8. Verosimilitud con crédito parcial</h3>
-<p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1. Si solo se dispone de esa puntuación agregada, una verosimilitud coherente es la geométrica:</p>
-<div class="math-block">\[L(H_i)=P(\text{acierto}\mid H_i,q)^s\,P(\text{fallo}\mid H_i,q)^{1-s}\]</div>
-<p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno. Un \(s=0{,}5\) no tiene por qué ser neutro: favorece las hipótesis para las que el ítem predice una puntuación intermedia. Cuando se conocen los componentes concretos de la respuesta, es preferible multiplicar sus verosimilitudes por separado en lugar de reducirlo todo a una sola puntuación. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
+<p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1. Si solo se dispone de esa puntuación agregada, la verosimilitud coherente es la <strong>geométrica</strong>: pondera la probabilidad de acierto y la de fallo con exponentes \(s\) y \(1-s\), de modo que la evidencia favorece a la hipótesis cuya probabilidad de acierto prevista se acerca más a \(s\). Con \(s=1\) equivale a un acierto pleno y con \(s=0\) a un fallo pleno; un \(s=0{,}5\) no es neutro, favorece las hipótesis intermedias. No se usa la interpolación lineal, que empujaría siempre hacia una hipótesis extrema. Cuando se conocen los componentes concretos de la respuesta, es preferible multiplicar sus verosimilitudes por separado en lugar de reducirlo todo a una sola puntuación. La fórmula, el desarrollo formal y un ejemplo numérico están en <a href="matematicas.html#s4-8">Fundamentos §4.8</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Verosimilitudes generadas por el sistema</h2>
@@ -507,12 +503,10 @@
 <p>Cada pregunta tiene una dificultad estimada.</p>
 <p>La dificultad puede expresarse de forma cualitativa, por ejemplo: fácil, media, difícil. También puede expresarse mediante una escala más flexible.</p>
 <p>El sistema no asume que siempre habrá tres dificultades. Se adapta al número de categorías que defina el docente.</p>
-<p>Cuando el docente define la dificultad de forma cualitativa, el sistema la convierte a valores numéricos repartiéndolos uniformemente en la mitad central de la escala de niveles. Con \(k\) categorías de dificultad y \(\theta_{\max} = n - 1\) (siendo \(n\) el número de niveles o hipótesis):</p>
-<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
-<p>(con una sola categoría, \(b = 0\)). La conversión depende, por tanto, del número de niveles además del número de categorías; una tabla que dependiera solo del número de categorías sería inconsistente con la escala de niveles cuando \(n\) es pequeño y las categorías muchas (con dos niveles, \(\theta = \pm 1\), asignaría dificultades de hasta \(\pm 2\), invirtiendo la separación entre escalas). Ejemplos: con 3 niveles y 3 categorías, \(b \in \{-1,\; 0,\; +1\}\); con 3 niveles y 5 categorías, \(b \in \{-1,\; -0{,}5,\; 0,\; +0{,}5,\; +1\}\); con 4 niveles y 3 categorías, \(b \in \{-1{,}5,\; 0,\; +1{,}5\}\); con 2 niveles y 3 categorías, \(b \in \{-0{,}5,\; 0,\; +0{,}5\}\). Este reparto garantiza automáticamente que la dificultad extrema valga la mitad del nivel extremo, sea cual sea el número de hipótesis.</p>
+<p>Cuando el docente define la dificultad de forma cualitativa, el sistema la convierte a valores numéricos repartiéndolos uniformemente en la mitad central de la escala de niveles: con \(k\) categorías, la más fácil y la más difícil quedan en \(\pm\theta_{\max}/2\) (con \(\theta_{\max}=n-1\), siendo \(n\) el número de niveles) y el resto a intervalos iguales. La conversión depende, por tanto, del número de niveles además del número de categorías: una tabla que dependiera solo del número de categorías sería inconsistente cuando hay pocos niveles y muchas categorías (con dos niveles, \(\theta=\pm 1\), asignaría dificultades de hasta \(\pm 2\), invirtiendo la separación entre escalas). Ejemplos: con 3 niveles y 3 categorías, \(b \in \{-1, 0, +1\}\); con 3 niveles y 5 categorías, \(b \in \{-1, -0{,}5, 0, +0{,}5, +1\}\); con 4 niveles y 3 categorías, \(b \in \{-1{,}5, 0, +1{,}5\}\). La fórmula exacta está en <a href="matematicas.html#s8">Fundamentos §8.3</a>.</p>
 <p>En consecuencia, no basta con que haya muchas preguntas: conviene que el banco esté bien distribuido en los ejes pedagógicamente relevantes del recurso, sobre todo la dificultad, el tipo de ítem y los contenidos, habilidades o errores que se quieren discriminar. Si una zona importante queda infrarrepresentada, el sistema puede parecer adaptativo y, sin embargo, razonar sobre una base pobre.</p>
 <p>Tampoco basta con el número total. Para que la selección adaptativa no se vuelva repetitiva, hace falta <strong>redundancia local</strong>: en cada zona relevante del banco conviene disponer de varias preguntas alternativas de dificultad y función diagnóstica parecidas. Si una categoría, nivel o tipo de error solo tiene un ítem útil, el sistema tenderá a repetirlo aunque la regla de selección sea correcta.</p>
-<p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero abarcan un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es fijar la escala por convención y situar las dificultades dentro de ella: los valores \(\theta_i\) dependen solo del número de hipótesis (intervalos de 2 centrados en 0, con \(\theta_{\max} = n - 1\)) y las dificultades se mantienen en la mitad central, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), recortando a ese intervalo los valores atípicos. No conviene lo contrario —recalcular \(\theta\) a partir del ítem más extremo del banco—, porque una sola pregunta atípica estiraría la escala, saturaría las verosimilitudes del resto de preguntas y haría los diagnósticos no comparables entre recursos con bancos distintos.</p>
+<p>Los valores \(\theta_i\) que representan los niveles son fijos y dependen solo del número de hipótesis (centrados en cero, con espaciado 2 y \(\theta_{\max}=n-1\)); las dificultades se sitúan <em>dentro</em> de esa escala, en la mitad central, y los valores atípicos se recortan a ella. Así, el rango de \(\theta\) es estrictamente mayor que el de \(b_q\) —lo que evita que las preguntas extremas confirmen débilmente los niveles extremos— y una pregunta atípica no estira la escala ni distorsiona las verosimilitudes del resto del banco. El motivo (la «regla del factor 2») y la derivación completa están en <a href="matematicas.html#s8">Fundamentos §8</a>.</p>
 </section>
 <section id="s9">
 <h2>9. Número variable de niveles e hipótesis</h2>
@@ -525,9 +519,7 @@
 <li>hipótesis por necesidades, siempre que sean alternativas en la decisión que se modela: refuerzo previo / práctica guiada / consolidación / ampliación.</li>
 </ul>
 <p>El umbral de entropía y los criterios de parada se adaptan al número de hipótesis consideradas. No conviene usar el mismo umbral para todos los diseños sin justificación.</p>
-<p>Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0,80), un umbral de entropía orientativo asociado a ese nivel de confianza es:</p>
-<div class="math-block">\[H_{\text{stop}}=-p_{\min}\log_2 p_{\min}-(1-p_{\min})\log_2\!\left(\frac{1-p_{\min}}{n-1}\right)\]</div>
-<p>Esta fórmula supone que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis. Algunos valores orientativos con \(p_{\min}=0{,}80\):</p>
+<p>Si se desea parar cuando la hipótesis más probable supera un nivel de confianza \(p_{\min}\) (por ejemplo, 0,80), el umbral de entropía asociado se obtiene suponiendo que la probabilidad restante se reparte uniformemente entre las otras \(n-1\) hipótesis (fórmula y derivación en <a href="matematicas.html#s7">Fundamentos §7</a>). Algunos valores orientativos con \(p_{\min}=0{,}80\):</p>
 <table>
 <thead>
 <tr><th>Hipótesis \(n\)</th><th>\(H_{\text{stop}}\) (bits)</th></tr>

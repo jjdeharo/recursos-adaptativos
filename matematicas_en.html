@@ -392,7 +392,7 @@
 <p>For example, an item with three components of weights \((0.5,\,0.3,\,0.2)\) and options \((2,\,4,\,6)\) has an expected score by chance:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
 <p>This aggregated \(c_q\) enters the ICC (§4.2) only if the curve is interpreted as the <strong>expected score</strong> of the composite item. If the item is scored all-or-nothing, the probability of full success by chance is not the mean but the product of the chance levels of the independent components: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). The weights \(w_j\) must be the same as those used to score partial credit (§4.8).</p>
-<h3>4.8. Partial credit: soft likelihood</h3>
+<h3 id="s4-8">4.8. Partial credit: soft likelihood</h3>
 <p>When the answer allows degrees, not just correct or incorrect, but a score \(s \in [0, 1]\) obtained from weighted components, the likelihood should favor the hypotheses whose prediction \(p_i = P(A \mid H_i, q)\) is compatible with that score. If only an aggregate score is available, a coherent approximation is the geometric likelihood:</p>
 <div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Since \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), if we write \(p_i = P(A \mid H_i, q)\), then:</p>

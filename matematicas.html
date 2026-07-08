@@ -394,7 +394,7 @@
 <p>Por ejemplo, un ítem con tres componentes de pesos \((0.5,\,0.3,\,0.2)\) y opciones \((2,\,4,\,6)\) tiene una puntuación esperada por azar:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
 <p>Este \(c_q\) agregado entra en la ICC (§4.2) solo si la curva se interpreta como <strong>puntuación esperada</strong> del ítem compuesto. Si el ítem se corrige como todo-o-nada, la probabilidad de acierto pleno por azar no es la media sino el producto de los azares de los componentes independientes: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). Los pesos \(w_j\) deben ser los mismos que se usan para puntuar el crédito parcial (§4.8).</p>
-<h3>4.8. Crédito parcial: verosimilitud suave</h3>
+<h3 id="s4-8">4.8. Crédito parcial: verosimilitud suave</h3>
 <p>Cuando la respuesta admite grados —no solo acierto o fallo, sino una puntuación \(s \in [0, 1]\) obtenida de los componentes ponderados— la verosimilitud debe favorecer las hipótesis cuya predicción \(p_i = P(A \mid H_i, q)\) sea compatible con esa puntuación. Si solo se dispone de una puntuación agregada, una aproximación coherente es la verosimilitud geométrica:</p>
 <div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Como \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escribiendo \(p_i = P(A \mid H_i, q)\):</p>

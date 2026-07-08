@@ -389,7 +389,7 @@
 </section>
 <section id="s5">
 <h2>5. Basic model formulas</h2>
-<p>Although the document keeps a language understandable for teachers, it includes the essential formulas so that the system can be implemented coherently.</p>
+<p>Although the document keeps a language understandable for teachers, it includes the essential formulas so that the system can be implemented coherently. Their formal development, derivations and numerical examples are in the <a href="matematicas_en.html">Mathematical foundations</a>, which are the canonical reference; here they appear in their minimal form.</p>
 <h3>5.1. Initial distribution of hypotheses</h3>
 <p>If there are \(n\) hypotheses and no reliable prior information exists, a uniform distribution can be used:</p>
 <div class="math-block">\[P(H_i)=\frac{1}{n}\]</div>
@@ -399,7 +399,7 @@
 <div class="math-block">\[P(H_i\mid R)=\frac{P(R\mid H_i)P(H_i)}{P(R)}\]</div>
 <p>The denominator is calculated by adding over all the hypotheses:</p>
 <div class="math-block">\[P(R)=\sum_i P(R\mid H_i)P(H_i)\]</div>
-<p>Here \(R\) is the observed response, which may be correct, incorrect, or another automatically scorable result anticipated by the system.</p>
+<p>Here \(R\) is the observed response, which may be correct, incorrect, or another automatically scorable result anticipated by the system. The full derivation is in <a href="matematicas_en.html#s3">Foundations §3</a>.</p>
 <h3>5.3. Probability of success and failure</h3>
 <p>For each question \(q\) and each hypothesis \(H_i\), the system estimates:</p>
 <div class="math-block">\[P(\text{correct}\mid H_i,q)\]</div>
@@ -432,20 +432,16 @@
 <p>Where \(p_i\) is the current probability of each hypothesis.</p>
 <p>The maximum entropy, when all hypotheses are equally probable, is:</p>
 <div class="math-block">\[H_{\max}=\log_2(n)\]</div>
-<p>This value helps adjust the stopping threshold to the number of hypotheses considered.</p>
+<p>This value helps adjust the stopping threshold to the number of hypotheses considered. See <a href="matematicas_en.html#s5">Foundations §5</a>.</p>
 <h3>5.7. Expected information gain</h3>
 <p>To select the next question, the system can estimate the expected reduction in uncertainty:</p>
 <div class="math-block">\[IG(q)=H(\text{before})-\left[P(A)\,H(\text{after correct})+P(F)\,H(\text{after incorrect})\right]\]</div>
 <p>Where \(P(A)\) is the total expected probability of success and \(P(F)\) is the total expected probability of failure, calculated using the law of total probability:</p>
 <div class="math-block">\[P(A)=\sum_i P(H_i)\cdot P(\text{correct}\mid H_i,q)\]</div>
 <div class="math-block">\[P(F)=1-P(A)\]</div>
-<p>The posterior distributions for a correct and an incorrect response are calculated by applying Bayes before the actual answer is known:</p>
-<div class="math-block">\[P(H_i\mid\text{correct})=\frac{P(\text{correct}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{incorrect})=\frac{P(\text{incorrect}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
-<p>When possible, the most useful question will be the one that produces the greatest expected reduction in entropy.</p>
+<p>The posterior distributions for a correct and an incorrect response are calculated by applying Bayes (§5.2) before the actual answer is known, and from them the expected entropy of each scenario. When possible, the most useful question will be the one that produces the greatest expected reduction in entropy. The full development, with the formulation as mutual information, is in <a href="matematicas_en.html#s6">Foundations §6</a>.</p>
 <h3>5.8. Likelihood with partial credit</h3>
-<p>The formulas above assume that the response is binary: correct or incorrect. But many tasks are solved through steps or components and allow partial credit. In those cases, instead of classifying the response as simply correct or incorrect, it is summarised as a score \(s\) between 0 and 1. If only that aggregate score is available, a coherent likelihood is the geometric one:</p>
-<div class="math-block">\[L(H_i)=P(\text{correct}\mid H_i,q)^s\,P(\text{incorrect}\mid H_i,q)^{1-s}\]</div>
-<p>If \(s=1\), it is equivalent to a completely correct answer; if \(s=0\), to a completely incorrect answer. An \(s=0.5\) need not be neutral: it favors the hypotheses for which the item predicts an intermediate score. When the concrete response components are known, it is preferable to multiply their likelihoods separately instead of reducing everything to a single score. The formal development and a numerical example are in the <a href="matematicas_en.html">mathematical explanation</a>.</p>
+<p>The formulas above assume that the response is binary: correct or incorrect. But many tasks are solved through steps or components and allow partial credit. In those cases, instead of classifying the response as simply correct or incorrect, it is summarised as a score \(s\) between 0 and 1. If only that aggregate score is available, the coherent likelihood is the <strong>geometric</strong> one: it weights the probability of a correct and an incorrect answer with exponents \(s\) and \(1-s\), so that the evidence favours the hypothesis whose predicted success probability is closest to \(s\). With \(s=1\) it is equivalent to a completely correct answer and with \(s=0\) to a completely incorrect one; an \(s=0.5\) is not neutral, it favours the intermediate hypotheses. Linear interpolation is not used, as it would always push towards an extreme hypothesis. When the concrete response components are known, it is preferable to multiply their likelihoods separately instead of reducing everything to a single score. The formula, its formal development and a numerical example are in <a href="matematicas_en.html#s4-8">Foundations §4.8</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Likelihoods generated by the system</h2>
@@ -496,12 +492,10 @@
 <p>Each question has an estimated difficulty.</p>
 <p>Difficulty can be expressed qualitatively, for example as easy, medium, or difficult. It can also be expressed on a more flexible scale.</p>
 <p>The system does not assume that there will always be three difficulties. It adapts to the number of categories defined by the teacher.</p>
-<p>When the teacher defines difficulty qualitatively, the system converts it into numerical values by spreading them evenly over the central half of the level scale. With \(k\) difficulty categories and \(\theta_{\max} = n - 1\) (where \(n\) is the number of levels or hypotheses):</p>
-<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
-<p>(with a single category, \(b = 0\)). The conversion therefore depends on the number of levels in addition to the number of categories; a table depending only on the number of categories would be inconsistent with the level scale when \(n\) is small and the categories many (with two levels, \(\theta = \pm 1\), it would assign difficulties up to \(\pm 2\), inverting the separation between scales). Examples: with 3 levels and 3 categories, \(b \in \{-1,\; 0,\; +1\}\); with 3 levels and 5 categories, \(b \in \{-1,\; -0.5,\; 0,\; +0.5,\; +1\}\); with 4 levels and 3 categories, \(b \in \{-1.5,\; 0,\; +1.5\}\); with 2 levels and 3 categories, \(b \in \{-0.5,\; 0,\; +0.5\}\). This spread automatically guarantees that the extreme difficulty is half the extreme level, whatever the number of hypotheses.</p>
+<p>When the teacher defines difficulty qualitatively, the system converts it into numerical values by spreading them evenly over the central half of the level scale: with \(k\) categories, the easiest and hardest land at \(\pm\theta_{\max}/2\) (with \(\theta_{\max}=n-1\), where \(n\) is the number of levels) and the rest at equal intervals. The conversion therefore depends on the number of levels in addition to the number of categories: a table depending only on the number of categories would be inconsistent when there are few levels and many categories (with two levels, \(\theta=\pm 1\), it would assign difficulties up to \(\pm 2\), inverting the separation between scales). Examples: with 3 levels and 3 categories, \(b \in \{-1, 0, +1\}\); with 3 levels and 5 categories, \(b \in \{-1, -0.5, 0, +0.5, +1\}\); with 4 levels and 3 categories, \(b \in \{-1.5, 0, +1.5\}\). The exact formula is in <a href="matematicas_en.html#s8">Foundations §8.3</a>.</p>
 <p>Consequently, it is not enough simply to have many questions: the bank should be well distributed across the pedagogically relevant axes of the resource, especially difficulty, item type, and the content, skills, or errors the system is meant to discriminate. If an important area is underrepresented, the system may look adaptive while actually reasoning from a weak base.</p>
 <p>The total number is not enough either. To prevent adaptive selection from becoming repetitive, the bank needs <strong>local redundancy</strong>: in each relevant area, there should be several alternative questions with similar difficulty and diagnostic function. If a category, level, or error type has only one useful item, the system will tend to repeat it even when the selection rule itself is correct.</p>
-<p>The \(\theta_i\) numerical values of the levels or hierarchical hypotheses follow the same convention of centering at zero with equal intervals, <strong>but they cover a range strictly greater than that of \(b_q\)</strong>. This condition is important: if \(\theta_{\max} = b_{\max}\), the extreme level and the extreme difficulty coincide at the inflection point of the logistic curve. At that point the question is very discriminating, but the probability of correctness at the extreme level can still be moderate, so getting it right weakly confirms that level. A factor of 2 works well in practice: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). For example, with 3 \(b \in \{-1, 0, +1\}\) difficulties and 3 levels, using \(\theta \in \{-2, 0, +2\}\) makes difficult questions more informative for advanced learners. The most robust approach is to fix the scale by convention and place the difficulties within it: the \(\theta_i\) values depend only on the number of hypotheses (intervals of 2 centred on 0, with \(\theta_{\max} = n - 1\)) and the difficulties stay in the central half, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), clamping outliers to that interval. The opposite —recomputing \(\theta\) from the most extreme item in the bank— is not advisable, because a single atypical question would stretch the scale, saturate the likelihoods of the rest of the questions, and make diagnoses non-comparable across resources with different banks.</p>
+<p>The \(\theta_i\) values that represent the levels are fixed and depend only on the number of hypotheses (centred at zero, with spacing 2 and \(\theta_{\max}=n-1\)); the difficulties are placed <em>within</em> that scale, in the central half, and outliers are clamped to it. Thus the range of \(\theta\) is strictly greater than that of \(b_q\) —which prevents extreme questions from weakly confirming the extreme levels— and an atypical question does not stretch the scale or distort the likelihoods of the rest of the bank. The reason (the "factor of 2 rule") and the full derivation are in <a href="matematicas_en.html#s8">Foundations §8</a>.</p>
 </section>
 <section id="s9">
 <h2>9. Variable number of levels and hypotheses</h2>
@@ -514,9 +508,7 @@
 <li>need-based hypotheses, provided that they are alternatives within the decision being modeled: prior reinforcement / guided practice / consolidation / extension.</li>
 </ul>
 <p>The entropy threshold and stopping criteria are adapted to the number of hypotheses considered. The same threshold is not used for all designs without justification.</p>
-<p>If you want to stop when the most probable hypothesis exceeds a \(p_{\min}\) confidence level (for example, 0.80), an indicative entropy threshold associated with that confidence level is:</p>
-<div class="math-block">\[H_{\text{stop}}=-p_{\min}\log_2 p_{\min}-(1-p_{\min})\log_2\!\left(\frac{1-p_{\min}}{n-1}\right)\]</div>
-<p>This formula assumes that the remaining probability is distributed evenly among the other \(n-1\) hypotheses. Some guide values with \(p_{\min}=0.80\):</p>
+<p>If you want to stop when the most probable hypothesis exceeds a \(p_{\min}\) confidence level (for example, 0.80), the associated entropy threshold is obtained by assuming that the remaining probability is distributed evenly among the other \(n-1\) hypotheses (formula and derivation in <a href="matematicas_en.html#s7">Foundations §7</a>). Some guide values with \(p_{\min}=0.80\):</p>
 <table>
 <thead>
 <tr><th>Hypothesis \(n\)</th><th>\(H_{\text{stop}}\) (bits)</th></tr>

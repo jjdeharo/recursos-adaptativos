@@ -389,7 +389,7 @@
 </section>
 <section id="s5">
 <h2>5. Fórmules bàsiques del model</h2>
-<p>Tot i que el document manté un llenguatge comprensible per a docents, inclou les fórmules essencials perquè el sistema s'implementi de manera coherent.</p>
+<p>Tot i que el document manté un llenguatge comprensible per a docents, inclou les fórmules essencials perquè el sistema s'implementi de manera coherent. El desenvolupament formal, les derivacions i els exemples numèrics són als <a href="matematicas_ca.html">Fonaments matemàtics</a>, que en són la referència canònica; aquí es recullen en la seva forma mínima.</p>
 <h3>5.1. Distribució inicial d'hipòtesis</h3>
 <p>Si hi ha \(n\) hipòtesis i no hi ha informació prèvia fiable, es pot fer servir una distribució uniforme:</p>
 <div class="math-block">\[P(H_i)=\frac{1}{n}\]</div>
@@ -399,7 +399,7 @@
 <div class="math-block">\[P(H_i\mid R)=\frac{P(R\mid H_i)P(H_i)}{P(R)}\]</div>
 <p>El denominador es calcula sumant sobre totes les hipòtesis:</p>
 <div class="math-block">\[P(R)=\sum_i P(R\mid H_i)P(H_i)\]</div>
-<p>On \(R\) és la resposta observada, que pot ser encert, fallada o un altre resultat autocorregible previst pel sistema.</p>
+<p>On \(R\) és la resposta observada, que pot ser encert, fallada o un altre resultat autocorregible previst pel sistema. La derivació completa és als <a href="matematicas_ca.html#s3">Fonaments §3</a>.</p>
 <h3>5.3. Versemblança d'encert i fallada</h3>
 <p>Per a cada pregunta \(q\) i cada hipòtesi \(H_i\), el sistema estima:</p>
 <div class="math-block">\[P(\text{encert}\mid H_i,q)\]</div>
@@ -432,20 +432,16 @@
 <p>On \(p_i\) és la probabilitat actual de cada hipòtesi.</p>
 <p>L'entropia màxima, quan totes les hipòtesis són igual de probables, és:</p>
 <div class="math-block">\[H_{\max}=\log_2(n)\]</div>
-<p>Aquest valor ajuda a ajustar el llindar de parada al nombre d'hipòtesis considerades.</p>
+<p>Aquest valor ajuda a ajustar el llindar de parada al nombre d'hipòtesis considerades. Vegeu <a href="matematicas_ca.html#s5">Fonaments §5</a>.</p>
 <h3>5.7. Guany esperat d'informació</h3>
 <p>Per seleccionar la pregunta següent, el sistema pot estimar la reducció esperada d'incertesa:</p>
 <div class="math-block">\[IG(q)=H(\text{abans})-\left[P(A)\,H(\text{després d'encert})+P(F)\,H(\text{després de fallada})\right]\]</div>
 <p>On \(P(A)\) és la probabilitat total esperada d'encert i \(P(F)\) la probabilitat total esperada de fallada, calculades mitjançant la llei de la probabilitat total:</p>
 <div class="math-block">\[P(A)=\sum_i P(H_i)\cdot P(\text{encert}\mid H_i,q)\]</div>
 <div class="math-block">\[P(F)=1-P(A)\]</div>
-<p>Les distribucions posteriors a l'encert i a la fallada es calculen aplicant Bayes abans d'obtenir la resposta real:</p>
-<div class="math-block">\[P(H_i\mid\text{encert})=\frac{P(\text{encert}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{fallada})=\frac{P(\text{fallada}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
-<p>Quan sigui possible, la pregunta més útil serà la que produeixi una reducció més gran esperada d'entropia.</p>
+<p>Les distribucions posteriors a l'encert i a la fallada es calculen aplicant Bayes (§5.2) abans d'obtenir la resposta real, i amb elles les entropies esperades de cada escenari. Quan sigui possible, la pregunta més útil serà la que produeixi una reducció més gran esperada d'entropia. El desenvolupament complet, amb la formulació com a informació mútua, és als <a href="matematicas_ca.html#s6">Fonaments §6</a>.</p>
 <h3>5.8. Versemblança amb crèdit parcial</h3>
-<p>Les fórmules anteriors suposen que la resposta és binària: encert o error. Però moltes tasques es resolen per passos o components i admeten encerts parcials. En aquests casos, en lloc de classificar la resposta com a encert o fallada, es resumeix en una puntuació \(s\) entre 0 i 1. Si només es disposa d'aquesta puntuació agregada, una versemblança coherent és la geomètrica:</p>
-<div class="math-block">\[L(H_i)=P(\text{encert}\mid H_i,q)^s\,P(\text{fallada}\mid H_i,q)^{1-s}\]</div>
-<p>Si \(s=1\), equival a un encert ple; si \(s=0\), a una fallada plena. Un \(s=0.5\) no ha de ser neutre necessàriament: afavoreix les hipòtesis per a les quals l'ítem prediu una puntuació intermèdia. Quan es coneixen els components concrets de la resposta, és preferible multiplicar-ne les versemblances per separat en comptes de reduir-ho tot a una sola puntuació. El desenvolupament formal i un exemple numèric són a la <a href="matematicas_ca.html">explicació matemàtica</a>.</p>
+<p>Les fórmules anteriors suposen que la resposta és binària: encert o error. Però moltes tasques es resolen per passos o components i admeten encerts parcials. En aquests casos, en lloc de classificar la resposta com a encert o fallada, es resumeix en una puntuació \(s\) entre 0 i 1. Si només es disposa d'aquesta puntuació agregada, la versemblança coherent és la <strong>geomètrica</strong>: pondera la probabilitat d'encert i la de fallada amb exponents \(s\) i \(1-s\), de manera que l'evidència afavoreix la hipòtesi la probabilitat d'encert prevista de la qual s'acosta més a \(s\). Amb \(s=1\) equival a un encert ple i amb \(s=0\) a una fallada plena; un \(s=0.5\) no és neutre, afavoreix les hipòtesis intermèdies. No es fa servir la interpolació lineal, que empenyeria sempre cap a una hipòtesi extrema. Quan es coneixen els components concrets de la resposta, és preferible multiplicar-ne les versemblances per separat en comptes de reduir-ho tot a una sola puntuació. La fórmula, el desenvolupament formal i un exemple numèric són als <a href="matematicas_ca.html#s4-8">Fonaments §4.8</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Versemblances generades pel sistema</h2>
@@ -496,12 +492,10 @@
 <p>Cada pregunta té una dificultat estimada.</p>
 <p>La dificultat es pot expressar de manera qualitativa, per exemple: fàcil, mitjana, difícil. També es pot expressar mitjançant una escala més flexible.</p>
 <p>El sistema no assumeix que sempre hi haurà tres dificultats. S'adapta al nombre de categories que defineixi el docent.</p>
-<p>Quan el docent defineix la dificultat de manera qualitativa, el sistema la converteix a valors numèrics repartint-los uniformement en la meitat central de l'escala de nivells. Amb \(k\) categories de dificultat i \(\theta_{\max} = n - 1\) (on \(n\) és el nombre de nivells o hipòtesis):</p>
-<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
-<p>(amb una sola categoria, \(b = 0\)). La conversió depèn, doncs, del nombre de nivells a més del nombre de categories; una taula que depengués només del nombre de categories seria inconsistent amb l'escala de nivells quan \(n\) és petit i les categories moltes (amb dos nivells, \(\theta = \pm 1\), assignaria dificultats de fins a \(\pm 2\), invertint la separació entre escales). Exemples: amb 3 nivells i 3 categories, \(b \in \{-1,\; 0,\; +1\}\); amb 3 nivells i 5 categories, \(b \in \{-1,\; -0{,}5,\; 0,\; +0{,}5,\; +1\}\); amb 4 nivells i 3 categories, \(b \in \{-1{,}5,\; 0,\; +1{,}5\}\); amb 2 nivells i 3 categories, \(b \in \{-0{,}5,\; 0,\; +0{,}5\}\). Aquest repartiment garanteix automàticament que la dificultat extrema valgui la meitat del nivell extrem, sigui quin sigui el nombre d'hipòtesis.</p>
+<p>Quan el docent defineix la dificultat de manera qualitativa, el sistema la converteix a valors numèrics repartint-los uniformement en la meitat central de l'escala de nivells: amb \(k\) categories, la més fàcil i la més difícil queden a \(\pm\theta_{\max}/2\) (amb \(\theta_{\max}=n-1\), on \(n\) és el nombre de nivells) i la resta a intervals iguals. La conversió depèn, doncs, del nombre de nivells a més del nombre de categories: una taula que depengués només del nombre de categories seria inconsistent quan hi ha pocs nivells i moltes categories (amb dos nivells, \(\theta=\pm 1\), assignaria dificultats de fins a \(\pm 2\), invertint la separació entre escales). Exemples: amb 3 nivells i 3 categories, \(b \in \{-1, 0, +1\}\); amb 3 nivells i 5 categories, \(b \in \{-1, -0{,}5, 0, +0{,}5, +1\}\); amb 4 nivells i 3 categories, \(b \in \{-1{,}5, 0, +1{,}5\}\). La fórmula exacta és als <a href="matematicas_ca.html#s8">Fonaments §8.3</a>.</p>
 <p>En conseqüència, no n'hi ha prou que hi hagi moltes preguntes: convé que el banc estigui ben distribuït en els eixos pedagògicament rellevants del recurs, sobretot la dificultat, el tipus d'ítem i els continguts, habilitats o errors que es volen discriminar. Si una zona important queda infrarepresentada, el sistema pot semblar adaptatiu i, tanmateix, raonar sobre una base pobra.</p>
 <p>Tampoc no n'hi ha prou amb el nombre total. Perquè la selecció adaptativa no es torni repetitiva, cal <strong>redundància local</strong>: en cada zona rellevant del banc convé disposar de diverses preguntes alternatives de dificultat i funció diagnòstica semblants. Si una categoria, nivell o tipus d'error només té un ítem útil, el sistema tendirà a repetir-lo encara que la regla de selecció sigui correcta.</p>
-<p>Els valors numèrics \(\theta_i\) dels nivells o hipòtesis jeràrquiques segueixen la mateixa convenció de centrat en zero amb intervals iguals, <strong>però abasten un rang estrictament més gran que el de \(b_q\)</strong>. Aquesta condició és important: si \(\theta_{\max} = b_{\max}\), el nivell extrem i la dificultat extrema coincideixen al punt d'inflexió de la corba logística. En aquest punt la pregunta discrimina molt, però la probabilitat d'encert del nivell extrem encara pot ser moderada, per això encertar-la confirma feblement aquest nivell. Un factor de 2 funciona bé a la pràctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Per exemple, amb 3 dificultats \(b \in \{-1, 0, +1\}\) i 3 nivells, fer servir \(\theta \in \{-2, 0, +2\}\) fa que les preguntes difícils resultin més informatives per als alumnes avançats. El més robust és fixar l'escala per convenció i situar les dificultats dins d'ella: els valors \(\theta_i\) depenen només del nombre d'hipòtesis (intervals de 2 centrats en 0, amb \(\theta_{\max} = n - 1\)) i les dificultats es mantenen a la meitat central, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), retallant a aquest interval els valors atípics. No convé el contrari —recalcular \(\theta\) a partir de l'ítem més extrem del banc—, perquè una sola pregunta atípica estiraria l'escala, saturaria les versemblances de la resta de preguntes i faria els diagnòstics no comparables entre recursos amb bancs diferents.</p>
+<p>Els valors \(\theta_i\) que representen els nivells són fixos i depenen només del nombre d'hipòtesis (centrats en zero, amb espaiat 2 i \(\theta_{\max}=n-1\)); les dificultats se situen <em>dins</em> d'aquesta escala, a la meitat central, i els valors atípics es retallen a ella. Així, el rang de \(\theta\) és estrictament més gran que el de \(b_q\) —cosa que evita que les preguntes extremes confirmin feblement els nivells extrems— i una pregunta atípica no estira l'escala ni distorsiona les versemblances de la resta del banc. El motiu (la «regla del factor 2») i la derivació completa són als <a href="matematicas_ca.html#s8">Fonaments §8</a>.</p>
 </section>
 <section id="s9">
 <h2>9. Nombre variable de nivells i hipòtesis</h2>
@@ -514,9 +508,7 @@
 <li>hipòtesis per necessitats, sempre que siguin alternatives en la decisió que es modela: reforç previ / pràctica guiada / consolidació / ampliació.</li>
 </ul>
 <p>El llindar d'entropia i els criteris de parada s'adapten al nombre d'hipòtesis considerades. No convé fer servir el mateix llindar per a tots els dissenys sense justificació.</p>
-<p>Si es vol aturar quan la hipòtesi més probable supera un nivell de confiança \(p_{\min}\) (per exemple, 0,80), un llindar d'entropia orientatiu associat a aquest nivell de confiança és:</p>
-<div class="math-block">\[H_{\text{stop}}=-p_{\min}\log_2 p_{\min}-(1-p_{\min})\log_2\!\left(\frac{1-p_{\min}}{n-1}\right)\]</div>
-<p>Aquesta fórmula suposa que la probabilitat restant es reparteix uniformement entre les altres hipòtesis \(n-1\). Alguns valors orientatius amb \(p_{\min}=0,80\):</p>
+<p>Si es vol aturar quan la hipòtesi més probable supera un nivell de confiança \(p_{\min}\) (per exemple, 0,80), el llindar d'entropia associat s'obté suposant que la probabilitat restant es reparteix uniformement entre les altres \(n-1\) hipòtesis (fórmula i derivació als <a href="matematicas_ca.html#s7">Fonaments §7</a>). Alguns valors orientatius amb \(p_{\min}=0,80\):</p>
 <table>
 <thead>
 <tr><th>Hipòtesi \(n\)</th><th>\(H_{\text{stop}}\) (bits)</th></tr>

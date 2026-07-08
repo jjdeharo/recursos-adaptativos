@@ -392,7 +392,7 @@
 <p>Per exemple, un ítem amb tres components de pesos \((0.5,\,0.3,\,0.2)\) i opcions \((2,\,4,\,6)\) té una puntuació esperada per atzar:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
 <p>Aquest agregat \(c_q\) entra a la ICC (§4.2) només si la corba s'interpreta com a <strong>puntuació esperada</strong> de l'ítem compost. Si l'ítem es corregeix com a tot-o-res, la probabilitat d'encert ple per atzar no és la mitjana sinó el producte dels atzars dels components independents: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). Els pesos \(w_j\) han de ser els mateixos que es fan servir per puntuar el crèdit parcial (§4.8).</p>
-<h3>4.8. Crèdit parcial: versemblança suau</h3>
+<h3 id="s4-8">4.8. Crèdit parcial: versemblança suau</h3>
 <p>Quan la resposta admet graus —no només encert o error, sinó una puntuació \(s \in [0, 1]\) obtinguda dels components ponderats— la versemblança ha d'afavorir les hipòtesis la predicció de les quals \(p_i = P(A \mid H_i, q)\) sigui compatible amb aquesta puntuació. Si només es disposa d'una puntuació agregada, una aproximació coherent és la versemblança geomètrica:</p>
 <div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Com \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escrivint \(p_i = P(A \mid H_i, q)\):</p>
