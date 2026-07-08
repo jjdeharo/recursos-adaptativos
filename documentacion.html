@@ -289,7 +289,7 @@
 <a class="back-link" href="index.html">← Inicio</a>
 <h1>Protocolo para sistemas educativos adaptativos bayesianos</h1>
 <p>Guía técnica para implementar evaluación adaptativa con inferencia bayesiana y entropía de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.12</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -374,7 +374,7 @@
 <p>Al inicio, si no hay información previa del alumno, el sistema puede partir de probabilidades equilibradas. Si hay información previa fiable, puede usar una distribución inicial justificada.</p>
 <h3>3.1. Estado multidimensional</h3>
 <p>El estado del alumno no tiene por qué ser una sola distribución. Cuando interesa saber no solo cuánto domina, sino qué habilidades o pasos concretos falla, el sistema puede mantener varias distribuciones de probabilidad en paralelo: una por categoría o nivel y otra por cada dimensión diagnóstica (una habilidad, un paso del proceso, un tipo de error).</p>
-<p>Todas se actualizan con la misma respuesta del alumno: el resultado global modifica la creencia sobre el nivel, y cada parte de la respuesta modifica la creencia sobre la dimensión correspondiente. Así, la estimación de nivel indica qué conviene practicar, y el diagnóstico por dimensión indica qué conviene explicar o reforzar. Cada dimensión puede tener su propia probabilidad de acierto por azar, por lo que sus porcentajes no son directamente comparables entre sí; la referencia común es el valor de nivel subyacente.</p>
+<p>Cada distribución debe actualizarse con la evidencia que le corresponde: el resultado global puede modificar la creencia sobre el nivel, y cada parte evaluada de la respuesta modifica la creencia sobre su dimensión. Si una misma respuesta global depende de varias habilidades, no conviene usar ese único acierto o fallo para actualizar todas las dimensiones independientes, porque se duplicaría la evidencia y se atribuiría mal la causa del error. Así, la estimación de nivel indica qué conviene practicar, y el diagnóstico por dimensión indica qué conviene explicar o reforzar. Cada dimensión puede tener su propia probabilidad de acierto por azar, por lo que sus porcentajes no son directamente comparables entre sí; la referencia común es el valor de nivel subyacente.</p>
 <figure style="margin:1.25rem 0 0;text-align:center;">
 <img src="img/clasificacion_hipotesis_es.png" alt="Clasificación de las hipótesis en cuatro tipos: ordinal unifactorial (una sola dimensión con niveles ordenados, IRT), ordinal multidimensional (varias dimensiones jerárquicas en paralelo, IRT por dimensión), nominal unifactorial (categorías excluyentes con verosimilitudes explícitas) y nominal multifactorial (factores que pueden coexistir, modelados como dimensiones separadas o perfiles completos)." loading="lazy" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:12px;">
 <figcaption style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Clasificación de las hipótesis: cómo decidir la arquitectura de datos y el modelo matemático.</figcaption>
@@ -435,8 +435,8 @@
 <li>\(c_q\) es la probabilidad mínima de acierto por azar.</li>
 </ul>
 <p>Esta fórmula no sustituye a Bayes. Solo genera las verosimilitudes que Bayes necesita.</p>
-<p>El parámetro \(a\) controla la pendiente de la curva logística. Un valor alto hace que la función discrimine más entre hipótesis próximas; un valor bajo produce transiciones más suaves. Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, <strong>un valor de 1.0 a 1.5 es un punto de partida razonable</strong>; 1.5 es una buena elección por defecto.</p>
-<p>Ahora bien, cuánto separa realmente una pregunta entre niveles no depende solo de \(a\), sino del producto \(a\,(1-c_q)\): el suelo de azar «aplana» la parte alta de la curva. Por eso conviene fijar una discriminación efectiva objetivo \(a_{\text{ef}}\) (por defecto 1.25, elegido para que la \(a\) derivada no supere 2.5 ni siquiera en verdadero/falso, donde \(c_q = 0.5\)) y calcular \(a\) en cada pregunta como \(a = a_{\text{ef}} / (1 - c_q)\). Esto no es solo para pruebas que mezclan formatos: conviene aplicarlo <strong>siempre</strong>, porque garantiza que preguntas con distinto número de opciones —e incluso recursos distintos entre sí— tengan la misma capacidad real de discriminar. Con \(a\) fijo, una pregunta de 3 opciones (\(c_q = 1/3\)) discriminaría menos que una de 4 (\(c_q = 1/4\)) aunque ambas usaran \(a = 1.5\). En <a href="matematicas.html#s4">la formulación matemática (§4.4)</a> se detalla esta relación.</p>
+<p>El parámetro \(a\) controla la pendiente de la curva logística. Un valor alto hace que la función discrimine más entre hipótesis próximas; un valor bajo produce transiciones más suaves. Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, valores de 1.0 a 1.5 son puntos de partida razonables; en esta metodología se fija por defecto la discriminación efectiva \(a_{\text{ef}}=1.25\) y se deriva \(a\) según el suelo de azar de cada ítem.</p>
+<p>Ahora bien, cuánto separa la curva entre niveles no depende solo de \(a\), sino del producto \(a\,(1-c_q)\): el suelo de azar «aplana» la parte alta de la curva. Por eso conviene fijar una discriminación efectiva objetivo \(a_{\text{ef}}\) (por defecto 1.25, elegido para que la \(a\) derivada no supere 2.5 ni siquiera en verdadero/falso, donde \(c_q = 0.5\)) y calcular \(a\) en cada pregunta como \(a = a_{\text{ef}} / (1 - c_q)\). Esto no es solo para pruebas que mezclan formatos: conviene aplicarlo <strong>siempre</strong>, porque iguala la pendiente máxima de la curva y evita que el formato altere mecánicamente esa pendiente. No significa que todos los formatos aporten la misma información esperada: la selección por ganancia de información seguirá prefiriendo los ítems que discriminen mejor en el estado posterior actual. En <a href="matematicas.html#s4">la formulación matemática (§4.4)</a> se detalla esta relación.</p>
 <h3>5.6. Entropía de Shannon</h3>
 <p>La incertidumbre del sistema se mide mediante:</p>
 <div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
@@ -454,9 +454,9 @@
 <div class="math-block">\[P(H_i\mid\text{acierto})=\frac{P(\text{acierto}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{fallo})=\frac{P(\text{fallo}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
 <p>Cuando sea posible, la pregunta más útil será la que produzca mayor reducción esperada de entropía.</p>
 <h3>5.8. Verosimilitud con crédito parcial</h3>
-<p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1, y la verosimilitud se obtiene interpolando entre la de acierto y la de fallo:</p>
-<div class="math-block">\[L(H_i)=s\,P(\text{acierto}\mid H_i,q)+(1-s)\,P(\text{fallo}\mid H_i,q)\]</div>
-<p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno; si \(s=0{,}5\), la verosimilitud es plana y no modifica la distribución. Esta verosimilitud suave entra en la actualización bayesiana igual que cualquier otra: solo cambia la forma de construirla. La puntuación \(s\) se calcula de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios cuyos pesos suman 1. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
+<p>Las fórmulas anteriores suponen que la respuesta es binaria: acierto o fallo. Pero muchas tareas se resuelven por pasos o componentes y admiten aciertos parciales. En esos casos, en lugar de clasificar la respuesta como acierto o fallo, se resume en una puntuación \(s\) entre 0 y 1. Si solo se dispone de esa puntuación agregada, una verosimilitud coherente es la geométrica:</p>
+<div class="math-block">\[L(H_i)=P(\text{acierto}\mid H_i,q)^s\,P(\text{fallo}\mid H_i,q)^{1-s}\]</div>
+<p>Si \(s=1\), equivale a un acierto pleno; si \(s=0\), a un fallo pleno. Un \(s=0{,}5\) no tiene por qué ser neutro: favorece las hipótesis para las que el ítem predice una puntuación intermedia. Cuando se conocen los componentes concretos de la respuesta, es preferible multiplicar sus verosimilitudes por separado en lugar de reducirlo todo a una sola puntuación. El desarrollo formal y un ejemplo numérico están en la <a href="matematicas.html">explicación matemática</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Verosimilitudes generadas por el sistema</h2>
@@ -507,21 +507,12 @@
 <p>Cada pregunta tiene una dificultad estimada.</p>
 <p>La dificultad puede expresarse de forma cualitativa, por ejemplo: fácil, media, difícil. También puede expresarse mediante una escala más flexible.</p>
 <p>El sistema no asume que siempre habrá tres dificultades. Se adapta al número de categorías que defina el docente.</p>
-<p>Cuando el docente define la dificultad de forma cualitativa, el sistema la convierte a valores numéricos para operar con la función logística. Una convención útil es centrar los valores en cero y separarlos por intervalos iguales:</p>
-<table>
-<thead>
-<tr><th>Categorías de dificultad</th><th>Valores numéricos \(b_q\)</th></tr>
-</thead>
-<tbody>
-<tr><td>2</td><td>−0,5 · · 0,5</td></tr>
-<tr><td>3</td><td>−1 · · 0 · · 1</td></tr>
-<tr><td>4</td><td>−1,5 · · −0,5 · · 0,5 · · 1,5</td></tr>
-<tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
-</tbody>
-</table>
+<p>Cuando el docente define la dificultad de forma cualitativa, el sistema la convierte a valores numéricos repartiéndolos uniformemente en la mitad central de la escala de niveles. Con \(k\) categorías de dificultad y \(\theta_{\max} = n - 1\) (siendo \(n\) el número de niveles o hipótesis):</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(con una sola categoría, \(b = 0\)). La conversión depende, por tanto, del número de niveles además del número de categorías; una tabla que dependiera solo del número de categorías sería inconsistente con la escala de niveles cuando \(n\) es pequeño y las categorías muchas (con dos niveles, \(\theta = \pm 1\), asignaría dificultades de hasta \(\pm 2\), invirtiendo la separación entre escalas). Ejemplos: con 3 niveles y 3 categorías, \(b \in \{-1,\; 0,\; +1\}\); con 3 niveles y 5 categorías, \(b \in \{-1,\; -0{,}5,\; 0,\; +0{,}5,\; +1\}\); con 4 niveles y 3 categorías, \(b \in \{-1{,}5,\; 0,\; +1{,}5\}\); con 2 niveles y 3 categorías, \(b \in \{-0{,}5,\; 0,\; +0{,}5\}\). Este reparto garantiza automáticamente que la dificultad extrema valga la mitad del nivel extremo, sea cual sea el número de hipótesis.</p>
 <p>En consecuencia, no basta con que haya muchas preguntas: conviene que el banco esté bien distribuido en los ejes pedagógicamente relevantes del recurso, sobre todo la dificultad, el tipo de ítem y los contenidos, habilidades o errores que se quieren discriminar. Si una zona importante queda infrarrepresentada, el sistema puede parecer adaptativo y, sin embargo, razonar sobre una base pobre.</p>
 <p>Tampoco basta con el número total. Para que la selección adaptativa no se vuelva repetitiva, hace falta <strong>redundancia local</strong>: en cada zona relevante del banco conviene disponer de varias preguntas alternativas de dificultad y función diagnóstica parecidas. Si una categoría, nivel o tipo de error solo tiene un ítem útil, el sistema tenderá a repetirlo aunque la regla de selección sea correcta.</p>
-<p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero abarcan un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es calcular \(\theta_{\max}\) automáticamente: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+<p>Los valores numéricos \(\theta_i\) de los niveles o hipótesis jerárquicas siguen la misma convención de centrado en cero con intervalos iguales, <strong>pero abarcan un rango estrictamente mayor que el de \(b_q\)</strong>. Esta condición es importante: si \(\theta_{\max} = b_{\max}\), el nivel extremo y la dificultad extrema coinciden en el punto de inflexión de la curva logística. En ese punto la pregunta discrimina mucho, pero la probabilidad de acierto del nivel extremo todavía puede ser moderada, por lo que acertarla confirma débilmente ese nivel. Un factor de 2 funciona bien en la práctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Por ejemplo, con 3 dificultades \(b \in \{-1, 0, +1\}\) y 3 niveles, usar \(\theta \in \{-2, 0, +2\}\) hace que las preguntas difíciles resulten más informativas para los alumnos avanzados. Lo más robusto es fijar la escala por convención y situar las dificultades dentro de ella: los valores \(\theta_i\) dependen solo del número de hipótesis (intervalos de 2 centrados en 0, con \(\theta_{\max} = n - 1\)) y las dificultades se mantienen en la mitad central, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), recortando a ese intervalo los valores atípicos. No conviene lo contrario —recalcular \(\theta\) a partir del ítem más extremo del banco—, porque una sola pregunta atípica estiraría la escala, saturaría las verosimilitudes del resto de preguntas y haría los diagnósticos no comparables entre recursos con bancos distintos.</p>
 </section>
 <section id="s9">
 <h2>9. Número variable de niveles e hipótesis</h2>
@@ -583,7 +574,7 @@
 <p>Si dentro de una misma prueba hay preguntas con distinto número de opciones, cada pregunta usa su propia probabilidad mínima de acierto por azar.</p>
 <p>En selección múltiple con varias respuestas correctas, la probabilidad de acierto por azar puede ser distinta. El sistema trata este caso de forma específica, especialmente si se exige coincidencia exacta con la combinación correcta.</p>
 <p>En respuestas numéricas con tolerancia o respuestas breves exactas, la probabilidad de acierto por azar puede considerarse nula o muy baja, según el diseño.</p>
-<p>Cuando un ítem se corrige por varios componentes con distinto número de opciones —por ejemplo, una tarea con varios pasos—, su probabilidad de acierto por azar no es la de una sola pregunta. En ese caso se calcula como la media ponderada de los azares de cada componente, usando los mismos pesos con que se puntúa la respuesta. Ese valor agregado es el que alimenta la función logística del ítem completo.</p>
+<p>Cuando un ítem se corrige por varios componentes con distinto número de opciones —por ejemplo, una tarea con varios pasos— y se puntúa con crédito parcial, la media ponderada de los azares de cada componente representa la <strong>puntuación parcial esperada por azar</strong>, no la probabilidad de acertar el ítem completo. Ese valor puede alimentar la función logística si la curva se interpreta como puntuación esperada del ítem compuesto. Si el ítem se corrige como todo-o-nada, la probabilidad de acierto pleno por azar es el producto de los azares de los componentes independientes.</p>
 </section>
 <section id="s12">
 <h2>12. Uso de una función logística</h2>
@@ -771,7 +762,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Evaluación formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprendizaje para el dominio; base de los mecanismos de refuerzo y recuperación.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 1.12). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Protocolo para sistemas educativos adaptativos bayesianos</em> (versión 2.0). https://jjdeharo.github.io/recursos-adaptativos/documentacion.html</p>
 <p class="callout">
 El desarrollo formal de los mecanismos descritos en este protocolo —inferencia bayesiana, modelo IRT, entropía de Shannon y selección adaptativa— se encuentra en el documento complementario <a href="matematicas.html">Fundamentos matemáticos</a>, que incluye fórmulas, demostraciones y un ejemplo numérico completo.
 </p>

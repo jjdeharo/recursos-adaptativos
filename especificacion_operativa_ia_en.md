@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 1.9**
+**Version 2.0**
 
 ## Purpose
 
@@ -51,8 +51,14 @@ Attach this document to the AI and use the following prompt:
 - If there is no reliable prior information, use a uniform distribution.
 - If the hypotheses are hierarchical, assign them ordered, centred `theta` values.
 - If the teacher does not set values, use a symmetric scale centred at 0.
-- When using centred difficulties `b_q`, make the `theta` scale span a wider range than the difficulty scale. Practical rule: `theta_max = 2 * max(abs(b_q))`.
-- Edge case: if `max(abs(b_q)) = 0` (all questions share the same central difficulty), that rule would give `theta_max = 0` and the hypotheses would collapse to the same value. Use a minimum of `theta_max = 1` in that case.
+- The `theta` scale is fixed and depends only on the number of hypotheses, not on the question bank. With `n` hierarchical hypotheses, use values centred on `0` with intervals of `2`: `theta_i = 2 * (i - 1) - (n - 1)`, so that `theta` runs over `{-(n-1), ..., +(n-1)}` and `theta_max = n - 1`. Examples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
+- Place the difficulties within the central half of that scale: `b_q` must lie in `[-theta_max / 2, +theta_max / 2]`. Since `theta_max` depends on `n`, the conversion of difficulties also depends on `n`, not only on the number of categories.
+- If the teacher gives `k` qualitative difficulty categories, spread them uniformly over that interval: `b_j = (theta_max / 2) * (2 * (j - 1) / (k - 1) - 1)` for `j = 1..k` (if `k = 1`, use `b = 0`). Examples: `n = 3` and `k = 3` → `{-1, 0, +1}`; `n = 3` and `k = 5` → `{-1, -0.5, 0, +0.5, +1}`; `n = 4` and `k = 3` → `{-1.5, 0, +1.5}`; `n = 2` and `k = 5` → `{-0.5, -0.25, 0, +0.25, +0.5}`.
+- Do not use a fixed difficulty table independent of `n`: with few hypotheses and many categories it would produce difficulties outside the range of levels (for example, `n = 2` with `b = ±2`) and cancel the separation between scales.
+- If the teacher gives numeric `b_q` values outside the interval, clamp them to the interval.
+- Never recompute `theta` from the extremes of the bank. A single atypically hard or easy question must not redefine the scale: if you stretch `theta` to accommodate it, you saturate the likelihoods of the rest of the bank (all probabilities pinned to `c_q` or to `1`) and the posterior makes overconfident jumps on a single answer.
+- If most of the bank's difficulties fell outside the interval, do not stretch the scale: review the definition of levels and difficulties with the teacher, because the design is inconsistent.
+- Comparability invariant: with `a_ef = 1.25` and intervals of `2` between adjacent hypotheses, the product `a_ef * Δtheta = 2.5` sets the maximum strength of an update, whatever `n` is (as `n` grows so does `theta_max`, but the spacing between adjacent hypotheses stays the same). Keep this invariant across resources so that confidences and convergence speeds remain comparable.
 
 ## Bayesian Update
 
@@ -86,7 +92,7 @@ This must be done after each relevant interaction.
   - `c_q = 1 / m_q` if guessing is possible
   - `c_q = 0` if it is not
 - Do not set `a` directly: fix the target effective discrimination `a_ef = 1.25` and compute `a` per question as `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
-  - Do this **always**, even if all questions have the same number of options. What matters is the effective discrimination `a * (1 - c_q)`, not `a`. A fixed `a` with different `c_q` produces different, non-comparable real discriminations (for example, a fixed `a=1.5` gives `a_ef=1.0` with 3 options but `a_ef=1.125` with 4).
+  - Do this **always**, even if all questions have the same number of options. This rule equalizes the ICC's maximum slope; it does not guarantee that every format provides the same expected information. A fixed `a` with different `c_q` produces different and non-comparable real slopes (for example, fixed `a=1.5` gives `a_ef=1.0` with 3 options but `a_ef=1.125` with 4). Information-gain selection will still favor the items that provide more evidence.
   - `a_ef = 1.25` guarantees that `a` stays within the usual psychometric range (0.5–2.5) for any format with 2 or more options: the extreme case, true/false (`c_q=0.5`), gives exactly `a = 2.5`.
   - Values you should obtain: open (`c_q=0`) → `a=1.25`; 5 options (`c_q=0.20`) → `a=1.5625`; 4 options (`c_q=0.25`) → `a≈1.667`; 3 options (`c_q=1/3`) → `a=1.875`; true/false (`c_q=0.5`) → `a=2.5`.
 - If the learner fails:
@@ -108,30 +114,33 @@ This must be done after each relevant interaction.
 ## Partial Credit Responses
 
 - If a response is not simply correct or incorrect but admits degrees (multiple steps, weighted components, partial credit), summarise it as a score `s` between `0` and `1`.
-- Construct the likelihood by interpolating between correct and incorrect:
+- If you only have an aggregated partial score `s`, construct a geometric likelihood:
 
-`L(H_i) = s * P(correct | H_i, q) + (1 - s) * P(incorrect | H_i, q)`
+`L(H_i) = P(correct | H_i, q)^s * P(incorrect | H_i, q)^(1 - s)`
 
 - Use this `L(H_i)` in the Bayesian update instead of choosing between `P(correct)` and `P(incorrect)`. Normalisation and the rest of the process remain unchanged.
-- Edge cases: `s = 1` is equivalent to full credit; `s = 0` to full failure; `s = 0.5` provides no information and leaves the posterior almost unchanged.
+- Edge cases: `s = 1` is equivalent to full credit; `s = 0` to full failure. An `s = 0.5` is not necessarily neutral: it favors the hypotheses for which the item predicts an intermediate score.
+- If the item has `J` approximately independent components and `s` is the weighted fraction of correct components, you can preserve the strength of the evidence with `L(H_i) = P(correct | H_i, q)^(sJ) * P(incorrect | H_i, q)^((1 - s)J)`.
+- If you have separate evidence by component, prefer multiplying the component likelihoods instead of reducing everything to a single `s`.
 - Define how `s` is calculated in an explicit, self-correctable way: weighted sum of sub-criteria, fraction of correct steps, proximity to the numerical solution, etc. Weights must sum to `1`.
 - Do not treat a response that admits degrees as binary: diagnostic information is lost.
 - To select the next question, compute information gain over the outcomes the item actually models. For binary or partial-credit items, the approximation with full success and full failure remains acceptable; if you model distractors or full profiles, average over all relevant response outcomes.
 
 ## Chance Floor in Composite Items
 
-- If an item is scored across several components with different numbers of options, the probability of a correct response by chance is not `1/m`.
-- Calculate the aggregate chance floor as the weighted mean of the chance levels for each component:
+- If an item is scored across several components with different numbers of options and partial credit is used, the aggregate floor is not the probability of getting the whole item right, but the expected partial score by chance.
+- Calculate that expected-score floor as the weighted mean of the chance levels for each component:
 
 `c_q = Σ_j w_j * c_j`  with  `c_j = 1 / m_j`  and  `Σ_j w_j = 1`
 
-- Use that aggregate `c_q` in the logistic function when generating the likelihoods for the full item.
+- Use that aggregate `c_q` in the logistic function only when the ICC represents the expected score of the composite item.
+- If the composite item is scored all-or-nothing, do not use the weighted mean: the probability of full success by chance is the product `Π_j c_j` if the components are guessed independently.
 - The weights `w_j` must match those used to calculate the partial credit score `s`.
 
 ## Multidimensional Diagnosis
 
 - If you need to know not only the overall level but also which skills or steps are failing, maintain several Bayesian distributions in parallel: one per category or level, and one for each diagnostic dimension (skill, step, error type).
-- Update all relevant distributions with the same response: the overall outcome feeds the level belief; each sub-criterion feeds the belief for its own dimension.
+- Update each distribution with the evidence that belongs to it: the overall outcome may feed the level belief; each sub-criterion must feed only its own dimension. Do not use the same global correct/incorrect result to update several independent dimensions if the question requires multiple skills at once, because that duplicates evidence and misattributes the cause of the error.
 - Each dimension may have its own chance floor `c` depending on its number of options, so their percentages are not directly comparable across dimensions: the common reference is the latent value `theta`.
 - Do not merge into a single distribution dimensions that can coexist: use separate distributions.
 - If several diagnostic dimensions interact strongly, you may replace those independent distributions with a single distribution over full profiles; the key is not to force as mutually exclusive factors that can in fact coexist.

@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Inici</a>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.12</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -363,7 +363,7 @@
 <p>A l'inici, si no hi ha informació prèvia de l'alumne, el sistema pot partir de probabilitats equilibrades. Si hi ha informació prèvia fiable, podeu utilitzar una distribució inicial justificada.</p>
 <h3>3.1. Estat multidimensional</h3>
 <p>L'estat de l'alumne no ha de ser una sola distribució. Quan interessa saber no tan sols quant domina, sinó quines habilitats o passos concrets falla, el sistema pot mantenir diverses distribucions de probabilitat en paral·lel: una per categoria o nivell i una altra per cada dimensió diagnòstica (una habilitat, un pas del procés, un tipus d'error).</p>
-<p>Totes s'actualitzen amb la mateixa resposta de l'alumne: el resultat global modifica la creença sobre el nivell, i cada part de la resposta modifica la creença sobre la dimensió corresponent. Així, l'estimació de nivell indica què cal practicar, i el diagnòstic per dimensió indica què convé explicar o reforçar. Cada dimensió pot tenir la seva pròpia probabilitat d'encert per atzar, per la qual cosa els seus percentatges no són directament comparables entre si; la referència comuna és el valor de nivell subjacent.</p>
+<p>Cada distribució s'ha d'actualitzar amb l'evidència que li correspon: el resultat global pot modificar la creença sobre el nivell, i cada part avaluada de la resposta modifica la creença sobre la seva dimensió. Si una mateixa resposta global depèn de diverses habilitats, no convé fer servir aquest únic encert o error per actualitzar totes les dimensions independents, perquè es duplicaria l'evidència i s'atribuiria malament la causa de l'error. Així, l'estimació de nivell indica què cal practicar, i el diagnòstic per dimensió indica què convé explicar o reforçar. Cada dimensió pot tenir la seva pròpia probabilitat d'encert per atzar, per la qual cosa els seus percentatges no són directament comparables entre si; la referència comuna és el valor de nivell subjacent.</p>
 <figure style="margin:1.25rem 0 0;text-align:center;">
 <img src="img/clasificacion_hipotesis_ca.png" alt="Classificació de les hipòtesis en quatre tipus: ordinal unifactorial (una sola dimensió amb nivells ordenats, IRT), ordinal multidimensional (diverses dimensions jeràrquiques en paral·lel, IRT per dimensió), nominal unifactorial (categories excloents amb versemblances explícites) i nominal multifactorial (factors que poden coexistir, modelats com a dimensions separades o perfils complets)." loading="lazy" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:12px;">
 <figcaption style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Classificació de les hipòtesis: com decidir l'arquitectura de dades i el model matemàtic.</figcaption>
@@ -424,8 +424,8 @@
 <li>\(c_q\) és la probabilitat mínima d'encert per atzar.</li>
 </ul>
 <p>Aquesta fórmula no substitueix Bayes. Només genera les versemblances que Bayes necessita.</p>
-<p>El paràmetre \(a\) controla el pendent de la corba logística. Un valor alt fa que la funció discrimini més entre hipòtesis properes; un valor baix produeix transicions més suaus. Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, <strong>un valor de 1.0 a 1.5 és un punt de partida raonable</strong>; 1.5 és una bona elecció per defecte.</p>
-<p>Ara bé, quant separa realment una pregunta entre nivells no depèn només de \(a\), sinó del producte \(a\,(1-c_q)\): el sòl d'atzar «aplana» la part alta de la corba. Per això convé fixar una discriminació efectiva objectiu \(a_{\text{ef}}\) (per defecte 1.25, triat perquè la \(a\) derivada no superi 2.5 ni tan sols en vertader/fals, on \(c_q = 0.5\)) i calcular \(a\) en cada pregunta com \(a = a_{\text{ef}} / (1 - c_q)\). Això no és només per a proves que barregen formats: convé aplicar-ho <strong>sempre</strong>, perquè garanteix que preguntes amb diferent nombre d'opcions —i fins i tot recursos diferents entre si— tinguin la mateixa capacitat real de discriminar. Amb \(a\) fix, una pregunta de 3 opcions (\(c_q = 1/3\)) discriminaria menys que una de 4 (\(c_q = 1/4\)) encara que totes dues fessin servir \(a = 1.5\). A <a href="matematicas_ca.html#s4">la formulació matemàtica (§4.4)</a> es detalla aquesta relació.</p>
+<p>El paràmetre \(a\) controla el pendent de la corba logística. Un valor alt fa que la funció discrimini més entre hipòtesis properes; un valor baix produeix transicions més suaus. Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, valors d'1.0 a 1.5 són punts de partida raonables; en aquesta metodologia es fixa per defecte la discriminació efectiva \(a_{\text{ef}}=1.25\) i es deriva \(a\) segons el sòl d'atzar de cada ítem.</p>
+<p>Ara bé, quant separa la corba entre nivells no depèn només de \(a\), sinó del producte \(a\,(1-c_q)\): el sòl d'atzar «aplana» la part alta de la corba. Per això convé fixar una discriminació efectiva objectiu \(a_{\text{ef}}\) (per defecte 1.25, triat perquè la \(a\) derivada no superi 2.5 ni tan sols en vertader/fals, on \(c_q = 0.5\)) i calcular \(a\) en cada pregunta com \(a = a_{\text{ef}} / (1 - c_q)\). Això no és només per a proves que barregen formats: convé aplicar-ho <strong>sempre</strong>, perquè iguala el pendent màxim de la corba i evita que el format alteri mecànicament aquest pendent. No vol dir que tots els formats aportin la mateixa informació esperada: la selecció per guany d'informació continuarà preferint els ítems que discriminin millor en l'estat posterior actual. A <a href="matematicas_ca.html#s4">la formulació matemàtica (§4.4)</a> es detalla aquesta relació.</p>
 <h3>5.6. Entropia de Shannon</h3>
 <p>La incertesa del sistema es mesura mitjançant:</p>
 <div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
@@ -443,9 +443,9 @@
 <div class="math-block">\[P(H_i\mid\text{encert})=\frac{P(\text{encert}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{fallada})=\frac{P(\text{fallada}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
 <p>Quan sigui possible, la pregunta més útil serà la que produeixi una reducció més gran esperada d'entropia.</p>
 <h3>5.8. Versemblança amb crèdit parcial</h3>
-<p>Les fórmules anteriors suposen que la resposta és binària: encert o error. Però moltes tasques es resolen per passos o components i admeten encerts parcials. En aquests casos, en lloc de classificar la resposta com a encert o fallada, es resumeix en una puntuació \(s\) entre 0 i 1, i la versemblança s'obté interpolant entre la d'encert i la de fallada:</p>
-<div class="math-block">\[L(H_i)=s\,P(\text{encert}\mid H_i,q)+(1-s)\,P(\text{fallada}\mid H_i,q)\]</div>
-<p>Si \(s=1\), equival a un encert ple; si \(s=0\), a una fallada plena; si \(s=0.5\), la versemblança és plana i no modifica la distribució. Aquesta versemblança suau entra en l'actualització bayesiana igual que qualsevol altra: només canvia la manera de construir-la. La puntuació \(s\) es calcula de forma explícita i autocorregible, normalment com a suma ponderada de subcriteris els pesos dels quals sumen 1. El desenvolupament formal i un exemple numèric són a la <a href="matematicas_ca.html">explicació matemàtica</a>.</p>
+<p>Les fórmules anteriors suposen que la resposta és binària: encert o error. Però moltes tasques es resolen per passos o components i admeten encerts parcials. En aquests casos, en lloc de classificar la resposta com a encert o fallada, es resumeix en una puntuació \(s\) entre 0 i 1. Si només es disposa d'aquesta puntuació agregada, una versemblança coherent és la geomètrica:</p>
+<div class="math-block">\[L(H_i)=P(\text{encert}\mid H_i,q)^s\,P(\text{fallada}\mid H_i,q)^{1-s}\]</div>
+<p>Si \(s=1\), equival a un encert ple; si \(s=0\), a una fallada plena. Un \(s=0.5\) no ha de ser neutre necessàriament: afavoreix les hipòtesis per a les quals l'ítem prediu una puntuació intermèdia. Quan es coneixen els components concrets de la resposta, és preferible multiplicar-ne les versemblances per separat en comptes de reduir-ho tot a una sola puntuació. El desenvolupament formal i un exemple numèric són a la <a href="matematicas_ca.html">explicació matemàtica</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Versemblances generades pel sistema</h2>
@@ -496,21 +496,12 @@
 <p>Cada pregunta té una dificultat estimada.</p>
 <p>La dificultat es pot expressar de manera qualitativa, per exemple: fàcil, mitjana, difícil. També es pot expressar mitjançant una escala més flexible.</p>
 <p>El sistema no assumeix que sempre hi haurà tres dificultats. S'adapta al nombre de categories que defineixi el docent.</p>
-<p>Quan el docent defineix la dificultat de manera qualitativa, el sistema la converteix a valors numèrics per operar amb la funció logística. Una convenció útil és centrar els valors a zero i separar-los per intervals iguals:</p>
-<table>
-<thead>
-<tr><th>Categories de dificultat</th><th>Valors numèrics \(b_q\)</th></tr>
-</thead>
-<tbody>
-<tr><td>2</td><td>−0,5 · · 0,5</td></tr>
-<tr><td>3</td><td>−1 · · 0 · · 1</td></tr>
-<tr><td>4</td><td>−1,5 · · −0,5 · · 0,5 · · 1,5</td></tr>
-<tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
-</tbody>
-</table>
+<p>Quan el docent defineix la dificultat de manera qualitativa, el sistema la converteix a valors numèrics repartint-los uniformement en la meitat central de l'escala de nivells. Amb \(k\) categories de dificultat i \(\theta_{\max} = n - 1\) (on \(n\) és el nombre de nivells o hipòtesis):</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(amb una sola categoria, \(b = 0\)). La conversió depèn, doncs, del nombre de nivells a més del nombre de categories; una taula que depengués només del nombre de categories seria inconsistent amb l'escala de nivells quan \(n\) és petit i les categories moltes (amb dos nivells, \(\theta = \pm 1\), assignaria dificultats de fins a \(\pm 2\), invertint la separació entre escales). Exemples: amb 3 nivells i 3 categories, \(b \in \{-1,\; 0,\; +1\}\); amb 3 nivells i 5 categories, \(b \in \{-1,\; -0{,}5,\; 0,\; +0{,}5,\; +1\}\); amb 4 nivells i 3 categories, \(b \in \{-1{,}5,\; 0,\; +1{,}5\}\); amb 2 nivells i 3 categories, \(b \in \{-0{,}5,\; 0,\; +0{,}5\}\). Aquest repartiment garanteix automàticament que la dificultat extrema valgui la meitat del nivell extrem, sigui quin sigui el nombre d'hipòtesis.</p>
 <p>En conseqüència, no n'hi ha prou que hi hagi moltes preguntes: convé que el banc estigui ben distribuït en els eixos pedagògicament rellevants del recurs, sobretot la dificultat, el tipus d'ítem i els continguts, habilitats o errors que es volen discriminar. Si una zona important queda infrarepresentada, el sistema pot semblar adaptatiu i, tanmateix, raonar sobre una base pobra.</p>
 <p>Tampoc no n'hi ha prou amb el nombre total. Perquè la selecció adaptativa no es torni repetitiva, cal <strong>redundància local</strong>: en cada zona rellevant del banc convé disposar de diverses preguntes alternatives de dificultat i funció diagnòstica semblants. Si una categoria, nivell o tipus d'error només té un ítem útil, el sistema tendirà a repetir-lo encara que la regla de selecció sigui correcta.</p>
-<p>Els valors numèrics \(\theta_i\) dels nivells o hipòtesis jeràrquiques segueixen la mateixa convenció de centrat en zero amb intervals iguals, <strong>però abasten un rang estrictament més gran que el de \(b_q\)</strong>. Aquesta condició és important: si \(\theta_{\max} = b_{\max}\), el nivell extrem i la dificultat extrema coincideixen al punt d'inflexió de la corba logística. En aquest punt la pregunta discrimina molt, però la probabilitat d'encert del nivell extrem encara pot ser moderada, per això encertar-la confirma feblement aquest nivell. Un factor de 2 funciona bé a la pràctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Per exemple, amb 3 dificultats \(b \in \{-1, 0, +1\}\) i 3 nivells, fer servir \(\theta \in \{-2, 0, +2\}\) fa que les preguntes difícils resultin més informatives per als alumnes avançats. El més robust és calcular automàticament \(\theta_{\max}\): \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+<p>Els valors numèrics \(\theta_i\) dels nivells o hipòtesis jeràrquiques segueixen la mateixa convenció de centrat en zero amb intervals iguals, <strong>però abasten un rang estrictament més gran que el de \(b_q\)</strong>. Aquesta condició és important: si \(\theta_{\max} = b_{\max}\), el nivell extrem i la dificultat extrema coincideixen al punt d'inflexió de la corba logística. En aquest punt la pregunta discrimina molt, però la probabilitat d'encert del nivell extrem encara pot ser moderada, per això encertar-la confirma feblement aquest nivell. Un factor de 2 funciona bé a la pràctica: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). Per exemple, amb 3 dificultats \(b \in \{-1, 0, +1\}\) i 3 nivells, fer servir \(\theta \in \{-2, 0, +2\}\) fa que les preguntes difícils resultin més informatives per als alumnes avançats. El més robust és fixar l'escala per convenció i situar les dificultats dins d'ella: els valors \(\theta_i\) depenen només del nombre d'hipòtesis (intervals de 2 centrats en 0, amb \(\theta_{\max} = n - 1\)) i les dificultats es mantenen a la meitat central, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), retallant a aquest interval els valors atípics. No convé el contrari —recalcular \(\theta\) a partir de l'ítem més extrem del banc—, perquè una sola pregunta atípica estiraria l'escala, saturaria les versemblances de la resta de preguntes i faria els diagnòstics no comparables entre recursos amb bancs diferents.</p>
 </section>
 <section id="s9">
 <h2>9. Nombre variable de nivells i hipòtesis</h2>
@@ -572,7 +563,7 @@
 <p>Si dins d'una mateixa prova hi ha preguntes amb diferents opcions, cada pregunta usa la seva pròpia probabilitat mínima d'encert per atzar.</p>
 <p>En la selecció múltiple amb diverses respostes correctes, la probabilitat d'encert per atzar pot ser diferent. El sistema tracta aquest cas de manera específica, especialment si s'exigeix coincidència exacta amb la combinació correcta.</p>
 <p>En respostes numèriques amb tolerància o respostes breus exactes, la probabilitat d'encert per atzar es pot considerar nul·la o molt baixa, segons el disseny.</p>
-<p>Quan un ítem es corregeix per diversos components amb diferents opcions —per exemple, una tasca amb diversos passos—, la seva probabilitat d'encert per atzar no és la d'una sola pregunta. En aquest cas es calcula com la mitjana ponderada dels atzars de cada component, usant els mateixos pesos amb què es puntua la resposta. Aquest valor afegit és el que alimenta la funció logística de l'element complet.</p>
+<p>Quan un ítem es corregeix per diversos components amb diferents opcions —per exemple, una tasca amb diversos passos— i es puntua amb crèdit parcial, la mitjana ponderada dels atzars de cada component representa la <strong>puntuació parcial esperada per atzar</strong>, no la probabilitat d'encertar l'ítem complet. Aquest valor pot alimentar la funció logística si la corba s'interpreta com a puntuació esperada de l'ítem compost. Si l'ítem es corregeix com a tot-o-res, la probabilitat d'encert ple per atzar és el producte dels atzars dels components independents.</p>
 </section>
 <section id="s12">
 <h2>12. Ús d'una funció logística</h2>
@@ -760,7 +751,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Avaluació formativa.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Aprenentatge per al domini; base dels mecanismes de reforç i recuperació.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 1.12). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol per a sistemes educatius adaptatius bayesians</em> (versió 2.0). https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html</p>
 <p class="callout">
 El desenvolupament formal dels mecanismes descrits en aquest protocol —inferència bayesiana, model IRT, entropia de Shannon i selecció adaptativa— es troba al document complementari <a href="matematicas_ca.html">Fonaments matemàtics</a>, que inclou fórmules, demostracions i un exemple numèric complet.
 </p>

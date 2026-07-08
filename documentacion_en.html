@@ -287,7 +287,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Protocol for Bayesian adaptive educational systems</h1>
 <p>Technical guide to implement adaptive evaluation with Bayesian inference and Shannon entropy</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.12</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -363,7 +363,7 @@
 <p>If there is no prior information about the student, the system can begin with balanced probabilities. If reliable prior information exists, a justified initial distribution can be used instead.</p>
 <h3>3.1. Multidimensional state</h3>
 <p>The student's state does not have to be represented by a single distribution. When it is useful to know not only how much has been mastered, but also which specific skills or steps are failing, the system can maintain several probability distributions in parallel: one per category or level and another for each diagnostic dimension (a skill, a process step, or a type of error).</p>
-<p>All of them are updated from the same student response: the overall result modifies the belief about level, and each part of the response modifies the belief about the corresponding dimension. In this way, the level estimate indicates what should be practised, while the diagnosis by dimension indicates what should be explained or reinforced. Each dimension may have its own probability of success by chance, so percentages from different dimensions are not directly comparable; the shared reference is the underlying latent level.</p>
+<p>Each distribution should be updated with the evidence that belongs to it: the overall result may modify the belief about level, and each scored part of the response modifies the belief about its own dimension. If the same global response depends on several skills, that single correct or incorrect outcome should not be used to update all independent dimensions, because it would duplicate evidence and misattribute the cause of the error. In this way, the level estimate indicates what should be practised, while the diagnosis by dimension indicates what should be explained or reinforced. Each dimension may have its own probability of success by chance, so percentages from different dimensions are not directly comparable; the shared reference is the underlying latent level.</p>
 <figure style="margin:1.25rem 0 0;text-align:center;">
 <img src="img/clasificacion_hipotesis_en.png" alt="Classification of hypotheses into four types: single-factor ordinal (one dimension with ordered levels, IRT), multidimensional ordinal (several hierarchical dimensions in parallel, IRT per dimension), single-factor nominal (mutually exclusive categories with explicit likelihoods) and multifactor nominal (factors that can coexist, modeled as separate dimensions or full profiles)." loading="lazy" style="max-width:100%;height:auto;border:1px solid var(--border);border-radius:12px;">
 <figcaption style="font-size:0.82rem;color:var(--muted);margin-top:0.5rem;">Classification of hypotheses: how to decide the data architecture and the mathematical model.</figcaption>
@@ -424,8 +424,8 @@
 <li>\(c_q\) is the minimum probability of success by chance.</li>
 </ul>
 <p>This formula does not replace Bayes. It only generates the likelihoods that Bayes needs.</p>
-<p>The \(a\) parameter controls the slope of the logistic curve. A high value makes the function discriminate more between close hypotheses; a lower value produces smoother transitions. The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, <strong>a value of 1.0 to 1.5 is a reasonable starting point</strong>; 1.5 is a good default choice.</p>
-<p>However, how much a question actually separates between levels depends not on \(a\) alone but on the product \(a\,(1-c_q)\): the guessing floor «flattens» the upper part of the curve. This is why it is best to fix a target effective discrimination \(a_{\text{ef}}\) (1.25 by default, chosen so that the derived \(a\) never exceeds 2.5, not even for true/false, where \(c_q = 0.5\)) and compute \(a\) for each question as \(a = a_{\text{ef}} / (1 - c_q)\). This is not only for tests that mix formats: it should be applied <strong>always</strong>, because it guarantees that questions with a different number of options —and even different resources— have the same real discriminating power. With \(a\) fixed, a 3-option question (\(c_q = 1/3\)) would discriminate less than a 4-option one (\(c_q = 1/4\)) even if both used \(a = 1.5\). The <a href="matematicas_en.html#s4">mathematical formulation (§4.4)</a> details this relationship.</p>
+<p>The \(a\) parameter controls the slope of the logistic curve. A high value makes the function discriminate more between close hypotheses; a lower value produces smoother transitions. The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, values from 1.0 to 1.5 are reasonable starting points; in this methodology the default is to fix the effective discrimination \(a_{\text{ef}}=1.25\) and derive \(a\) from each item's guessing floor.</p>
+<p>However, how much the curve separates between levels depends not on \(a\) alone but on the product \(a\,(1-c_q)\): the guessing floor «flattens» the upper part of the curve. This is why it is best to fix a target effective discrimination \(a_{\text{ef}}\) (1.25 by default, chosen so that the derived \(a\) never exceeds 2.5, not even for true/false, where \(c_q = 0.5\)) and compute \(a\) for each question as \(a = a_{\text{ef}} / (1 - c_q)\). This is not only for tests that mix formats: it should be applied <strong>always</strong>, because it equalizes the maximum slope of the curve and prevents the format from mechanically changing that slope. It does not mean that every format provides the same expected information: information-gain selection will still prefer the items that discriminate best in the current posterior state. The <a href="matematicas_en.html#s4">mathematical formulation (§4.4)</a> details this relationship.</p>
 <h3>5.6. Shannon entropy</h3>
 <p>The uncertainty of the system is measured by:</p>
 <div class="math-block">\[H=-\sum_i p_i\log_2(p_i)\]</div>
@@ -443,9 +443,9 @@
 <div class="math-block">\[P(H_i\mid\text{correct})=\frac{P(\text{correct}\mid H_i,q)\,P(H_i)}{P(A)}\qquad P(H_i\mid\text{incorrect})=\frac{P(\text{incorrect}\mid H_i,q)\,P(H_i)}{P(F)}\]</div>
 <p>When possible, the most useful question will be the one that produces the greatest expected reduction in entropy.</p>
 <h3>5.8. Likelihood with partial credit</h3>
-<p>The formulas above assume that the response is binary: correct or incorrect. But many tasks are solved through steps or components and allow partial credit. In those cases, instead of classifying the response as simply correct or incorrect, it is summarised as a score \(s\) between 0 and 1, and the likelihood is obtained by interpolating between success and failure:</p>
-<div class="math-block">\[L(H_i)=s\,P(\text{correct}\mid H_i,q)+(1-s)\,P(\text{incorrect}\mid H_i,q)\]</div>
-<p>If \(s=1\), it is equivalent to a completely correct answer; if \(s=0\), to a completely incorrect answer; if \(s=0.5\), the likelihood is flat and does not modify the distribution. This soft likelihood enters Bayesian updating just like any other: it only changes the way it is constructed. The \(s\) score is calculated explicitly and automatically, usually as a weighted sum of subcriteria whose weights add up to 1. The formal development and a numerical example are in the <a href="matematicas_en.html">mathematical explanation</a>.</p>
+<p>The formulas above assume that the response is binary: correct or incorrect. But many tasks are solved through steps or components and allow partial credit. In those cases, instead of classifying the response as simply correct or incorrect, it is summarised as a score \(s\) between 0 and 1. If only that aggregate score is available, a coherent likelihood is the geometric one:</p>
+<div class="math-block">\[L(H_i)=P(\text{correct}\mid H_i,q)^s\,P(\text{incorrect}\mid H_i,q)^{1-s}\]</div>
+<p>If \(s=1\), it is equivalent to a completely correct answer; if \(s=0\), to a completely incorrect answer. An \(s=0.5\) need not be neutral: it favors the hypotheses for which the item predicts an intermediate score. When the concrete response components are known, it is preferable to multiply their likelihoods separately instead of reducing everything to a single score. The formal development and a numerical example are in the <a href="matematicas_en.html">mathematical explanation</a>.</p>
 </section>
 <section id="s6">
 <h2>6. Likelihoods generated by the system</h2>
@@ -496,21 +496,12 @@
 <p>Each question has an estimated difficulty.</p>
 <p>Difficulty can be expressed qualitatively, for example as easy, medium, or difficult. It can also be expressed on a more flexible scale.</p>
 <p>The system does not assume that there will always be three difficulties. It adapts to the number of categories defined by the teacher.</p>
-<p>When the teacher defines difficulty qualitatively, the system converts it into numerical values so that it can work with the logistic function. A useful convention is to center the values at zero and space them at equal intervals:</p>
-<table>
-<thead>
-<tr><th>Difficulty Categories</th><th>Numerical values \(b_q\)</th></tr>
-</thead>
-<tbody>
-<tr><td>2</td><td>−0.5 · · 0.5</td></tr>
-<tr><td>3</td><td>−1 · · 0 · · 1</td></tr>
-<tr><td>4</td><td>−1.5 · · −0.5 · · 0.5 · · 1.5</td></tr>
-<tr><td>5</td><td>−2 · · −1 · · 0 · · 1 · · 2</td></tr>
-</tbody>
-</table>
+<p>When the teacher defines difficulty qualitatively, the system converts it into numerical values by spreading them evenly over the central half of the level scale. With \(k\) difficulty categories and \(\theta_{\max} = n - 1\) (where \(n\) is the number of levels or hypotheses):</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(with a single category, \(b = 0\)). The conversion therefore depends on the number of levels in addition to the number of categories; a table depending only on the number of categories would be inconsistent with the level scale when \(n\) is small and the categories many (with two levels, \(\theta = \pm 1\), it would assign difficulties up to \(\pm 2\), inverting the separation between scales). Examples: with 3 levels and 3 categories, \(b \in \{-1,\; 0,\; +1\}\); with 3 levels and 5 categories, \(b \in \{-1,\; -0.5,\; 0,\; +0.5,\; +1\}\); with 4 levels and 3 categories, \(b \in \{-1.5,\; 0,\; +1.5\}\); with 2 levels and 3 categories, \(b \in \{-0.5,\; 0,\; +0.5\}\). This spread automatically guarantees that the extreme difficulty is half the extreme level, whatever the number of hypotheses.</p>
 <p>Consequently, it is not enough simply to have many questions: the bank should be well distributed across the pedagogically relevant axes of the resource, especially difficulty, item type, and the content, skills, or errors the system is meant to discriminate. If an important area is underrepresented, the system may look adaptive while actually reasoning from a weak base.</p>
 <p>The total number is not enough either. To prevent adaptive selection from becoming repetitive, the bank needs <strong>local redundancy</strong>: in each relevant area, there should be several alternative questions with similar difficulty and diagnostic function. If a category, level, or error type has only one useful item, the system will tend to repeat it even when the selection rule itself is correct.</p>
-<p>The \(\theta_i\) numerical values of the levels or hierarchical hypotheses follow the same convention of centering at zero with equal intervals, <strong>but they cover a range strictly greater than that of \(b_q\)</strong>. This condition is important: if \(\theta_{\max} = b_{\max}\), the extreme level and the extreme difficulty coincide at the inflection point of the logistic curve. At that point the question is very discriminating, but the probability of correctness at the extreme level can still be moderate, so getting it right weakly confirms that level. A factor of 2 works well in practice: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). For example, with 3 \(b \in \{-1, 0, +1\}\) difficulties and 3 levels, using \(\theta \in \{-2, 0, +2\}\) makes difficult questions more informative for advanced learners. The most robust thing is to calculate \(\theta_{\max}\) automatically: \(\theta_{\max} = 2 \cdot \max|b_q|\).</p>
+<p>The \(\theta_i\) numerical values of the levels or hierarchical hypotheses follow the same convention of centering at zero with equal intervals, <strong>but they cover a range strictly greater than that of \(b_q\)</strong>. This condition is important: if \(\theta_{\max} = b_{\max}\), the extreme level and the extreme difficulty coincide at the inflection point of the logistic curve. At that point the question is very discriminating, but the probability of correctness at the extreme level can still be moderate, so getting it right weakly confirms that level. A factor of 2 works well in practice: \(|\theta_{\max}| = 2 \cdot |b_{\max}|\). For example, with 3 \(b \in \{-1, 0, +1\}\) difficulties and 3 levels, using \(\theta \in \{-2, 0, +2\}\) makes difficult questions more informative for advanced learners. The most robust approach is to fix the scale by convention and place the difficulties within it: the \(\theta_i\) values depend only on the number of hypotheses (intervals of 2 centred on 0, with \(\theta_{\max} = n - 1\)) and the difficulties stay in the central half, \(b_q \in [-\theta_{\max}/2, +\theta_{\max}/2]\), clamping outliers to that interval. The opposite —recomputing \(\theta\) from the most extreme item in the bank— is not advisable, because a single atypical question would stretch the scale, saturate the likelihoods of the rest of the questions, and make diagnoses non-comparable across resources with different banks.</p>
 </section>
 <section id="s9">
 <h2>9. Variable number of levels and hypotheses</h2>
@@ -572,7 +563,7 @@
 <p>If within the same test there are questions with a different number of options, each question uses its own minimum probability of success by chance.</p>
 <p>In multiple selection with several correct answers, the probability of success by chance may be different. The system handles this case specifically, especially if exact matching with the correct combination is required.</p>
 <p>In numerical responses with tolerance or exact short responses, the probability of correctness by chance may be considered null or very low, depending on the design.</p>
-<p>When an item is scored through several components with different numbers of options—for example, a task with several steps—its probability of correctness by chance is not that of a single question. In that case it is calculated as the weighted average of the chance levels of each component, using the same weights with which the response is scored. This aggregated value is what feeds the logistic function of the complete item.</p>
+<p>When an item is scored through several components with different numbers of options—for example, a task with several steps—and partial credit is used, the weighted average of the component chance levels represents the <strong>expected partial score by chance</strong>, not the probability of getting the complete item right. That value may feed the logistic function if the curve is interpreted as the expected score of the composite item. If the item is scored all-or-nothing, the probability of full success by chance is the product of the chance levels of the independent components.</p>
 </section>
 <section id="s12">
 <h2>12. Use of a logistic function</h2>
@@ -760,7 +751,7 @@
 <li><strong>Black, P. &amp; Wiliam, D.</strong> (1998). Assessment and Classroom Learning. <em>Assessment in Education: Principles, Policy &amp; Practice</em>, 5(1), 7–74. [Formative assessment.]</li>
 <li><strong>Bloom, B. S.</strong> (1968). Learning for Mastery. <em>Evaluation Comment</em>, 1(2). UCLA. [Mastery learning; basis of the reinforcement and recovery mechanisms.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 1.12). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Protocol for Bayesian adaptive educational systems</em> (Version 2.0). https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html</p>
 <p class="callout">
 The formal development of the mechanisms described in this protocol —Bayesian inference, IRT model, Shannon entropy and adaptive selection— is provided in the companion document <a href="matematicas_en.html">Mathematical Foundations</a>, which includes formulas, proofs and a complete numerical example.
 </p>

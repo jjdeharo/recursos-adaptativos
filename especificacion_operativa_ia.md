@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 1.9**
+**Versión 2.0**
 
 ## Propósito
 
@@ -52,8 +52,14 @@ Adjunta este documento a la IA y usa este prompt:
 - Si no hay información previa fiable, usa distribución uniforme.
 - Si las hipótesis son jerárquicas, asígnales valores `theta` ordenados y centrados.
 - Si el docente no fija valores, usa una escala simétrica centrada en 0.
-- Cuando uses dificultades `b_q` centradas, haz que la escala `theta` abarque un rango mayor que la escala de dificultad. Regla práctica: `theta_max = 2 * max(abs(b_q))`.
-- Caso límite: si `max(abs(b_q)) = 0` (todas las preguntas con la misma dificultad central), esa regla daría `theta_max = 0` y las hipótesis colapsarían en el mismo valor. Usa entonces un mínimo `theta_max = 1`.
+- La escala `theta` es fija y depende solo del número de hipótesis, no del banco de preguntas. Con `n` hipótesis jerárquicas, usa valores centrados en `0` con intervalos de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, es decir, `theta` recorre `{-(n-1), ..., +(n-1)}` y `theta_max = n - 1`. Ejemplos: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
+- Sitúa las dificultades dentro de la mitad central de esa escala: `b_q` debe quedar en `[-theta_max / 2, +theta_max / 2]`. Como `theta_max` depende de `n`, la conversión de dificultades también depende de `n`, no solo del número de categorías.
+- Si el docente da `k` categorías cualitativas de dificultad, repártelas uniformemente en ese intervalo: `b_j = (theta_max / 2) * (2 * (j - 1) / (k - 1) - 1)` para `j = 1..k` (si `k = 1`, usa `b = 0`). Ejemplos: `n = 3` y `k = 3` → `{-1, 0, +1}`; `n = 3` y `k = 5` → `{-1, -0.5, 0, +0.5, +1}`; `n = 4` y `k = 3` → `{-1.5, 0, +1.5}`; `n = 2` y `k = 5` → `{-0.5, -0.25, 0, +0.25, +0.5}`.
+- No uses una tabla de dificultades fija e independiente de `n`: con pocas hipótesis y muchas categorías produciría dificultades fuera del rango de niveles (por ejemplo, `n = 2` con `b = ±2`) y anularía la separación entre escalas.
+- Si el docente da valores numéricos de `b_q` fuera del intervalo, recórtalos (clamp) al intervalo.
+- No recalcules nunca `theta` a partir de los extremos del banco. Una sola pregunta atípicamente difícil o fácil no debe redefinir la escala: si estiras `theta` para acomodarla, saturas las verosimilitudes del resto del banco (todas las probabilidades quedan pegadas a `c_q` o a `1`) y el posterior da saltos sobreconfiados con una sola respuesta.
+- Si la mayoría de las dificultades del banco quedara fuera del intervalo, no estires la escala: revisa con el docente la definición de niveles y dificultades, porque el diseño es incoherente.
+- Invariante de comparabilidad: con `a_ef = 1.25` e intervalos de `2` entre hipótesis adyacentes, el producto `a_ef * Δtheta = 2.5` determina la fuerza máxima de una actualización, sea cual sea `n` (al crecer `n` crece `theta_max`, pero el espaciado entre hipótesis adyacentes se mantiene). Mantén este invariante entre recursos para que las confianzas y velocidades de convergencia sean comparables.
 
 ## Actualización bayesiana
 
@@ -87,7 +93,7 @@ Esto debe hacerse después de cada interacción relevante.
   - `c_q = 1 / m_q` si hay azar
   - `c_q = 0` si no lo hay
 - No fijes `a` directamente: fija la discriminación efectiva objetivo `a_ef = 1.25` y calcula `a` por pregunta con `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
-  - Hazlo **siempre**, aunque todas las preguntas tengan el mismo número de opciones. Lo que importa es la discriminación efectiva `a * (1 - c_q)`, no `a`. Un `a` fijo con distintos `c_q` produce discriminaciones reales distintas y no comparables (por ejemplo, `a=1.5` fijo da `a_ef=1.0` con 3 opciones pero `a_ef=1.125` con 4).
+  - Hazlo **siempre**, aunque todas las preguntas tengan el mismo número de opciones. Esta regla iguala la pendiente máxima de la ICC, no garantiza que todos los formatos aporten la misma información esperada. Un `a` fijo con distintos `c_q` produce pendientes reales distintas y no comparables (por ejemplo, `a=1.5` fijo da `a_ef=1.0` con 3 opciones pero `a_ef=1.125` con 4). La selección por ganancia de información seguirá favoreciendo los ítems que aporten más evidencia.
   - `a_ef = 1.25` garantiza que `a` se mantenga dentro del rango habitual en psicometría (0.5–2.5) para cualquier formato de 2 o más opciones: el caso extremo, verdadero/falso (`c_q=0.5`), da exactamente `a = 2.5`.
   - Valores que debes obtener: abierta (`c_q=0`) → `a=1.25`; 5 opciones (`c_q=0.20`) → `a=1.5625`; 4 opciones (`c_q=0.25`) → `a≈1.667`; 3 opciones (`c_q=1/3`) → `a=1.875`; verdadero/falso (`c_q=0.5`) → `a=2.5`.
 - Si el alumno falla:
@@ -109,30 +115,33 @@ Esto debe hacerse después de cada interacción relevante.
 ## Respuestas con crédito parcial
 
 - Si una respuesta no es solo acierto o fallo, sino que admite grados (varios pasos, componentes ponderados, aciertos parciales), resúmela en una puntuación `s` entre `0` y `1`.
-- Construye la verosimilitud por interpolación entre acierto y fallo:
+- Si solo tienes una puntuación parcial agregada `s`, construye una verosimilitud geométrica:
 
-`L(H_i) = s * P(acierto | H_i, q) + (1 - s) * P(fallo | H_i, q)`
+`L(H_i) = P(acierto | H_i, q)^s * P(fallo | H_i, q)^(1 - s)`
 
 - Usa esta `L(H_i)` en la actualización bayesiana en lugar de elegir entre `P(acierto)` y `P(fallo)`. La normalización y el resto del proceso no cambian.
-- Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno; `s = 0.5` no aporta información y deja el posterior casi intacto.
+- Casos límite: `s = 1` equivale a acierto pleno; `s = 0` a fallo pleno. Un `s = 0.5` no es necesariamente neutro: favorece las hipótesis para las que el ítem predice una puntuación intermedia.
+- Si el ítem tiene `J` componentes aproximadamente independientes y `s` es la fracción ponderada de componentes correctos, puedes conservar la fuerza de la evidencia usando `L(H_i) = P(acierto | H_i, q)^(sJ) * P(fallo | H_i, q)^((1 - s)J)`.
+- Si tienes evidencia separada por componente, es preferible multiplicar las verosimilitudes de cada componente en lugar de reducir todo a una sola `s`.
 - Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
 - No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
 - Para seleccionar la siguiente pregunta, calcula la ganancia de información con los resultados que realmente modele el ítem. Si trabajas con binario o crédito parcial, la aproximación con acierto y fallo plenos sigue siendo aceptable; si modelas distractores o perfiles completos, promedia sobre todas las respuestas relevantes del ítem.
 
 ## Suelo de azar en ítems compuestos
 
-- Si un ítem se corrige por varios componentes con distinto número de opciones, su probabilidad de acierto por azar no es `1/m`.
-- Calcula el suelo agregado como media ponderada de los azares de cada componente:
+- Si un ítem se corrige por varios componentes con distinto número de opciones y se puntúa con crédito parcial, el suelo agregado no es la probabilidad de acertar el ítem completo, sino la puntuación parcial esperada por azar.
+- Calcula ese suelo de puntuación esperada como media ponderada de los azares de cada componente:
 
 `c_q = Σ_j w_j * c_j`  con  `c_j = 1 / m_j`  y  `Σ_j w_j = 1`
 
-- Usa ese `c_q` agregado en la función logística al generar las verosimilitudes del ítem completo.
+- Usa ese `c_q` agregado en la función logística solo cuando la ICC represente la puntuación esperada del ítem compuesto.
+- Si el ítem compuesto se corrige como todo-o-nada, no uses la media ponderada: la probabilidad de acierto pleno por azar es el producto `Π_j c_j` si los componentes se aciertan independientemente.
 - Los pesos `w_j` deben coincidir con los que uses para calcular la puntuación `s` del crédito parcial.
 
 ## Diagnóstico multidimensional
 
 - Si necesitas saber no solo el nivel global sino qué habilidades o pasos fallan, mantén varias distribuciones bayesianas en paralelo: una por categoría o nivel y otra por cada dimensión diagnóstica (habilidad, paso, tipo de error).
-- Actualiza con la misma respuesta todas las distribuciones relevantes: el resultado global alimenta la creencia de nivel; cada subcriterio alimenta la creencia de su dimensión.
+- Actualiza cada distribución con la evidencia que le corresponde: el resultado global puede alimentar la creencia de nivel; cada subcriterio debe alimentar solo su dimensión. No uses el mismo acierto/fallo global para actualizar varias dimensiones independientes si la pregunta exige varias habilidades a la vez, porque duplicas evidencia y atribuyes mal la causa del error.
 - Cada dimensión puede tener su propio suelo de azar `c` según su número de opciones, por lo que sus porcentajes no son directamente comparables entre sí: la referencia común es el valor latente `theta`.
 - No metas en una sola distribución dimensiones que pueden coexistir: usa distribuciones separadas.
 - Si varias dimensiones diagnósticas interactúan de manera fuerte, puedes sustituir las distribuciones independientes por una sola distribución sobre perfiles completos; lo importante es no forzar como excluyentes factores que en realidad pueden coexistir.

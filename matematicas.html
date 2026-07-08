@@ -214,7 +214,7 @@
 <a class="back-link" href="documentacion.html">← Protocolo</a>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 1.7</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -278,14 +278,14 @@
 <tr><td>5</td><td>\(-4,\; -2,\; 0,\; +2,\; +4\)</td></tr>
 </tbody>
 </table>
-<p>Los valores concretos dependen de la escala de dificultad de las preguntas. La relación exacta entre θ y b se explica en §8.</p>
+<p>Estos valores son fijos y dependen solo del número de hipótesis; las dificultades \(b_q\) se sitúan <em>dentro</em> de esa escala, no al revés. La relación exacta entre θ y b se explica en §8.</p>
 <h3>2.4. Estado multidimensional</h3>
 <p>El estado del alumno no tiene por qué ser una única distribución. Cuando interesa saber no solo <em>cuánto</em> domina sino <em>qué</em> componentes falla, conviene mantener <strong>varias distribuciones bayesianas en paralelo</strong>:</p>
 <ul>
 <li>una distribución por <strong>categoría</strong> o nivel (qué tipo de tarea domina);</li>
 <li>una distribución por cada <strong>dimensión diagnóstica</strong> (habilidad, paso del proceso o tipo de error).</li>
 </ul>
-<p>Cada distribución \(\mathbf{p}^{(d)}\) sobre las hipótesis de la dimensión \(d\) se actualiza de forma independiente con la maquinaria de §3–§4, pero todas se alimentan de la <strong>misma respuesta</strong>: el resultado global actualiza la creencia de nivel y cada subcriterio actualiza la creencia de su dimensión. Esto permite distinguir <em>qué practicar</em> (nivel por categoría) de <em>qué reforzar</em> (diagnóstico por dimensión).</p>
+<p>Cada distribución \(\mathbf{p}^{(d)}\) sobre las hipótesis de la dimensión \(d\) se actualiza de forma independiente con la maquinaria de §3–§4, pero debe alimentarse con la evidencia que le corresponde: el resultado global puede actualizar la creencia de nivel y cada subcriterio actualiza solo la creencia de su dimensión. Si un único acierto o fallo global depende de varias habilidades a la vez, usarlo para actualizar varias dimensiones independientes duplicaría la evidencia y atribuiría mal la causa del error. Esto permite distinguir <em>qué practicar</em> (nivel por categoría) de <em>qué reforzar</em> (diagnóstico por dimensión).</p>
 <p>Cada dimensión puede tener su propio suelo de azar \(c^{(d)}\) (véase §4.6–4.7), por lo que un mismo valor latente \(\theta\) produce porcentajes visibles distintos según la dimensión. Los porcentajes entre dimensiones <strong>no son directamente comparables</strong>; la referencia común es \(\theta\). Las dimensiones que pueden coexistir no deben forzarse dentro de una sola distribución: se modelan por separado (véase §9 del protocolo).</p>
 <p>Conviene situar esto frente al modelo clásico. La TRI y los modelos de Rasch asumen <strong>unidimensionalidad</strong> (todos los ítems miden un único atributo latente) e <strong>independencia local</strong> (a un nivel de habilidad dado, la respuesta a un ítem no depende de las respuestas a los demás). Bajo esos supuestos, una sola distribución sobre \(\theta\) describe por completo al alumno. El estado multidimensional descrito aquí <strong>extiende</strong> ese marco: en lugar de forzar varios atributos dentro de una única dimensión —lo que violaría la independencia local—, mantiene una distribución separada por cada dimensión y conserva la independencia local <em>dentro</em> de cada una. Es una generalización deliberada, no un incumplimiento del modelo.</p>
 </section>
@@ -363,8 +363,8 @@
 <p>La pendiente máxima (en \(\theta = b_q\)) vale:</p>
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>Un valor alto de \(a\) produce una curva más escarpada: la pregunta discrimina mejor entre alumnos cerca de su dificultad, pero aporta poca información a alumnos claramente por encima o por debajo. Un valor bajo produce una curva más suave: la pregunta es útil en un rango más amplio de niveles, pero discrimina menos.</p>
-<p>Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, <strong>\(a = 1.5\) es un punto de partida razonable</strong>.</p>
-<p><strong>Discriminación efectiva y mezcla de formatos.</strong> La pendiente máxima depende del producto \(a\,(1 - c_q)\), no de \(a\) por separado. Conviene por eso distinguir la <strong>discriminación efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —la que realmente gobierna cuánto separa la pregunta entre niveles— de la discriminación nominal \(a\). Cuando todas las preguntas comparten el mismo número de opciones, y por tanto el mismo \(c_q\), ambas son proporcionales y basta fijar \(a\). Pero si el banco mezcla formatos con distinto \(c_q\) (por ejemplo, verdadero/falso con \(c_q = 0.5\) junto a ítems de 4 opciones con \(c_q = 0.25\)), mantener \(a\) constante hace que la pendiente varíe <em>solo por el formato</em>: una pregunta de verdadero/falso bien construida discriminaría la mitad que una abierta equivalente, un sesgo puramente mecánico y no didáctico.</p>
+<p>Los valores habituales en psicometría oscilan entre 0.5 y 2.5. Para sistemas educativos de propósito general, valores en torno a \(1.0\)–\(1.5\) son puntos de partida razonables; en la especificación operativa se recomienda fijar \(a_{\text{ef}} = 1.25\) y derivar \(a\) desde el suelo de azar de cada ítem.</p>
+<p><strong>Discriminación efectiva y mezcla de formatos.</strong> La pendiente máxima depende del producto \(a\,(1 - c_q)\), no de \(a\) por separado. Conviene por eso distinguir la <strong>discriminación efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —la pendiente máxima expresada sin el factor \(1/4\)— de la discriminación nominal \(a\). Cuando todas las preguntas comparten el mismo número de opciones, y por tanto el mismo \(c_q\), ambas son proporcionales y basta fijar \(a\). Pero si el banco mezcla formatos con distinto \(c_q\) (por ejemplo, verdadero/falso con \(c_q = 0.5\) junto a ítems de 4 opciones con \(c_q = 0.25\)), mantener \(a\) constante hace que la pendiente varíe <em>solo por el formato</em>: una pregunta de verdadero/falso bien construida tendría una pendiente menor que una abierta equivalente, un sesgo puramente mecánico y no didáctico.</p>
 <p>Para evitarlo se fija la discriminación efectiva objetivo \(a_{\text{ef}}\) y se despeja la nominal:</p>
 <div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
 <p>Así cada pregunta conserva la misma pendiente en su punto de inflexión con independencia del número de opciones. Tomando \(a_{\text{ef}} = 1.25\) como objetivo común:</p>
@@ -380,7 +380,7 @@
 <tr><td>Verdadero/falso</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
 </tbody>
 </table>
-<p>De este modo \(a\) no se fija de forma arbitraria: se calcula a partir de una discriminación efectiva objetivo y del pseudoazar de cada pregunta. Conviene aplicar esta regla <strong>siempre</strong>, no solo cuando un mismo test mezcla formatos. Dos preguntas —o dos recursos distintos— con el mismo \(a\) nominal pero distinto número de opciones tienen en realidad discriminaciones efectivas diferentes y no son comparables: con \(a = 1.5\), una pregunta de 3 opciones (\(c_q = 1/3\)) rinde \(a_{\text{ef}} = 1.0\), mientras que una de 4 (\(c_q = 1/4\)) rinde \(a_{\text{ef}} = 1.125\). Fijar \(a_{\text{ef}}\) y derivar \(a\) en cada caso las iguala. Como objetivo se recomienda \(a_{\text{ef}} = 1.25\): dado que \(c_q \leq 0.5\) en cualquier ítem de dos o más opciones, la \(a\) nominal derivada nunca supera \(2.5\) —el caso extremo, verdadero/falso, da exactamente \(a = 2.5\)— y se mantiene así dentro del rango habitual en psicometría (0.5–2.5). Un objetivo mayor lo desbordaría: \(a_{\text{ef}} = 1.5\) daría \(a = 3.0\) en verdadero/falso. Los ejemplos numéricos de este documento usan \(a = 1.5\) directamente con fines ilustrativos.</p>
+<p>De este modo \(a\) no se fija de forma arbitraria: se calcula a partir de una discriminación efectiva objetivo y del pseudoazar de cada pregunta. Conviene aplicar esta regla <strong>siempre</strong>, no solo cuando un mismo test mezcla formatos. Dos preguntas —o dos recursos distintos— con el mismo \(a\) nominal pero distinto número de opciones tienen pendientes máximas diferentes y no son comparables en ese sentido: con \(a = 1.5\), una pregunta de 3 opciones (\(c_q = 1/3\)) rinde \(a_{\text{ef}} = 1.0\), mientras que una de 4 (\(c_q = 1/4\)) rinde \(a_{\text{ef}} = 1.125\). Fijar \(a_{\text{ef}}\) y derivar \(a\) en cada caso iguala esas pendientes, pero no iguala toda la información esperada del ítem: esa información depende de la curva completa, del suelo de azar y del posterior actual. Como objetivo se recomienda \(a_{\text{ef}} = 1.25\): dado que \(c_q \leq 0.5\) en cualquier ítem de dos o más opciones, la \(a\) nominal derivada nunca supera \(2.5\) —el caso extremo, verdadero/falso, da exactamente \(a = 2.5\)— y se mantiene así dentro del rango habitual en psicometría (0.5–2.5). Un objetivo mayor lo desbordaría: \(a_{\text{ef}} = 1.5\) daría \(a = 3.0\) en verdadero/falso. Los ejemplos numéricos de este documento usan \(a = 1.5\) directamente con fines ilustrativos.</p>
 <h3>4.5. La probabilidad de fallo</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>Esta es la verosimilitud que entra en la actualización bayesiana cuando el alumno falla.</p>
@@ -389,32 +389,32 @@
 <div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
 <p>En un modelo IRT calibrado, \(c_q\) debería estimarse a partir de datos reales, porque el pseudoazar no siempre coincide con el azar puro: los distractores no son igualmente atractivos y algunos alumnos eliminan opciones antes de responder. Esta probabilidad pertenece a <strong>cada pregunta</strong>, no al test en conjunto. En respuestas numéricas o de texto exacto donde el azar es irrelevante, se usa \(c_q = 0\).</p>
 <h3>4.7. Ítems compuestos: suelo de azar agregado</h3>
-<p>Una pregunta no siempre se corrige como un único acierto o fallo. Si la tarea se evalúa por varios <strong>componentes</strong> \(j\) (pasos, decisiones o subrespuestas), cada uno con su propio número de opciones \(m_j\) y su peso \(w_j\), la probabilidad de acertar el ítem completo por puro azar no es \(1/m\), sino la <strong>media ponderada</strong> de los azares de cada componente:</p>
+<p>Una pregunta no siempre se corrige como un único acierto o fallo. Si la tarea se evalúa por varios <strong>componentes</strong> \(j\) (pasos, decisiones o subrespuestas), cada uno con su propio número de opciones \(m_j\) y su peso \(w_j\), la media ponderada de los azares de cada componente no es la probabilidad de acertar el ítem completo, sino la <strong>puntuación parcial esperada por azar</strong>:</p>
 <div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
-<p>Por ejemplo, un ítem con tres componentes de pesos \((0.5,\,0.3,\,0.2)\) y opciones \((2,\,4,\,6)\) tiene un suelo agregado:</p>
+<p>Por ejemplo, un ítem con tres componentes de pesos \((0.5,\,0.3,\,0.2)\) y opciones \((2,\,4,\,6)\) tiene una puntuación esperada por azar:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
-<p>Este \(c_q\) agregado es el que entra en la ICC (§4.2) al generar las verosimilitudes del ítem completo. Los pesos \(w_j\) deben ser los mismos que se usan para puntuar el crédito parcial (§4.8).</p>
+<p>Este \(c_q\) agregado entra en la ICC (§4.2) solo si la curva se interpreta como <strong>puntuación esperada</strong> del ítem compuesto. Si el ítem se corrige como todo-o-nada, la probabilidad de acierto pleno por azar no es la media sino el producto de los azares de los componentes independientes: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). Los pesos \(w_j\) deben ser los mismos que se usan para puntuar el crédito parcial (§4.8).</p>
 <h3>4.8. Crédito parcial: verosimilitud suave</h3>
-<p>Cuando la respuesta admite grados —no solo acierto o fallo, sino una puntuación \(s \in [0, 1]\) obtenida de los componentes ponderados— la verosimilitud no debe elegir entre \(P(A)\) y \(P(F)\), sino <strong>interpolar</strong> entre ambas:</p>
-<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>Cuando la respuesta admite grados —no solo acierto o fallo, sino una puntuación \(s \in [0, 1]\) obtenida de los componentes ponderados— la verosimilitud debe favorecer las hipótesis cuya predicción \(p_i = P(A \mid H_i, q)\) sea compatible con esa puntuación. Si solo se dispone de una puntuación agregada, una aproximación coherente es la verosimilitud geométrica:</p>
+<div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Como \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escribiendo \(p_i = P(A \mid H_i, q)\):</p>
-<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<div class="math-block">\[L(H_i) \propto p_i^s (1 - p_i)^{1-s}\]</div>
 <p>Esta \(L(H_i)\) sustituye a la verosimilitud en la actualización bayesiana de §3.2; el resto del proceso (normalización incluida) no cambia. Casos límite:</p>
 <ul>
 <li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), acierto pleno.</li>
 <li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), fallo pleno.</li>
-<li>\(s = 0.5\): \(L(H_i) = 0.5\) para toda hipótesis, una verosimilitud plana que no modifica el posterior.</li>
+<li>\(s = 0.5\): favorece hipótesis con \(p_i\) cercano a \(0.5\); no es una evidencia neutra salvo que el modelo no distinga entre hipótesis.</li>
 </ul>
-<p>La puntuación \(s\) debe calcularse de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios con \(\sum_j w_j = 1\).</p>
+<p>La puntuación \(s\) debe calcularse de forma explícita y autocorregible, normalmente como suma ponderada de subcriterios con \(\sum_j w_j = 1\). Si el ítem tiene \(J\) componentes aproximadamente independientes y se quiere conservar la fuerza de la evidencia, puede usarse \(L(H_i) \propto p_i^{sJ}(1-p_i)^{(1-s)J}\). Si se conoce el resultado de cada componente, es preferible multiplicar las verosimilitudes componente a componente.</p>
 <h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Ejemplo numérico</h4>
 <p>Tres hipótesis \(\theta \in \{-2, 0, 2\}\), ítem de dificultad media (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), prior uniforme \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). Las verosimilitudes de acierto pleno son aproximadamente \(p = (0.40,\, 0.68,\, 0.97)\). Con una respuesta parcial \(s = 0.75\):</p>
-<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
-<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
-<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
-<p>Aplicando Bayes y normalizando (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)):</p>
-<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
-<p>El posterior se desplaza hacia el dominio, pero de forma más moderada que con un acierto pleno (\(s = 1\) daría \(\approx (0.20,\, 0.33,\, 0.47)\)). El crédito parcial gradúa así la fuerza de la evidencia según la calidad de la respuesta.</p>
-<p><strong>Selección con crédito parcial.</strong> La ganancia esperada de información (§6) está definida sobre los dos resultados binarios; la versión exacta con respuestas graduadas exigiría promediar sobre la distribución de \(s\), que no se conoce a priori. En la práctica basta seguir seleccionando la pregunta con los dos escenarios binarios (acierto y fallo plenos) como aproximación, y reservar la verosimilitud interpolada para la actualización, una vez observada la respuesta.</p>
+<div class="math-block">\[L(-2) \propto 0.40^{0.75} \cdot 0.60^{0.25} \approx 0.443\]</div>
+<div class="math-block">\[L(0) \propto 0.68^{0.75} \cdot 0.32^{0.25} \approx 0.563\]</div>
+<div class="math-block">\[L(2) \propto 0.97^{0.75} \cdot 0.03^{0.25} \approx 0.407\]</div>
+<p>Aplicando Bayes y normalizando (\(\sum = \tfrac13(0.443 + 0.563 + 0.407) \approx 0.471\)):</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.313,\; 0.399,\; 0.288)\]</div>
+<p>El posterior se desplaza hacia el nivel medio, porque una puntuación \(s = 0.75\) es más compatible con una predicción \(p_i = 0.68\) que con una predicción casi perfecta \(p_i = 0.97\). Así el crédito parcial aporta evidencia sobre el nivel que mejor predice la puntuación observada, no solo un empuje más suave hacia el dominio alto.</p>
+<p><strong>Selección con crédito parcial.</strong> La ganancia esperada de información (§6) está definida sobre los resultados que el ítem modele. La versión exacta con respuestas graduadas exigiría promediar sobre la distribución de \(s\), que normalmente no se conoce a priori. En la práctica se puede seguir seleccionando con los escenarios binarios (acierto y fallo plenos) como aproximación, y reservar la verosimilitud geométrica o por componentes para la actualización una vez observada la respuesta.</p>
 </section>
 <section id="s5">
 <h2>5. Entropía de Shannon como medida de incertidumbre</h2>
@@ -427,7 +427,7 @@
 <p><strong>Entropía máxima.</strong> Si todas las hipótesis son equiprobables (\(p_i = 1/n\)), la entropía es máxima:</p>
 <div class="math-block">\[H_{\max} = \log_2 n\]</div>
 <p>Esto corresponde a la ignorancia total sobre el estado del alumno.</p>
-<p><strong>Entropía esperada no creciente.</strong> La entropía posterior puede aumentar o disminuir tras una respuesta concreta, según la evidencia observada (como ilustra el ejemplo de §9, donde el acierto en Q2 sube la entropía respecto al paso anterior). Lo que garantiza la selección por máxima ganancia de información es que la entropía posterior <em>esperada</em> —antes de conocer la respuesta— no supera la entropía actual.</p>
+<p><strong>Entropía esperada no creciente.</strong> La entropía posterior puede aumentar o disminuir tras una respuesta concreta, según la evidencia observada (como ilustra el ejemplo de §9, donde el acierto en Q2 sube la entropía respecto al paso anterior). Para cualquier pregunta modelada correctamente, la entropía posterior <em>esperada</em> —antes de conocer la respuesta— no supera la entropía actual, porque la ganancia esperada es información mutua y no puede ser negativa. La selección por máxima ganancia no crea esa propiedad: elige la pregunta que más reduce esa entropía esperada.</p>
 <h3>5.3. Ejemplos numéricos</h3>
 <p>Con \(n = 3\) hipótesis:</p>
 <table>
@@ -478,7 +478,7 @@
 <p>La solución recomendada es una <strong>selección aleatoria ponderada</strong>:</p>
 <ol>
 <li>Calcular \(IG(q)\) para todas las candidatas disponibles.</li>
-<li>Reunir las candidatas con \(IG \geq IG_{\max} - \varepsilon\) (por ejemplo \(\varepsilon = 10^{-9}\)).</li>
+<li>Reunir las candidatas con \(IG \geq IG_{\max} - \varepsilon\). Si solo se quieren empates numéricos exactos, \(\varepsilon = 10^{-9}\) es suficiente; si se quiere diversificar entre ganancias realmente próximas, conviene usar un margen práctico, por ejemplo un 1–2% de \(IG_{\max}\).</li>
 <li>Asignar a cada candidata un peso inversamente proporcional al número de veces que su categoría o concepto ha aparecido ya en la sesión.</li>
 <li>Elegir con probabilidad proporcional a esos pesos.</li>
 </ol>
@@ -487,10 +487,10 @@
 <p>El criterio dominante en los tests adaptativos clásicos (CAT) no es la reducción de entropía, sino la <strong>Función de Información del Ítem</strong> (FII), basada en la información de Fisher:</p>
 <div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
 <p>donde \(P(\theta)\) es la ICC del ítem (§4.2) y \(P'(\theta)\) su derivada. La FII mide cuánta información aporta el ítem <strong>en un punto concreto</strong> \(\theta\) del continuo, y el sistema clásico selecciona el ítem que maximiza \(I_q(\hat\theta)\) en la estimación puntual actual de la habilidad.</p>
-<p>El criterio de este sistema —máxima reducción esperada de entropía (§6.1)— es preferible cuando el estado se representa como una distribución completa, y no como un único valor \(\hat\theta\), por dos razones:</p>
+<p>El criterio de este sistema —máxima reducción esperada de entropía (§6.1)— encaja especialmente bien cuando el estado se representa como una distribución completa, y no como un único valor \(\hat\theta\), por dos razones:</p>
 <ul>
-<li><strong>Usa toda la distribución, no un punto.</strong> La FII obliga a colapsar la creencia a una estimación puntual \(\hat\theta\) antes de seleccionar; si la distribución es ancha o multimodal, ese punto no la representa bien y la FII puede elegir un ítem informativo solo alrededor de un valor que quizá no sea el verdadero. La ganancia de información pondera <em>todas</em> las hipótesis por su probabilidad actual.</li>
-<li><strong>Es coherente con la actualización bayesiana.</strong> El sistema ya mantiene y actualiza una distribución por Bayes (§3); medir la utilidad de un ítem por cuánto reduce la entropía de esa misma distribución usa el mismo marco de principio a fin. Introducir la FII obligaría a mezclar una estimación puntual frecuentista con una creencia bayesiana.</li>
+<li><strong>Usa toda la distribución, no un punto.</strong> La FII clásica se aplica en una estimación puntual \(\hat\theta\); si la distribución es ancha o multimodal, ese punto no la representa bien y puede elegir un ítem informativo solo alrededor de un valor que quizá no sea el verdadero. La ganancia de información pondera <em>todas</em> las hipótesis por su probabilidad actual.</li>
+<li><strong>Es coherente con la actualización bayesiana.</strong> El sistema ya mantiene y actualiza una distribución por Bayes (§3); medir la utilidad de un ítem por cuánto reduce la entropía de esa misma distribución usa el mismo marco de principio a fin. Existen variantes bayesianas basadas en información de Fisher ponderada por el posterior, por lo que la contraposición no es entre “Fisher frecuentista” y “Bayes”, sino entre un criterio puntual y uno que usa directamente toda la distribución posterior discreta.</li>
 </ul>
 <p>Ambos criterios convergen en el caso límite de una distribución muy concentrada: cuando la creencia es casi puntual, maximizar la ganancia de información y maximizar la FII en \(\hat\theta\) seleccionan prácticamente el mismo ítem. La diferencia importa sobre todo en las primeras preguntas, cuando la incertidumbre es alta.</p>
 <p>El uso de la información mutua y la divergencia KL (§6.3) para seleccionar ítems está bien establecido en la investigación psicométrica bayesiana, pero su aplicación en <strong>herramientas educativas reales</strong> es poco habitual: lo común en el aula es la FII o reglas más simples (siguiente ítem del nivel estimado, selección por dificultad). La combinación que usa este sistema —distribución de hipótesis, actualización bayesiana y selección por reducción de entropía de Shannon, integrada en una herramienta para docentes— es, en ese sentido, infrecuente en el ámbito educativo.</p>
@@ -566,11 +566,13 @@
 <li>Escala correcta: \(\theta \in \{-2,\; 0,\; +2\}\) → el nivel avanzado supera con holgura la dificultad extrema; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.86\), un valor suficientemente alto para que la pregunta sea informativa.</li>
 </ul>
 <p>donde \(\sigma(x) = 1/(1 + e^{-x})\) es la función sigmoide estándar.</p>
-<h3>8.3. Cálculo automático desde el banco de preguntas</h3>
-<p>La forma más robusta es calcular \(\theta_{\max}\) directamente a partir de las dificultades del banco:</p>
-<div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
-<p>y distribuir los valores \(\theta_i\) uniformemente en \([-\theta_{\max},\; +\theta_{\max}]\). Así la escala se adapta automáticamente al banco de preguntas, sin necesidad de ajuste manual.</p>
-<p><strong>Caso límite:</strong> si todas las preguntas comparten la dificultad central (\(\max_q |b_q| = 0\)), la regla daría \(\theta_{\max} = 0\) y todas las hipótesis colapsarían en el mismo valor, anulando el modelo. En ese caso debe imponerse un mínimo, por ejemplo \(\theta_{\max} = 1\), para conservar la separación entre niveles.</p>
+<h3>8.3. Escala fija y ubicación de las dificultades</h3>
+<p>La forma robusta de garantizar la separación no es recalcular \(\theta\) a partir del banco, sino fijar la escala por convención y situar las dificultades dentro de ella. Los valores \(\theta_i\) dependen solo del número de hipótesis:</p>
+<div class="math-block">\[\theta_i = 2(i-1) - (n-1), \qquad \theta_{\max} = n - 1\]</div>
+<p>de modo que \(\theta\) recorre \(\{-(n-1), \ldots, +(n-1)\}\) con espaciado 2 (esta fórmula extiende la tabla de §2.3 a cualquier \(n\)). Las dificultades se sitúan en la mitad central de la escala, \(b_q \in [-\theta_{\max}/2,\; +\theta_{\max}/2]\), lo que garantiza el factor 2 de §8.2 para los ítems extremos con cualquier \(n\). Como \(\theta_{\max}\) depende de \(n\), la conversión de las dificultades cualitativas también debe depender de \(n\): con \(k\) categorías, se reparten uniformemente en el intervalo,</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(con \(k = 1\), \(b = 0\)). Así, con \(n = 3\) y \(k = 3\), \(b \in \{-1, 0, +1\}\); con \(n = 3\) y \(k = 5\), \(b \in \{-1, -0.5, 0, +0.5, +1\}\); con \(n = 4\) y \(k = 3\), \(b \in \{-1.5, 0, +1.5\}\). Una tabla de dificultades independiente de \(n\) sería inconsistente: con \(n = 2\) (\(\theta = \pm 1\)) y cinco categorías fijas hasta \(b = \pm 2\), la dificultad extrema duplicaría el nivel extremo y la separación entre escalas se invertiría. Los valores numéricos de \(b_q\) fuera del intervalo se recortan a él.</p>
+<p>La regla inversa —estirar \(\theta\) hasta \(2 \cdot \max_q |b_q|\)— tiene dos defectos. Primero, hace que el significado de las hipótesis dependa del banco: dos recursos con la misma pedagogía pero rangos de dificultad distintos producen confianzas y velocidades de convergencia no comparables, porque la fuerza de cada actualización la gobierna el producto \(a \cdot \Delta\theta\) (discriminación por separación entre hipótesis adyacentes), que quedaría sin controlar. Segundo, es frágil ante valores atípicos: una sola pregunta con \(b = 3\) en un banco donde el resto está en \(\pm 1\) estiraría \(\theta\) a \(\pm 6\) y saturaría las verosimilitudes de todas las demás preguntas (probabilidades pegadas a \(c_q\) o a 1), de modo que una única respuesta produciría saltos de posterior casi deterministas. Con la escala fija, ese ítem atípico simplemente se recorta al borde del intervalo y el resto del banco conserva su comportamiento. Con \(a_{\text{ef}} = 1.25\) e intervalos de 2, el invariante \(a_{\text{ef}} \cdot \Delta\theta = 2.5\) queda estable entre recursos. Si la mayoría del banco cayera fuera del intervalo, el problema es de diseño (niveles y dificultades mal definidos) y debe resolverse con el docente, no estirando la escala.</p>
 </section>
 <section id="s9">
 <h2>9. Ejemplo numérico completo</h2>
@@ -789,7 +791,7 @@
 <p>El índice estandarizado \(l_z\) (Drasgow, Levine y Williams, 1985) es:</p>
 <div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
 <p>que, bajo el modelo, se distribuye aproximadamente como \(N(0, 1)\). Valores muy negativos (orientativamente \(l_z &lt; -2\)) señalan un patrón improbable bajo el nivel estimado —típicamente, acertar preguntas difíciles y fallar fáciles, descuidos o respuestas al azar—: el diagnóstico, aunque el posterior lo dé como seguro, puede no ser fiable para ese alumno. Valores cercanos a \(0\) indican coherencia.</p>
-<p>Esto cuantifica la señal cualitativa de §11.6: la entropía mide cuán concentrada está la creencia del modelo, pero no si el patrón observado es compatible con esa creencia; el person-fit cubre ese flanco. <strong>Limitación:</strong> \(l_z\) es una aproximación asintótica; con pocas preguntas su distribución se aleja de la normal y el umbral es orientativo, una señal de cautela, no una prueba formal.</p>
+<p>Esto cuantifica la señal cualitativa de §11.6: la entropía mide cuán concentrada está la creencia del modelo, pero no si el patrón observado es compatible con esa creencia; el person-fit cubre ese flanco. <strong>Limitación:</strong> \(l_z\) es una aproximación asintótica; con pocas preguntas su distribución se aleja de la normal y el umbral es orientativo, una señal de cautela, no una prueba formal. En tests adaptativos la calibración es aún más delicada: la selección tiende a presentar ítems cerca de la zona de máxima incertidumbre y el índice se calcula usando el nivel estimado, no el verdadero. Existen correcciones y procedimientos específicos para esta situación, como \(l_z^*\) y trabajos de person-fit en CAT, pero aquí se mantiene \(l_z\) solo como alerta práctica de baja fiabilidad.</p>
 <h3>11.8. Validación del diseño por simulación (Monte Carlo)</h3>
 <p>El person-fit valida el diagnóstico de un alumno concreto; cuestión distinta es si el test en su conjunto —banco y parámetros— separa bien los niveles. Como los parámetros son a priori y no calibrados (§11.1), no puede responderse con datos reales, pero sí examinarse el comportamiento del propio modelo mediante simulación de Monte Carlo.</p>
 <p>El procedimiento genera respondentes sintéticos situados en el \(\theta_i\) de cada hipótesis. Para un respondente de nivel \(\theta_i\), cada respuesta se simula como un ensayo de Bernoulli con probabilidad \(P(A \mid \theta_i, q)\) dada por la ICC (§4.2), aplicándole la misma selección adaptativa (§6) y el mismo criterio de parada (§7) que a un alumno real. Repitiendo muchas veces por nivel se estima la matriz de confusión:</p>
@@ -807,11 +809,13 @@
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referencia enciclopédica de modelos y aplicaciones de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selección adaptativa de ítems e información.]</li>
 <li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Índices estandarizados de ajuste de la persona (person-fit), \(l_z\).]</li>
+<li><strong>Snijders, T. A. B.</strong> (2001). Asymptotic null distribution of person fit statistics with estimated person parameter. <em>Psychometrika</em>, 66(3), 331–342. DOI: <a href="https://doi.org/10.1007/BF02294437" rel="noopener" target="_blank">10.1007/BF02294437</a>. [Corrección del ajuste de persona cuando el parámetro se estima.]</li>
+<li><strong>van Krimpen-Stoop, E. M. L. A. &amp; Meijer, R. R.</strong> (2002). Detection of person misfit in computerized adaptive tests with polytomous items. <em>Applied Psychological Measurement</em>, 26(2), 164–180. [Person-fit en tests adaptativos.]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En español; acceso abierto. TRI: fundamentos y modelos.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2.ª ed.). Lawrence Erlbaum. [Fundamentos de la evaluación adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3.ª ed.). CRC Press. [Inferencia bayesiana general.]</li>
 </ul>
-<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
+<p><strong>Cómo citar este documento (APA 7):</strong> de Haro, J. J. (2026). <em>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</em> (versión 2.0). https://jjdeharo.github.io/recursos-adaptativos/matematicas.html</p>
 <p><em>Licencia: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro · <a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

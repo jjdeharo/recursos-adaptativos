@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_en.html">← Protocol</a>
 <h1>Mathematical foundations of Bayesian adaptive educational systems</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.7</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -276,14 +276,14 @@
 <tr><td>5</td><td>\(-4,\; -2,\; 0,\; +2,\; +4\)</td></tr>
 </tbody>
 </table>
-<p>The specific values depend on the difficulty scale of the questions. The exact relationship between θ and b is explained in §8.</p>
+<p>These values are fixed and depend only on the number of hypotheses; the difficulties \(b_q\) are placed <em>within</em> that scale, not the other way round. The exact relationship between θ and b is explained in §8.</p>
 <h3>2.4. Multidimensional state</h3>
 <p>The student's state does not have to be a single distribution. When you want to know not only <em>how much</em> has been mastered but <em>which</em> components are failing, it is advisable to maintain <strong>several Bayesian distributions in parallel</strong>:</p>
 <ul>
 <li>a distribution by <strong>category</strong> or level (what type of task is mastered);</li>
 <li>a distribution for each <strong>diagnostic dimension</strong> (skill, process step or type of error).</li>
 </ul>
-<p>Each distribution \(\mathbf{p}^{(d)}\) over the hypotheses of dimension \(d\) is updated independently using the machinery of §3–§4, but all of them are fed by the <strong>same response</strong>: the overall result updates the belief about level and each subcriterion updates the belief about its corresponding dimension. This makes it possible to distinguish <em>what to practise</em> (level by category) from <em>what to reinforce</em> (diagnosis by dimension).</p>
+<p>Each distribution \(\mathbf{p}^{(d)}\) over the hypotheses of dimension \(d\) is updated independently using the machinery of §3–§4, but it must be fed with the evidence that belongs to it: the overall result may update the belief about level and each subcriterion updates only the belief about its own dimension. If a single global correct or incorrect outcome depends on several skills at once, using it to update several independent dimensions would duplicate evidence and misattribute the cause of the error. This makes it possible to distinguish <em>what to practise</em> (level by category) from <em>what to reinforce</em> (diagnosis by dimension).</p>
 <p>Each dimension can have its own random floor \(c^{(d)}\) (see §4.6–4.7), so the same latent value \(\theta\) produces different visible percentages depending on the dimension. The percentages between dimensions <strong>are not directly comparable</strong>; the common reference is \(\theta\). Dimensions that can coexist should not be forced within a single distribution: they are modeled separately (see §9 of the protocol).</p>
 <p>It is worth situating this against the classic model. IRT and Rasch models assume <strong>unidimensionality</strong> (all items measure a single latent attribute) and <strong>local independence</strong> (at a given ability level, the response to one item does not depend on the responses to the others). Under those assumptions, a single distribution over \(\theta\) fully describes the student. The multidimensional state described here <strong>extends</strong> that framework: instead of forcing several attributes within a single dimension —which would violate local independence— it maintains a separate distribution for each dimension and preserves local independence <em>within</em> each one. It is a deliberate generalization, not a breach of the model.</p>
 </section>
@@ -361,8 +361,8 @@
 <p>The maximum slope (in \(\theta = b_q\)) is:</p>
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>A high value of \(a\) produces a steeper curve: the question discriminates better between students close to its difficulty, but provides little information to students clearly above or below it. A lower value produces a smoother curve: the question is useful over a wider range of levels, but is less discriminating.</p>
-<p>The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, <strong>\(a = 1.5\) is a reasonable starting point</strong>.</p>
-<p><strong>Effective discrimination and mixed formats.</strong> The maximum slope depends on the product \(a\,(1 - c_q)\), not on \(a\) alone. It is therefore useful to distinguish the <strong>effective discrimination</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —which actually governs how much the question separates between levels— from the nominal discrimination \(a\). When all questions share the same number of options, and therefore the same \(c_q\), both are proportional and it is enough to fix \(a\). But if the bank mixes formats with different \(c_q\) (for example, true/false with \(c_q = 0.5\) alongside 4-option items with \(c_q = 0.25\)), keeping \(a\) constant makes the slope vary <em>by format alone</em>: a well-constructed true/false question would discriminate half as much as an equivalent open question, a purely mechanical bias with no pedagogical meaning.</p>
+<p>The usual values in psychometrics range between 0.5 and 2.5. For general purpose educational systems, values around \(1.0\)–\(1.5\) are reasonable starting points; the operational specification recommends fixing \(a_{\text{ef}} = 1.25\) and deriving \(a\) from each item's guessing floor.</p>
+<p><strong>Effective discrimination and mixed formats.</strong> The maximum slope depends on the product \(a\,(1 - c_q)\), not on \(a\) alone. It is therefore useful to distinguish the <strong>effective discrimination</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —the maximum slope expressed without the factor \(1/4\)— from the nominal discrimination \(a\). When all questions share the same number of options, and therefore the same \(c_q\), both are proportional and it is enough to fix \(a\). But if the bank mixes formats with different \(c_q\) (for example, true/false with \(c_q = 0.5\) alongside 4-option items with \(c_q = 0.25\)), keeping \(a\) constant makes the slope vary <em>by format alone</em>: a well-constructed true/false question would have a lower slope than an equivalent open question, a purely mechanical bias with no pedagogical meaning.</p>
 <p>To avoid this, fix the target effective discrimination \(a_{\text{ef}}\) and solve for the nominal one:</p>
 <div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
 <p>This way each question keeps the same slope at its inflection point regardless of the number of options. Taking \(a_{\text{ef}} = 1.25\) as the common target:</p>
@@ -378,7 +378,7 @@
 <tr><td>True/false</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
 </tbody>
 </table>
-<p>In this way \(a\) is not set arbitrarily: it is computed from a target effective discrimination and the pseudo-guessing of each question. This rule should be applied <strong>always</strong>, not only when a single test mixes formats. Two questions —or two different resources— with the same nominal \(a\) but a different number of options actually have different effective discriminations and are not comparable: with \(a = 1.5\), a 3-option question (\(c_q = 1/3\)) yields \(a_{\text{ef}} = 1.0\), while a 4-option one (\(c_q = 1/4\)) yields \(a_{\text{ef}} = 1.125\). Fixing \(a_{\text{ef}}\) and deriving \(a\) in each case makes them equal. The recommended target is \(a_{\text{ef}} = 1.25\): since \(c_q \leq 0.5\) for any item with two or more options, the derived nominal \(a\) never exceeds \(2.5\) —the extreme case, true/false, gives exactly \(a = 2.5\)— and thus stays within the usual psychometric range (0.5–2.5). A larger target would overshoot it: \(a_{\text{ef}} = 1.5\) would give \(a = 3.0\) for true/false. The numerical examples in this document use \(a = 1.5\) directly for illustration.</p>
+<p>In this way \(a\) is not set arbitrarily: it is computed from a target effective discrimination and the pseudo-guessing of each question. This rule should be applied <strong>always</strong>, not only when a single test mixes formats. Two questions —or two different resources— with the same nominal \(a\) but a different number of options have different maximum slopes and are not comparable in that sense: with \(a = 1.5\), a 3-option question (\(c_q = 1/3\)) yields \(a_{\text{ef}} = 1.0\), while a 4-option one (\(c_q = 1/4\)) yields \(a_{\text{ef}} = 1.125\). Fixing \(a_{\text{ef}}\) and deriving \(a\) in each case equalizes those slopes, but it does not equalize the item's full expected information: that information depends on the whole curve, the guessing floor, and the current posterior. The recommended target is \(a_{\text{ef}} = 1.25\): since \(c_q \leq 0.5\) for any item with two or more options, the derived nominal \(a\) never exceeds \(2.5\) —the extreme case, true/false, gives exactly \(a = 2.5\)— and thus stays within the usual psychometric range (0.5–2.5). A larger target would overshoot it: \(a_{\text{ef}} = 1.5\) would give \(a = 3.0\) for true/false. The numerical examples in this document use \(a = 1.5\) directly for illustration.</p>
 <h3>4.5. The probability of failure</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>This is the likelihood that enters Bayesian updating when the learner answers incorrectly.</p>
@@ -387,32 +387,32 @@
 <div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
 <p>In a calibrated IRT model, \(c_q\) should be estimated from real data, because pseudo-chance does not always coincide with pure chance: distractors are not equally attractive and some learners eliminate options before responding. This probability belongs to <strong>each question</strong>, not to the test as a whole. In numerical or exact-text answers where chance is irrelevant, \(c_q = 0\) is used.</p>
 <h3>4.7. Composite items: aggregated chance floor</h3>
-<p>A question is not always scored as a single correct or incorrect response. If the task is evaluated through several <strong>components</strong> \(j\) (steps, decisions, or subresponses), each with its own number of options \(m_j\) and weight \(w_j\), the probability of correctly guessing the complete item by pure chance is not \(1/m\), but the <strong>weighted average</strong> of the chance levels of each component:</p>
+<p>A question is not always scored as a single correct or incorrect response. If the task is evaluated through several <strong>components</strong> \(j\) (steps, decisions, or subresponses), each with its own number of options \(m_j\) and weight \(w_j\), the weighted average of the chance levels of each component is not the probability of getting the whole item right, but the <strong>expected partial score by chance</strong>:</p>
 <div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
-<p>For example, an item with three components of weights \((0.5,\,0.3,\,0.2)\) and options \((2,\,4,\,6)\) has an added floor:</p>
+<p>For example, an item with three components of weights \((0.5,\,0.3,\,0.2)\) and options \((2,\,4,\,6)\) has an expected score by chance:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
-<p>This aggregated \(c_q\) is the value that enters the ICC (§4.2) when generating the likelihoods of the complete item. The weights \(w_j\) must be the same as those used to score partial credit (§4.8).</p>
+<p>This aggregated \(c_q\) enters the ICC (§4.2) only if the curve is interpreted as the <strong>expected score</strong> of the composite item. If the item is scored all-or-nothing, the probability of full success by chance is not the mean but the product of the chance levels of the independent components: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). The weights \(w_j\) must be the same as those used to score partial credit (§4.8).</p>
 <h3>4.8. Partial credit: soft likelihood</h3>
-<p>When the answer allows degrees, not just correct or incorrect, but a score \(s \in [0, 1]\) obtained from weighted components, the likelihood should not choose between \(P(A)\) and \(P(F)\), but rather <strong>interpolate</strong> between them:</p>
-<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>When the answer allows degrees, not just correct or incorrect, but a score \(s \in [0, 1]\) obtained from weighted components, the likelihood should favor the hypotheses whose prediction \(p_i = P(A \mid H_i, q)\) is compatible with that score. If only an aggregate score is available, a coherent approximation is the geometric likelihood:</p>
+<div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Since \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), if we write \(p_i = P(A \mid H_i, q)\), then:</p>
-<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<div class="math-block">\[L(H_i) \propto p_i^s (1 - p_i)^{1-s}\]</div>
 <p>This \(L(H_i)\) replaces the likelihood in the Bayesian update of §3.2; the rest of the process, including normalization, does not change. Boundary cases:</p>
 <ul>
 <li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), complete success.</li>
 <li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), full failure.</li>
-<li>\(s = 0.5\): \(L(H_i) = 0.5\) for every hypothesis, a flat likelihood that does not modify the posterior.</li>
+<li>\(s = 0.5\): favors hypotheses with \(p_i\) close to \(0.5\); it is not neutral evidence unless the model does not distinguish between hypotheses.</li>
 </ul>
-<p>The score \(s\) must be calculated explicitly and in a way that can be scored automatically, typically as a weighted sum of subcriteria with \(\sum_j w_j = 1\).</p>
+<p>The score \(s\) must be calculated explicitly and in a way that can be scored automatically, typically as a weighted sum of subcriteria with \(\sum_j w_j = 1\). If the item has \(J\) approximately independent components and the strength of the evidence should be preserved, one can use \(L(H_i) \propto p_i^{sJ}(1-p_i)^{(1-s)J}\). If the result of each component is known, it is preferable to multiply the likelihoods component by component.</p>
 <h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Numerical example</h4>
 <p>Three hypotheses \(\theta \in \{-2, 0, 2\}\), item of medium difficulty (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), uniform prior \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). The probabilities of complete success are approximately \(p = (0.40,\, 0.68,\, 0.97)\). With a partial answer \(s = 0.75\):</p>
-<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
-<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
-<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
-<p>Applying Bayes and normalising (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)) gives:</p>
-<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
-<p>The posterior shifts towards mastery, but in a more moderate way than after a fully correct answer (\(s = 1\) would give \(\approx (0.20,\, 0.33,\, 0.47)\)). Partial credit therefore modulates the strength of the evidence according to the quality of the answer.</p>
-<p><strong>Selection with partial credit.</strong> The expected information gain (§6) is defined over the two binary outcomes; the exact version with graded responses would require averaging over the distribution of \(s\), which is not known a priori. In practice it is enough to keep selecting the question using the two binary scenarios (full success and full failure) as an approximation, and to reserve the interpolated likelihood for the update, once the response has been observed.</p>
+<div class="math-block">\[L(-2) \propto 0.40^{0.75} \cdot 0.60^{0.25} \approx 0.443\]</div>
+<div class="math-block">\[L(0) \propto 0.68^{0.75} \cdot 0.32^{0.25} \approx 0.563\]</div>
+<div class="math-block">\[L(2) \propto 0.97^{0.75} \cdot 0.03^{0.25} \approx 0.407\]</div>
+<p>Applying Bayes and normalising (\(\sum = \tfrac13(0.443 + 0.563 + 0.407) \approx 0.471\)) gives:</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.313,\; 0.399,\; 0.288)\]</div>
+<p>The posterior shifts towards the middle level, because a score \(s = 0.75\) is more compatible with a prediction \(p_i = 0.68\) than with an almost perfect prediction \(p_i = 0.97\). Thus partial credit provides evidence for the level that best predicts the observed score, not only a softer push towards high mastery.</p>
+<p><strong>Selection with partial credit.</strong> Expected information gain (§6) is defined over the outcomes that the item models. The exact version with graded responses would require averaging over the distribution of \(s\), which is usually not known a priori. In practice, selection can keep using the binary scenarios (full success and full failure) as an approximation, while the geometric or component-wise likelihood is reserved for the update once the response has been observed.</p>
 </section>
 <section id="s5">
 <h2>5. Shannon entropy as a measure of uncertainty</h2>
@@ -425,7 +425,7 @@
 <p><strong>Maximum entropy.</strong> If all hypotheses are equiprobable (\(p_i = 1/n\)), the entropy is maximum:</p>
 <div class="math-block">\[H_{\max} = \log_2 n\]</div>
 <p>This corresponds to total ignorance about the student's state.</p>
-<p><strong>Non-increasing expected entropy.</strong> The subsequent entropy can increase or decrease after a specific response, depending on the evidence observed (as illustrated by the example in §9, where the correct answer in Q2 increases the entropy with respect to the previous step). What guarantees selection for maximum information gain is that the subsequent entropy <em>expected</em> —before knowing the answer—does not exceed the current entropy.</p>
+<p><strong>Non-increasing expected entropy.</strong> The subsequent entropy can increase or decrease after a specific response, depending on the evidence observed (as illustrated by the example in §9, where the correct answer in Q2 increases the entropy with respect to the previous step). For any correctly modelled question, the subsequent entropy <em>expected</em> —before knowing the answer—does not exceed the current entropy, because expected gain is mutual information and cannot be negative. Maximum-information selection does not create that property: it chooses the question that reduces that expected entropy the most.</p>
 <h3>5.3. Numerical examples</h3>
 <p>With \(n = 3\) hypothesis:</p>
 <table>
@@ -476,7 +476,7 @@
 <p>The recommended solution is a <strong>weighted random selection</strong>:</p>
 <ol>
 <li>Calculate \(IG(q)\) for all available candidates.</li>
-<li>Gather the candidates with \(IG \geq IG_{\max} - \varepsilon\) (for example \(\varepsilon = 10^{-9}\)).</li>
+<li>Gather the candidates with \(IG \geq IG_{\max} - \varepsilon\). If only exact numerical ties are intended, \(\varepsilon = 10^{-9}\) is enough; if the goal is to diversify among genuinely close gains, use a practical margin, for example 1–2% of \(IG_{\max}\).</li>
 <li>Assign each candidate a weight inversely proportional to the number of times their category or concept has already appeared in the session.</li>
 <li>Choose with probability proportional to those weights.</li>
 </ol>
@@ -485,10 +485,10 @@
 <p>The dominant criterion in classic adaptive tests (CAT) is not entropy reduction but the <strong>Item Information Function</strong> (IIF), based on Fisher information:</p>
 <div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
 <p>where \(P(\theta)\) is the item's ICC (§4.2) and \(P'(\theta)\) its derivative. The IIF measures how much information the item provides <strong>at a specific point</strong> \(\theta\) on the continuum, and the classic system selects the item that maximizes \(I_q(\hat\theta)\) at the current point estimate of ability.</p>
-<p>This system's criterion —maximum expected entropy reduction (§6.1)— is preferable when the state is represented as a full distribution rather than as a single value \(\hat\theta\), for two reasons:</p>
+<p>This system's criterion —maximum expected entropy reduction (§6.1)— fits especially well when the state is represented as a full distribution rather than as a single value \(\hat\theta\), for two reasons:</p>
 <ul>
-<li><strong>It uses the whole distribution, not a point.</strong> The IIF forces the belief to be collapsed into a point estimate \(\hat\theta\) before selecting; if the distribution is wide or multimodal, that point does not represent it well and the IIF may choose an item that is informative only around a value that might not be the true one. Information gain weights <em>all</em> hypotheses by their current probability.</li>
-<li><strong>It is coherent with Bayesian updating.</strong> The system already maintains and updates a distribution via Bayes (§3); measuring an item's usefulness by how much it reduces the entropy of that same distribution uses one framework from start to finish. Introducing the IIF would require mixing a frequentist point estimate with a Bayesian belief.</li>
+<li><strong>It uses the whole distribution, not a point.</strong> The classic IIF is applied at a point estimate \(\hat\theta\); if the distribution is wide or multimodal, that point does not represent it well and may choose an item that is informative only around a value that might not be the true one. Information gain weights <em>all</em> hypotheses by their current probability.</li>
+<li><strong>It is coherent with Bayesian updating.</strong> The system already maintains and updates a distribution via Bayes (§3); measuring an item's usefulness by how much it reduces the entropy of that same distribution uses one framework from start to finish. Bayesian variants based on posterior-weighted Fisher information also exist, so the contrast is not between “frequentist Fisher” and “Bayes”, but between a point criterion and a criterion that directly uses the full discrete posterior distribution.</li>
 </ul>
 <p>Both criteria converge in the limiting case of a highly concentrated distribution: when the belief is almost point-like, maximizing information gain and maximizing the IIF at \(\hat\theta\) select practically the same item. The difference matters above all in the first questions, when uncertainty is high.</p>
 <p>The use of mutual information and KL divergence (§6.3) to select items is well established in Bayesian psychometric research, but its application in <strong>real educational tools</strong> is uncommon: what is usual in the classroom is the IIF or simpler rules (next item of the estimated level, selection by difficulty). The combination this system uses —a distribution of hypotheses, Bayesian updating and selection by Shannon entropy reduction, integrated into a tool for teachers— is, in that sense, infrequent in the educational field.</p>
@@ -564,11 +564,13 @@
 <li>Correct scale: \(\theta \in \{-2,\; 0,\; +2\}\) → the advanced level easily exceeds the extreme difficulty; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.86\), a value high enough for the question to be informative.</li>
 </ul>
 <p>where \(\sigma(x) = 1/(1 + e^{-x})\) is the standard sigmoid function.</p>
-<h3>8.3. Automatic calculation from the question bank</h3>
-<p>The most robust way is to calculate \(\theta_{\max}\) directly from the bank's difficulties:</p>
-<div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
-<p>and distribute the \(\theta_i\) values evenly in \([-\theta_{\max},\; +\theta_{\max}]\). Thus the scale automatically adapts to the question bank, without the need for manual adjustment.</p>
-<p><strong>Edge case:</strong> if all questions share the central difficulty (\(\max_q |b_q| = 0\)), the rule would give \(\theta_{\max} = 0\) and all hypotheses would collapse to the same value, nullifying the model. In that case a minimum should be imposed, for example \(\theta_{\max} = 1\), to preserve the separation between levels.</p>
+<h3>8.3. Fixed scale and placement of difficulties</h3>
+<p>The robust way to guarantee the separation is not to recompute \(\theta\) from the bank, but to fix the scale by convention and place the difficulties within it. The \(\theta_i\) values depend only on the number of hypotheses:</p>
+<div class="math-block">\[\theta_i = 2(i-1) - (n-1), \qquad \theta_{\max} = n - 1\]</div>
+<p>so that \(\theta\) runs over \(\{-(n-1), \ldots, +(n-1)\}\) with spacing 2 (this formula extends the table in §2.3 to any \(n\)). The difficulties are placed in the central half of the scale, \(b_q \in [-\theta_{\max}/2,\; +\theta_{\max}/2]\), which guarantees the factor 2 of §8.2 for the extreme items with any \(n\). Since \(\theta_{\max}\) depends on \(n\), the conversion of qualitative difficulties must also depend on \(n\): with \(k\) categories, they are spread evenly over the interval,</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(with \(k = 1\), \(b = 0\)). Thus, with \(n = 3\) and \(k = 3\), \(b \in \{-1, 0, +1\}\); with \(n = 3\) and \(k = 5\), \(b \in \{-1, -0.5, 0, +0.5, +1\}\); with \(n = 4\) and \(k = 3\), \(b \in \{-1.5, 0, +1.5\}\). A difficulty table independent of \(n\) would be inconsistent: with \(n = 2\) (\(\theta = \pm 1\)) and five fixed categories up to \(b = \pm 2\), the extreme difficulty would double the extreme level and the separation between scales would be inverted. Numeric \(b_q\) values outside the interval are clamped to it.</p>
+<p>The inverse rule —stretching \(\theta\) up to \(2 \cdot \max_q |b_q|\)— has two flaws. First, it makes the meaning of the hypotheses depend on the bank: two resources with the same pedagogy but different difficulty ranges produce non-comparable confidences and convergence speeds, because the strength of each update is governed by the product \(a \cdot \Delta\theta\) (discrimination times separation between adjacent hypotheses), which would be left uncontrolled. Second, it is fragile to outliers: a single question with \(b = 3\) in a bank where the rest is at \(\pm 1\) would stretch \(\theta\) to \(\pm 6\) and saturate the likelihoods of all the other questions (probabilities pinned to \(c_q\) or to 1), so that a single answer would produce almost deterministic posterior jumps. With the fixed scale, that outlier item is simply clamped to the edge of the interval and the rest of the bank keeps its behaviour. With \(a_{\text{ef}} = 1.25\) and intervals of 2, the invariant \(a_{\text{ef}} \cdot \Delta\theta = 2.5\) stays stable across resources. If most of the bank fell outside the interval, the problem is one of design (poorly defined levels and difficulties) and must be resolved with the teacher, not by stretching the scale.</p>
 </section>
 <section id="s9">
 <h2>9. Complete numerical example</h2>
@@ -787,7 +789,7 @@
 <p>The standardized index \(l_z\) (Drasgow, Levine and Williams, 1985) is:</p>
 <div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
 <p>which, under the model, is approximately distributed as \(N(0, 1)\). Strongly negative values (as a rough guide, \(l_z &lt; -2\)) signal a pattern that is improbable under the estimated level —typically, getting hard questions right and easy ones wrong, slips, or random guessing—: the diagnosis, even if the posterior reports it as confident, may not be reliable for that student. Values close to \(0\) indicate coherence.</p>
-<p>This quantifies the qualitative signal of §11.6: entropy measures how concentrated the model's belief is, but not whether the observed pattern is compatible with that belief; person-fit covers that gap. <strong>Limitation:</strong> \(l_z\) is an asymptotic approximation; with few questions its distribution departs from the normal and the threshold is indicative, a caution signal, not a formal test.</p>
+<p>This quantifies the qualitative signal of §11.6: entropy measures how concentrated the model's belief is, but not whether the observed pattern is compatible with that belief; person-fit covers that gap. <strong>Limitation:</strong> \(l_z\) is an asymptotic approximation; with few questions its distribution departs from the normal and the threshold is indicative, a caution signal, not a formal test. In adaptive tests the calibration is even more delicate: selection tends to present items near the maximum-uncertainty region, and the index is computed using the estimated level, not the true one. Corrections and procedures for this situation exist, such as \(l_z^*\) and person-fit work in CAT, but here \(l_z\) is kept only as a practical low-reliability warning.</p>
 <h3>11.8. Validating the design by simulation (Monte Carlo)</h3>
 <p>Person-fit validates the diagnosis of a particular student; a different question is whether the test as a whole —bank and parameters— separates the levels well. Since the parameters are a priori and not calibrated (§11.1), this cannot be answered with real data, but the model's own behaviour can be examined through Monte Carlo simulation.</p>
 <p>The procedure generates synthetic respondents located at the \(\theta_i\) of each hypothesis. For a respondent of level \(\theta_i\), each response is simulated as a Bernoulli trial with probability \(P(A \mid \theta_i, q)\) given by the ICC (§4.2), applying the same adaptive selection (§6) and the same stopping criterion (§7) as for a real student. Repeating this many times per level estimates the confusion matrix:</p>
@@ -805,11 +807,13 @@
 <li><strong>van der Linden, W.J. &amp; Hambleton, R.K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Encyclopedic reference on IRT models and applications.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Adaptive item selection and information.]</li>
 <li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Standardized person-fit indices, \(l_z\).]</li>
+<li><strong>Snijders, T. A. B.</strong> (2001). Asymptotic null distribution of person fit statistics with estimated person parameter. <em>Psychometrika</em>, 66(3), 331–342. DOI: <a href="https://doi.org/10.1007/BF02294437" rel="noopener" target="_blank">10.1007/BF02294437</a>. [Person-fit correction when the parameter is estimated.]</li>
+<li><strong>van Krimpen-Stoop, E. M. L. A. &amp; Meijer, R. R.</strong> (2002). Detection of person misfit in computerized adaptive tests with polytomous items. <em>Applied Psychological Measurement</em>, 26(2), 164–180. [Person-fit in adaptive tests.]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [In Spanish; open access. IRT: foundations and models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2nd ed.). Lawrence Erlbaum. [Fundamentals of adaptive evaluation.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3rd ed.). CRC Press. [General Bayesian inference.]</li>
 </ul>
-<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
+<p><strong>How to cite this document (APA 7):</strong> de Haro, J. J. (2026). <em>Mathematical foundations of Bayesian adaptive educational systems</em> (Version 2.0). https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html</p>
 <p><em>License: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>

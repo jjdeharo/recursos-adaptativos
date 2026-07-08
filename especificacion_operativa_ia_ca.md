@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 1.9**
+**Versió 2.0**
 
 ## Propòsit
 
@@ -51,8 +51,14 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 - Si no hi ha informació prèvia fiable, utilitza una distribució uniforme.
 - Si les hipòtesis són jeràrquiques, assigna-les valors `theta` ordenats i centrats.
 - Si el docent no fixa valors, utilitza una escala simètrica centrada en 0.
-- Quan facis servir dificultats `b_q` centrades, fes que l'escala `theta` abasti un rang més gran que l'escala de dificultat. Regla pràctica: `theta_max = 2 * max(abs(b_q))`.
-- Cas límit: si `max(abs(b_q)) = 0` (totes les preguntes amb la mateixa dificultat central), aquesta regla donaria `theta_max = 0` i les hipòtesis col·lapsarien en el mateix valor. Fes servir llavors un mínim `theta_max = 1`.
+- L'escala `theta` és fixa i depèn només del nombre d'hipòtesis, no del banc de preguntes. Amb `n` hipòtesis jeràrquiques, fes servir valors centrats en `0` amb intervals de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, és a dir, `theta` recorre `{-(n-1), ..., +(n-1)}` i `theta_max = n - 1`. Exemples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
+- Situa les dificultats dins de la meitat central d'aquesta escala: `b_q` ha de quedar a `[-theta_max / 2, +theta_max / 2]`. Com que `theta_max` depèn de `n`, la conversió de dificultats també depèn de `n`, no només del nombre de categories.
+- Si el docent dona `k` categories qualitatives de dificultat, reparteix-les uniformement en aquest interval: `b_j = (theta_max / 2) * (2 * (j - 1) / (k - 1) - 1)` per a `j = 1..k` (si `k = 1`, fes servir `b = 0`). Exemples: `n = 3` i `k = 3` → `{-1, 0, +1}`; `n = 3` i `k = 5` → `{-1, -0.5, 0, +0.5, +1}`; `n = 4` i `k = 3` → `{-1.5, 0, +1.5}`; `n = 2` i `k = 5` → `{-0.5, -0.25, 0, +0.25, +0.5}`.
+- No facis servir una taula de dificultats fixa i independent de `n`: amb poques hipòtesis i moltes categories produiria dificultats fora del rang de nivells (per exemple, `n = 2` amb `b = ±2`) i anul·laria la separació entre escales.
+- Si el docent dona valors numèrics de `b_q` fora de l'interval, retalla'ls (clamp) a l'interval.
+- No recalculis mai `theta` a partir dels extrems del banc. Una sola pregunta atípicament difícil o fàcil no ha de redefinir l'escala: si estires `theta` per acomodar-la, satures les versemblances de la resta del banc (totes les probabilitats queden enganxades a `c_q` o a `1`) i el posterior fa salts sobreconfiats amb una sola resposta.
+- Si la majoria de les dificultats del banc quedés fora de l'interval, no estiris l'escala: revisa amb el docent la definició de nivells i dificultats, perquè el disseny és incoherent.
+- Invariant de comparabilitat: amb `a_ef = 1.25` i intervals de `2` entre hipòtesis adjacents, el producte `a_ef * Δtheta = 2.5` determina la força màxima d'una actualització, sigui quin sigui `n` (en créixer `n` creix `theta_max`, però l'espaiat entre hipòtesis adjacents es manté). Mantén aquest invariant entre recursos perquè les confiances i velocitats de convergència siguin comparables.
 
 ## Actualització bayesiana
 
@@ -86,7 +92,7 @@ Això s'ha de fer després de cada interacció rellevant.
   - `c_q = 1 / m_q` si hi ha atzar
   - `c_q = 0` si no n'hi ha
 - No fixis `a` directament: fixa la discriminació efectiva objectiu `a_ef = 1.25` i calcula `a` per pregunta amb `a = a_ef / (1 - c_q) = 1.25 / (1 - c_q)`.
-  - Fes-ho **sempre**, encara que totes les preguntes tinguin el mateix nombre d'opcions. El que importa és la discriminació efectiva `a * (1 - c_q)`, no `a`. Un `a` fix amb `c_q` diferents produeix discriminacions reals diferents i no comparables (per exemple, `a=1.5` fix dona `a_ef=1.0` amb 3 opcions però `a_ef=1.125` amb 4).
+  - Fes-ho **sempre**, encara que totes les preguntes tinguin el mateix nombre d'opcions. Aquesta regla iguala el pendent màxim de la ICC, no garanteix que tots els formats aportin la mateixa informació esperada. Un `a` fix amb `c_q` diferents produeix pendents reals diferents i no comparables (per exemple, `a=1.5` fix dona `a_ef=1.0` amb 3 opcions però `a_ef=1.125` amb 4). La selecció per guany d'informació continuarà afavorint els ítems que aportin més evidència.
   - `a_ef = 1.25` garanteix que `a` es mantingui dins del rang habitual en psicometria (0.5–2.5) per a qualsevol format de 2 o més opcions: el cas extrem, vertader/fals (`c_q=0.5`), dona exactament `a = 2.5`.
   - Valors que has d'obtenir: oberta (`c_q=0`) → `a=1.25`; 5 opcions (`c_q=0.20`) → `a=1.5625`; 4 opcions (`c_q=0.25`) → `a≈1.667`; 3 opcions (`c_q=1/3`) → `a=1.875`; vertader/fals (`c_q=0.5`) → `a=2.5`.
 - Si l'alumne falla:
@@ -108,30 +114,33 @@ Això s'ha de fer després de cada interacció rellevant.
 ## Respostes amb crèdit parcial
 
 - Si una resposta no és només encert o error, sinó que admet graus (diversos passos, components ponderats, encerts parcials), resumeix-la en una puntuació `s` entre `0` i `1`.
-- Construeix la versemblança per interpolació entre encert i error:
+- Si només tens una puntuació parcial agregada `s`, construeix una versemblança geomètrica:
 
-`L(H_i) = s * P(encert | H_i, q) + (1 - s) * P(error | H_i, q)`
+`L(H_i) = P(encert | H_i, q)^s * P(error | H_i, q)^(1 - s)`
 
 - Utilitza aquesta `L(H_i)` en l'actualització bayesiana en lloc de triar entre `P(encert)` i `P(error)`. La normalització i la resta del procés no canvien.
-- Casos límit: `s = 1` equival a encert ple; `s = 0` a error ple; `s = 0.5` no aporta informació i deixa el posterior gairebé intacte.
+- Casos límit: `s = 1` equival a encert ple; `s = 0` a error ple. Un `s = 0.5` no és necessàriament neutre: afavoreix les hipòtesis per a les quals l'ítem prediu una puntuació intermèdia.
+- Si l'ítem té `J` components aproximadament independents i `s` és la fracció ponderada de components correctes, pots conservar la força de l'evidència fent servir `L(H_i) = P(encert | H_i, q)^(sJ) * P(error | H_i, q)^((1 - s)J)`.
+- Si tens evidència separada per component, és preferible multiplicar les versemblances de cada component en comptes de reduir-ho tot a una sola `s`.
 - Defineix com es calcula `s` de manera explícita i autocorregible: suma ponderada de subcriteris, fracció de passos correctes, proximitat a la solució numèrica, etc. Els pesos han de sumar `1`.
 - No tractis com a binària una resposta que admet graus: perds informació diagnòstica.
 - Per seleccionar la pregunta següent, calcula el guany d'informació sobre els resultats que l'ítem modela realment. Per a ítems binaris o amb crèdit parcial, l'aproximació amb encert i error plens continua essent acceptable; si modeles distractors o perfils complets, fes la mitjana sobre totes les respostes rellevants.
 
 ## Sòl d'atzar en ítems compostos
 
-- Si un ítem es corregeix per diversos components amb un nombre diferent d'opcions, la probabilitat d'encert per atzar no és `1/m`.
-- Calcula el sòl agregat com a mitjana ponderada dels atzars de cada component:
+- Si un ítem es corregeix per diversos components amb diferent nombre d'opcions i es puntua amb crèdit parcial, el sòl agregat no és la probabilitat d'encertar l'ítem complet, sinó la puntuació parcial esperada per atzar.
+- Calcula aquest sòl de puntuació esperada com a mitjana ponderada dels atzars de cada component:
 
 `c_q = Σ_j w_j * c_j`  amb  `c_j = 1 / m_j`  i  `Σ_j w_j = 1`
 
-- Utilitza aquest `c_q` agregat en la funció logística quan generis les versemblances de l'ítem complet.
+- Utilitza aquest `c_q` agregat en la funció logística només quan la ICC representi la puntuació esperada de l'ítem compost.
+- Si l'ítem compost es corregeix com a tot-o-res, no facis servir la mitjana ponderada: la probabilitat d'encert ple per atzar és el producte `Π_j c_j` si els components s'encerten independentment.
 - Els pesos `w_j` han de coincidir amb els que facis servir per calcular la puntuació `s` del crèdit parcial.
 
 ## Diagnòstic multidimensional
 
 - Si necessites saber no només el nivell global sinó quines habilitats o passos fallen, mantén diverses distribucions bayesianes en paral·lel: una per categoria o nivell i una per cada dimensió diagnòstica (habilitat, pas, tipus d'error).
-- Actualitza amb la mateixa resposta totes les distribucions rellevants: el resultat global alimenta la creença de nivell; cada subcriteteri alimenta la creença de la seva dimensió.
+- Actualitza cada distribució amb l'evidència que li correspon: el resultat global pot alimentar la creença de nivell; cada subcriteri ha d'alimentar només la seva dimensió. No facis servir el mateix encert/error global per actualitzar diverses dimensions independents si la pregunta exigeix diverses habilitats alhora, perquè dupliques evidència i atribueixes malament la causa de l'error.
 - Cada dimensió pot tenir el seu propi sòl d'atzar `c` segons el seu nombre d'opcions, de manera que els seus percentatges no són directament comparables entre si: la referència comuna és el valor latent `theta`.
 - No posis en una sola distribució dimensions que poden coexistir: utilitza distribucions separades.
 - Si diverses dimensions diagnòstiques interactuen de manera forta, pots substituir aquestes distribucions independents per una sola distribució sobre perfils complets; el més important és no forçar com a excloents factors que en realitat poden coexistir.

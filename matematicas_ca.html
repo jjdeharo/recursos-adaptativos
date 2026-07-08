@@ -212,7 +212,7 @@
 <a class="back-link" href="documentacion_ca.html">← Protocol</a>
 <h1>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</h1>
 <p>Juan José de Haro · bilateria.org · <a href="https://bilateria.org" style="color:rgba(255,255,255,0.85);">bilateria.org</a></p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 1.7</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 2.0</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -276,14 +276,14 @@
 <tr><td>5</td><td>\(-4,\; -2,\; 0,\; +2,\; +4\)</td></tr>
 </tbody>
 </table>
-<p>Els valors concrets depenen de l'escala de dificultat de les preguntes. La relació exacta entre θ i b s'explica a §8.</p>
+<p>Aquests valors són fixos i depenen només del nombre d'hipòtesis; les dificultats \(b_q\) se situen <em>dins</em> d'aquesta escala, no al revés. La relació exacta entre θ i b s'explica a §8.</p>
 <h3>2.4. Estat multidimensional</h3>
 <p>L'estat de l'alumne no ha de ser una única distribució. Quan interessa saber no només <em>quant</em> domina sinó <em>què</em> components falla, convé mantenir <strong>diverses distribucions bayesianes en paral·lel</strong>:</p>
 <ul>
 <li>una distribució per <strong>categoria</strong> o nivell (quin tipus de tasca domina);</li>
 <li>una distribució per cada <strong>dimensió diagnòstica</strong> (habilitat, pas del procés o tipus d'error).</li>
 </ul>
-<p>Cada distribució \(\mathbf{p}^{(d)}\) sobre les hipòtesis de la dimensió \(d\) s'actualitza de forma independent amb la maquinària de §3–§4, però totes s'alimenten de la <strong>mateixa resposta</strong>: el resultat global actualitza la creença de nivell i cada subcriteri actualitza la creença de la seva dimensió. Això permet distingir <em>què practicar</em> (nivell per categoria) de <em>què reforçar</em> (diagnòstic per dimensió).</p>
+<p>Cada distribució \(\mathbf{p}^{(d)}\) sobre les hipòtesis de la dimensió \(d\) s'actualitza de forma independent amb la maquinària de §3–§4, però s'ha d'alimentar amb l'evidència que li correspon: el resultat global pot actualitzar la creença de nivell i cada subcriteri actualitza només la creença de la seva dimensió. Si un únic encert o error global depèn de diverses habilitats alhora, fer-lo servir per actualitzar diverses dimensions independents duplicaria l'evidència i atribuiria malament la causa de l'error. Això permet distingir <em>què practicar</em> (nivell per categoria) de <em>què reforçar</em> (diagnòstic per dimensió).</p>
 <p>Cada dimensió pot tenir el seu propi sòl d'atzar \(c^{(d)}\) (vegeu §4.6–4.7), per la qual cosa un mateix valor latent \(\theta\) produeix percentatges visibles diferents segons la dimensió. Els percentatges entre dimensions <strong>no són directament comparables</strong>; la referència comuna és \(\theta\). Les dimensions que poden coexistir no s'han de forçar dins d'una sola distribució: es modelen per separat (vegeu §9 del protocol).</p>
 <p>Convé situar això davant del model clàssic. La TRI i els models de Rasch assumeixen <strong>unidimensionalitat</strong> (tots els ítems mesuren un únic atribut latent) i <strong>independència local</strong> (a un nivell d'habilitat donat, la resposta a un ítem no depèn de les respostes als altres). Sota aquests supòsits, una sola distribució sobre \(\theta\) descriu completament l'alumne. L'estat multidimensional descrit aquí <strong>estén</strong> aquest marc: en lloc de forçar diversos atributs dins d'una única dimensió —cosa que violaria la independència local—, manté una distribució separada per cada dimensió i conserva la independència local <em>dins</em> de cadascuna. És una generalització deliberada, no un incompliment del model.</p>
 </section>
@@ -361,8 +361,8 @@
 <p>El pendent màxim (en \(\theta = b_q\)) val:</p>
 <div class="math-block">\[\left.\frac{d}{d\theta} P\right|_{\theta = b_q} = \frac{a\,(1 - c_q)}{4}\]</div>
 <p>Un valor alt de \(a\) produeix una corba més escarpada: la pregunta discrimina millor entre alumnes a prop de la dificultat, però aporta poca informació a alumnes clarament per sobre o per sota. Un valor baix produeix una corba més suau: la pregunta és útil en un rang més ampli de nivells, però discrimina menys.</p>
-<p>Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, <strong>\(a = 1.5\) és un punt de partida raonable</strong>.</p>
-<p><strong>Discriminació efectiva i barreja de formats.</strong> El pendent màxim depèn del producte \(a\,(1 - c_q)\), no de \(a\) per separat. Convé per això distingir la <strong>discriminació efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —la que realment governa quant separa la pregunta entre nivells— de la discriminació nominal \(a\). Quan totes les preguntes comparteixen el mateix nombre d'opcions, i per tant el mateix \(c_q\), totes dues són proporcionals i n'hi ha prou de fixar \(a\). Però si el banc barreja formats amb \(c_q\) diferent (per exemple, vertader/fals amb \(c_q = 0.5\) al costat d'ítems de 4 opcions amb \(c_q = 0.25\)), mantenir \(a\) constant fa que el pendent variï <em>només pel format</em>: una pregunta de vertader/fals ben construïda discriminaria la meitat que una oberta equivalent, un biaix purament mecànic i sense sentit didàctic.</p>
+<p>Els valors habituals en psicometria oscil·len entre 0,5 i 2,5. Per a sistemes educatius de propòsit general, valors al voltant d'\(1.0\)–\(1.5\) són punts de partida raonables; a l'especificació operativa es recomana fixar \(a_{\text{ef}} = 1.25\) i derivar \(a\) des del sòl d'atzar de cada ítem.</p>
+<p><strong>Discriminació efectiva i barreja de formats.</strong> El pendent màxim depèn del producte \(a\,(1 - c_q)\), no de \(a\) per separat. Convé per això distingir la <strong>discriminació efectiva</strong> \(a_{\text{ef}} = a\,(1 - c_q)\) —el pendent màxim expressat sense el factor \(1/4\)— de la discriminació nominal \(a\). Quan totes les preguntes comparteixen el mateix nombre d'opcions, i per tant el mateix \(c_q\), totes dues són proporcionals i n'hi ha prou de fixar \(a\). Però si el banc barreja formats amb \(c_q\) diferent (per exemple, vertader/fals amb \(c_q = 0.5\) al costat d'ítems de 4 opcions amb \(c_q = 0.25\)), mantenir \(a\) constant fa que el pendent variï <em>només pel format</em>: una pregunta de vertader/fals ben construïda tindria un pendent menor que una oberta equivalent, un biaix purament mecànic i sense sentit didàctic.</p>
 <p>Per evitar-ho es fixa la discriminació efectiva objectiu \(a_{\text{ef}}\) i s'aïlla la nominal:</p>
 <div class="math-block">\[a = \frac{a_{\text{ef}}}{1 - c_q}\]</div>
 <p>Així cada pregunta conserva el mateix pendent en el seu punt d'inflexió amb independència del nombre d'opcions. Prenent \(a_{\text{ef}} = 1.25\) com a objectiu comú:</p>
@@ -378,7 +378,7 @@
 <tr><td>Vertader/fals</td><td>0.50</td><td>2.5</td><td>1.25</td></tr>
 </tbody>
 </table>
-<p>D'aquesta manera \(a\) no es fixa de manera arbitrària: es calcula a partir d'una discriminació efectiva objectiu i del pseudoatzar de cada pregunta. Convé aplicar aquesta regla <strong>sempre</strong>, no només quan un mateix test barreja formats. Dues preguntes —o dos recursos diferents— amb el mateix \(a\) nominal però diferent nombre d'opcions tenen en realitat discriminacions efectives diferents i no són comparables: amb \(a = 1.5\), una pregunta de 3 opcions (\(c_q = 1/3\)) rendeix \(a_{\text{ef}} = 1.0\), mentre que una de 4 (\(c_q = 1/4\)) rendeix \(a_{\text{ef}} = 1.125\). Fixar \(a_{\text{ef}}\) i derivar \(a\) en cada cas les iguala. Com a objectiu es recomana \(a_{\text{ef}} = 1.25\): atès que \(c_q \leq 0.5\) en qualsevol ítem de dues o més opcions, la \(a\) nominal derivada mai no supera \(2.5\) —el cas extrem, vertader/fals, dona exactament \(a = 2.5\)— i es manté així dins del rang habitual en psicometria (0.5–2.5). Un objectiu més gran el desbordaria: \(a_{\text{ef}} = 1.5\) donaria \(a = 3.0\) en vertader/fals. Els exemples numèrics d'aquest document fan servir \(a = 1.5\) directament amb finalitats il·lustratives.</p>
+<p>D'aquesta manera \(a\) no es fixa de manera arbitrària: es calcula a partir d'una discriminació efectiva objectiu i del pseudoatzar de cada pregunta. Convé aplicar aquesta regla <strong>sempre</strong>, no només quan un mateix test barreja formats. Dues preguntes —o dos recursos diferents— amb el mateix \(a\) nominal però diferent nombre d'opcions tenen pendents màxims diferents i no són comparables en aquest sentit: amb \(a = 1.5\), una pregunta de 3 opcions (\(c_q = 1/3\)) rendeix \(a_{\text{ef}} = 1.0\), mentre que una de 4 (\(c_q = 1/4\)) rendeix \(a_{\text{ef}} = 1.125\). Fixar \(a_{\text{ef}}\) i derivar \(a\) en cada cas iguala aquests pendents, però no iguala tota la informació esperada de l'ítem: aquesta informació depèn de la corba completa, del sòl d'atzar i del posterior actual. Com a objectiu es recomana \(a_{\text{ef}} = 1.25\): atès que \(c_q \leq 0.5\) en qualsevol ítem de dues o més opcions, la \(a\) nominal derivada mai no supera \(2.5\) —el cas extrem, vertader/fals, dona exactament \(a = 2.5\)— i es manté així dins del rang habitual en psicometria (0.5–2.5). Un objectiu més gran el desbordaria: \(a_{\text{ef}} = 1.5\) donaria \(a = 3.0\) en vertader/fals. Els exemples numèrics d'aquest document fan servir \(a = 1.5\) directament amb finalitats il·lustratives.</p>
 <h3>4.5. La probabilitat de fallada</h3>
 <div class="math-block">\[P(F \mid \theta_i, q) = 1 - P(A \mid \theta_i, q)\]</div>
 <p>Aquesta és la versemblança que entra a l'actualització bayesiana quan l'alumne falla.</p>
@@ -387,32 +387,32 @@
 <div class="math-block">\[c_q \approx \frac{1}{m_q}\]</div>
 <p>En un model IRT calibrat, \(c_q\) s'hauria d'estimar a partir de dades reals, perquè el pseudoatzar no sempre coincideix amb l'atzar pur: els distractors no són igualment atractius i alguns alumnes eliminen opcions abans de respondre. Aquesta probabilitat pertany a <strong>cada pregunta</strong>, no al test en conjunt. En respostes numèriques o de text exacte on l'atzar és irrellevant, es fa servir \(c_q = 0\).</p>
 <h3>4.7. Ítems compostos: terra d'atzar agregat</h3>
-<p>Una pregunta no sempre es corregeix com un únic encert o error. Si la tasca s'avalua per diversos <strong>components</strong> \(j\) (passos, decisions o subrespostes), cadascun amb el seu propi nombre d'opcions \(m_j\) i el pes \(w_j\), la probabilitat d'encertar l'ítem complet per pur atzar no és \(1/m\), sinó la <strong>mitjana ponderada</strong> dels atzars de cada component:</p>
+<p>Una pregunta no sempre es corregeix com un únic encert o error. Si la tasca s'avalua per diversos <strong>components</strong> \(j\) (passos, decisions o subrespostes), cadascun amb el seu propi nombre d'opcions \(m_j\) i el pes \(w_j\), la mitjana ponderada dels atzars de cada component no és la probabilitat d'encertar l'ítem complet, sinó la <strong>puntuació parcial esperada per atzar</strong>:</p>
 <div class="math-block">\[c_q = \sum_{j} w_j\, c_j, \qquad c_j = \frac{1}{m_j}, \qquad \sum_j w_j = 1\]</div>
-<p>Per exemple, un ítem amb tres components de pesos \((0.5,\,0.3,\,0.2)\) i opcions \((2,\,4,\,6)\) té un terra agregat:</p>
+<p>Per exemple, un ítem amb tres components de pesos \((0.5,\,0.3,\,0.2)\) i opcions \((2,\,4,\,6)\) té una puntuació esperada per atzar:</p>
 <div class="math-block">\[c_q = 0.5 \cdot \tfrac{1}{2} + 0.3 \cdot \tfrac{1}{4} + 0.2 \cdot \tfrac{1}{6} \approx 0.358\]</div>
-<p>Aquest agregat \(c_q\) és el que entra a la ICC (§4.2) en generar les versemblances de l'ítem complet. Els pesos \(w_j\) han de ser els mateixos que es fan servir per puntuar el crèdit parcial (§4.8).</p>
+<p>Aquest agregat \(c_q\) entra a la ICC (§4.2) només si la corba s'interpreta com a <strong>puntuació esperada</strong> de l'ítem compost. Si l'ítem es corregeix com a tot-o-res, la probabilitat d'encert ple per atzar no és la mitjana sinó el producte dels atzars dels components independents: \(\tfrac12 \cdot \tfrac14 \cdot \tfrac16 \approx 0.021\). Els pesos \(w_j\) han de ser els mateixos que es fan servir per puntuar el crèdit parcial (§4.8).</p>
 <h3>4.8. Crèdit parcial: versemblança suau</h3>
-<p>Quan la resposta admet graus —no només encert o error, sinó una puntuació \(s \in [0, 1]\) obtinguda dels components ponderats— la versemblança no ha de triar entre \(P(A)\) i \(P(F)\), sinó <strong>interpolar</strong> entre ambdues:</p>
-<div class="math-block">\[L(H_i) = s \cdot P(A \mid H_i, q) + (1 - s) \cdot P(F \mid H_i, q)\]</div>
+<p>Quan la resposta admet graus —no només encert o error, sinó una puntuació \(s \in [0, 1]\) obtinguda dels components ponderats— la versemblança ha d'afavorir les hipòtesis la predicció de les quals \(p_i = P(A \mid H_i, q)\) sigui compatible amb aquesta puntuació. Si només es disposa d'una puntuació agregada, una aproximació coherent és la versemblança geomètrica:</p>
+<div class="math-block">\[L(H_i) \propto P(A \mid H_i, q)^s \cdot P(F \mid H_i, q)^{1-s}\]</div>
 <p>Com \(P(F \mid H_i, q) = 1 - P(A \mid H_i, q)\), escrivint \(p_i = P(A \mid H_i, q)\):</p>
-<div class="math-block">\[L(H_i) = s\, p_i + (1 - s)(1 - p_i)\]</div>
+<div class="math-block">\[L(H_i) \propto p_i^s (1 - p_i)^{1-s}\]</div>
 <p>Aquesta \(L(H_i)\) substitueix la versemblança en l'actualització bayesiana de §3.2; la resta del procés (normalització inclosa) no canvia. Casos límit:</p>
 <ul>
 <li>\(s = 1\): \(L(H_i) = P(A \mid H_i, q)\), encert ple.</li>
 <li>\(s = 0\): \(L(H_i) = P(F \mid H_i, q)\), fallada plena.</li>
-<li>\(s = 0.5\): \(L(H_i) = 0.5\) per a tota hipòtesi, una versemblança plana que no modifica el posterior.</li>
+<li>\(s = 0.5\): afavoreix hipòtesis amb \(p_i\) proper a \(0.5\); no és una evidència neutra llevat que el model no distingeixi entre hipòtesis.</li>
 </ul>
-<p>La puntuació \(s\) s'ha de calcular de manera explícita i autocorregible, normalment com a suma ponderada de subcriteris amb \(\sum_j w_j = 1\).</p>
+<p>La puntuació \(s\) s'ha de calcular de manera explícita i autocorregible, normalment com a suma ponderada de subcriteris amb \(\sum_j w_j = 1\). Si l'ítem té \(J\) components aproximadament independents i es vol conservar la força de l'evidència, es pot usar \(L(H_i) \propto p_i^{sJ}(1-p_i)^{(1-s)J}\). Si es coneix el resultat de cada component, és preferible multiplicar les versemblances component a component.</p>
 <h4 style="font-size:0.92rem;font-weight:700;margin-top:1rem;">Exemple numèric</h4>
 <p>Tres hipòtesis \(\theta \in \{-2, 0, 2\}\), ítem de dificultat mitjana (\(b_q = 0\), \(a = 1.5\), \(c_q \approx 0.36\)), prior uniforme \(\mathbf{p} = (\tfrac13, \tfrac13, \tfrac13)\). Les versemblances d'encert ple són aproximadament \(p = (0.40,\, 0.68,\, 0.97)\). Amb una resposta parcial \(s = 0.75\):</p>
-<div class="math-block">\[L(-2) = 0.75(0.40) + 0.25(0.60) = 0.45\]</div>
-<div class="math-block">\[L(0) = 0.75(0.68) + 0.25(0.32) = 0.59\]</div>
-<div class="math-block">\[L(2) = 0.75(0.97) + 0.25(0.03) = 0.735\]</div>
-<p>Aplicant Bayes i normalitzant (\(\sum = \tfrac13(0.45 + 0.59 + 0.735) = 0.592\)):</p>
-<div class="math-block">\[\mathbf{p}' \approx (0.253,\; 0.332,\; 0.414)\]</div>
-<p>El posterior es desplaça cap al domini, però de manera més moderada que amb un encert ple (\(s = 1\) donaria \(\approx (0.20,\, 0.33,\, 0.47)\)). El crèdit parcial gradua així la força de l'evidència segons la qualitat de la resposta.</p>
-<p><strong>Selecció amb crèdit parcial.</strong> El guany esperat d'informació (§6) està definit sobre els dos resultats binaris; la versió exacta amb respostes graduades exigiria fer la mitjana sobre la distribució de \(s\), que no es coneix a priori. A la pràctica n'hi ha prou de continuar seleccionant la pregunta amb els dos escenaris binaris (encert i error plens) com a aproximació, i reservar la versemblança interpolada per a l'actualització, un cop observada la resposta.</p>
+<div class="math-block">\[L(-2) \propto 0.40^{0.75} \cdot 0.60^{0.25} \approx 0.443\]</div>
+<div class="math-block">\[L(0) \propto 0.68^{0.75} \cdot 0.32^{0.25} \approx 0.563\]</div>
+<div class="math-block">\[L(2) \propto 0.97^{0.75} \cdot 0.03^{0.25} \approx 0.407\]</div>
+<p>Aplicant Bayes i normalitzant (\(\sum = \tfrac13(0.443 + 0.563 + 0.407) \approx 0.471\)):</p>
+<div class="math-block">\[\mathbf{p}' \approx (0.313,\; 0.399,\; 0.288)\]</div>
+<p>El posterior es desplaça cap al nivell mitjà, perquè una puntuació \(s = 0.75\) és més compatible amb una predicció \(p_i = 0.68\) que amb una predicció gairebé perfecta \(p_i = 0.97\). Així el crèdit parcial aporta evidència sobre el nivell que millor prediu la puntuació observada, no només una empenta més suau cap al domini alt.</p>
+<p><strong>Selecció amb crèdit parcial.</strong> El guany esperat d'informació (§6) està definit sobre els resultats que l'ítem modeli. La versió exacta amb respostes graduades exigiria fer la mitjana sobre la distribució de \(s\), que normalment no es coneix a priori. A la pràctica es pot continuar seleccionant amb els escenaris binaris (encert i error plens) com a aproximació, i reservar la versemblança geomètrica o per components per a l'actualització un cop observada la resposta.</p>
 </section>
 <section id="s5">
 <h2>5. Entropia de Shannon com a mesura d'incertesa</h2>
@@ -425,7 +425,7 @@
 <p><strong>Entropia màxima.</strong> Si totes les hipòtesis són equiprobables (\(p_i = 1/n\)), l'entropia és màxima:</p>
 <div class="math-block">\[H_{\max} = \log_2 n\]</div>
 <p>Això correspon a la total ignorància sobre l'estat de l'alumne.</p>
-<p><strong>Entropia esperada no creixent.</strong> L'entropia posterior pot augmentar o disminuir després d'una resposta concreta, segons l'evidència observada (com il·lustra l'exemple de §9, on l'encert a Q2 fa pujar l'entropia respecte al pas anterior). El que garanteix la selecció per màxim guany d'informació és que l'entropia posterior <em>esperada</em> -abans de conèixer la resposta- no supera l'entropia actual.</p>
+<p><strong>Entropia esperada no creixent.</strong> L'entropia posterior pot augmentar o disminuir després d'una resposta concreta, segons l'evidència observada (com il·lustra l'exemple de §9, on l'encert a Q2 fa pujar l'entropia respecte al pas anterior). Per a qualsevol pregunta modelada correctament, l'entropia posterior <em>esperada</em> —abans de conèixer la resposta— no supera l'entropia actual, perquè el guany esperat és informació mútua i no pot ser negatiu. La selecció per màxim guany no crea aquesta propietat: tria la pregunta que més redueix aquesta entropia esperada.</p>
 <h3>5.3. Exemples numèrics</h3>
 <p>Amb \(n = 3\) hipòtesis:</p>
 <table>
@@ -476,7 +476,7 @@
 <p>La solució recomanada és una <strong>selecció aleatòria ponderada</strong>:</p>
 <ol>
 <li>Calcular \(IG(q)\) per a totes les candidates disponibles.</li>
-<li>Reunir les candidates amb \(IG \geq IG_{\max} - \varepsilon\) (per exemple \(\varepsilon = 10^{-9}\)).</li>
+<li>Reunir les candidates amb \(IG \geq IG_{\max} - \varepsilon\). Si només es volen empats numèrics exactes, \(\varepsilon = 10^{-9}\) és suficient; si es vol diversificar entre guanys realment propers, convé usar un marge pràctic, per exemple un 1–2% d'\(IG_{\max}\).</li>
 <li>Assignar a cada candidata un pes inversament proporcional al nombre de vegades que la seva categoria o concepte ha aparegut ja a la sessió.</li>
 <li>Escollir amb probabilitat proporcional a aquests pesos.</li>
 </ol>
@@ -485,10 +485,10 @@
 <p>El criteri dominant en els tests adaptatius clàssics (CAT) no és la reducció d'entropia, sinó la <strong>Funció d'Informació de l'Ítem</strong> (FII), basada en la informació de Fisher:</p>
 <div class="math-block">\[I_q(\theta) = \frac{\left[P'(\theta)\right]^2}{P(\theta)\,\bigl(1 - P(\theta)\bigr)}\]</div>
 <p>on \(P(\theta)\) és la ICC de l'ítem (§4.2) i \(P'(\theta)\) la seva derivada. La FII mesura quanta informació aporta l'ítem <strong>en un punt concret</strong> \(\theta\) del continu, i el sistema clàssic selecciona l'ítem que maximitza \(I_q(\hat\theta)\) en l'estimació puntual actual de l'habilitat.</p>
-<p>El criteri d'aquest sistema —màxima reducció esperada d'entropia (§6.1)— és preferible quan l'estat es representa com una distribució completa, i no com un únic valor \(\hat\theta\), per dues raons:</p>
+<p>El criteri d'aquest sistema —màxima reducció esperada d'entropia (§6.1)— encaixa especialment bé quan l'estat es representa com una distribució completa, i no com un únic valor \(\hat\theta\), per dues raons:</p>
 <ul>
-<li><strong>Usa tota la distribució, no un punt.</strong> La FII obliga a col·lapsar la creença a una estimació puntual \(\hat\theta\) abans de seleccionar; si la distribució és ampla o multimodal, aquest punt no la representa bé i la FII pot triar un ítem informatiu només al voltant d'un valor que potser no és el veritable. El guany d'informació pondera <em>totes</em> les hipòtesis per la seva probabilitat actual.</li>
-<li><strong>És coherent amb l'actualització bayesiana.</strong> El sistema ja manté i actualitza una distribució per Bayes (§3); mesurar la utilitat d'un ítem per quant redueix l'entropia d'aquesta mateixa distribució fa servir el mateix marc de principi a fi. Introduir la FII obligaria a barrejar una estimació puntual frequentista amb una creença bayesiana.</li>
+<li><strong>Usa tota la distribució, no un punt.</strong> La FII clàssica s'aplica en una estimació puntual \(\hat\theta\); si la distribució és ampla o multimodal, aquest punt no la representa bé i pot triar un ítem informatiu només al voltant d'un valor que potser no és el veritable. El guany d'informació pondera <em>totes</em> les hipòtesis per la seva probabilitat actual.</li>
+<li><strong>És coherent amb l'actualització bayesiana.</strong> El sistema ja manté i actualitza una distribució per Bayes (§3); mesurar la utilitat d'un ítem per quant redueix l'entropia d'aquesta mateixa distribució fa servir el mateix marc de principi a fi. Existeixen variants bayesianes basades en informació de Fisher ponderada pel posterior, de manera que la contraposició no és entre “Fisher freqüentista” i “Bayes”, sinó entre un criteri puntual i un criteri que usa directament tota la distribució posterior discreta.</li>
 </ul>
 <p>Tots dos criteris convergeixen en el cas límit d'una distribució molt concentrada: quan la creença és gairebé puntual, maximitzar el guany d'informació i maximitzar la FII en \(\hat\theta\) seleccionen pràcticament el mateix ítem. La diferència importa sobretot en les primeres preguntes, quan la incertesa és alta.</p>
 <p>L'ús de la informació mútua i la divergència KL (§6.3) per seleccionar ítems està ben establert en la recerca psicomètrica bayesiana, però la seva aplicació en <strong>eines educatives reals</strong> és poc habitual: el que és comú a l'aula és la FII o regles més simples (següent ítem del nivell estimat, selecció per dificultat). La combinació que fa servir aquest sistema —distribució d'hipòtesis, actualització bayesiana i selecció per reducció d'entropia de Shannon, integrada en una eina per a docents— és, en aquest sentit, infreqüent en l'àmbit educatiu.</p>
@@ -564,11 +564,13 @@
 <li>Escala correcta: \(\theta \in \{-2,\; 0,\; +2\}\) → el nivell avançat supera amb comoditat la dificultat extrema; \(P(A) = c_q + (1-c_q) \cdot \sigma(1.5 \cdot (2-1)) \approx 0.86\), un valor prou alt perquè la pregunta sigui informativa.</li>
 </ul>
 <p>on \(\sigma(x) = 1/(1 + e^{-x})\) és la funció sigmoide estàndard.</p>
-<h3>8.3. Càlcul automàtic des del banc de preguntes</h3>
-<p>La forma més robusta és calcular \(\theta_{\max}\) directament a partir de les dificultats del banc:</p>
-<div class="math-block">\[\theta_{\max} = 2 \cdot \max_{q} |b_q|\]</div>
-<p>i distribuir els valors \(\theta_i\) uniformement a \([-\theta_{\max},\; +\theta_{\max}]\). Així, l'escala s'adapta automàticament al banc de preguntes, sense necessitat d'ajust manual.</p>
-<p><strong>Cas límit:</strong> si totes les preguntes comparteixen la dificultat central (\(\max_q |b_q| = 0\)), la regla donaria \(\theta_{\max} = 0\) i totes les hipòtesis col·lapsarien en el mateix valor, anul·lant el model. En aquest cas s'ha d'imposar un mínim, per exemple \(\theta_{\max} = 1\), per conservar la separació entre nivells.</p>
+<h3>8.3. Escala fixa i ubicació de les dificultats</h3>
+<p>La manera robusta de garantir la separació no és recalcular \(\theta\) a partir del banc, sinó fixar l'escala per convenció i situar les dificultats dins d'ella. Els valors \(\theta_i\) depenen només del nombre d'hipòtesis:</p>
+<div class="math-block">\[\theta_i = 2(i-1) - (n-1), \qquad \theta_{\max} = n - 1\]</div>
+<p>de manera que \(\theta\) recorre \(\{-(n-1), \ldots, +(n-1)\}\) amb espaiat 2 (aquesta fórmula estén la taula de §2.3 a qualsevol \(n\)). Les dificultats se situen a la meitat central de l'escala, \(b_q \in [-\theta_{\max}/2,\; +\theta_{\max}/2]\), cosa que garanteix el factor 2 de §8.2 per als ítems extrems amb qualsevol \(n\). Com que \(\theta_{\max}\) depèn de \(n\), la conversió de les dificultats qualitatives també ha de dependre de \(n\): amb \(k\) categories, es reparteixen uniformement en l'interval,</p>
+<div class="math-block">\[b_j = \frac{\theta_{\max}}{2}\left(\frac{2(j-1)}{k-1} - 1\right), \qquad j = 1, \ldots, k\]</div>
+<p>(amb \(k = 1\), \(b = 0\)). Així, amb \(n = 3\) i \(k = 3\), \(b \in \{-1, 0, +1\}\); amb \(n = 3\) i \(k = 5\), \(b \in \{-1, -0.5, 0, +0.5, +1\}\); amb \(n = 4\) i \(k = 3\), \(b \in \{-1.5, 0, +1.5\}\). Una taula de dificultats independent de \(n\) seria inconsistent: amb \(n = 2\) (\(\theta = \pm 1\)) i cinc categories fixes fins a \(b = \pm 2\), la dificultat extrema duplicaria el nivell extrem i la separació entre escales s'invertiria. Els valors numèrics de \(b_q\) fora de l'interval es retallen a ell.</p>
+<p>La regla inversa —estirar \(\theta\) fins a \(2 \cdot \max_q |b_q|\)— té dos defectes. Primer, fa que el significat de les hipòtesis depengui del banc: dos recursos amb la mateixa pedagogia però rangs de dificultat diferents produeixen confiances i velocitats de convergència no comparables, perquè la força de cada actualització la governa el producte \(a \cdot \Delta\theta\) (discriminació per separació entre hipòtesis adjacents), que quedaria sense controlar. Segon, és fràgil davant de valors atípics: una sola pregunta amb \(b = 3\) en un banc on la resta està a \(\pm 1\) estiraria \(\theta\) a \(\pm 6\) i saturaria les versemblances de totes les altres preguntes (probabilitats enganxades a \(c_q\) o a 1), de manera que una única resposta produiria salts de posterior quasi deterministes. Amb l'escala fixa, aquest ítem atípic simplement es retalla a la vora de l'interval i la resta del banc conserva el seu comportament. Amb \(a_{\text{ef}} = 1.25\) i intervals de 2, l'invariant \(a_{\text{ef}} \cdot \Delta\theta = 2.5\) queda estable entre recursos. Si la majoria del banc caigués fora de l'interval, el problema és de disseny (nivells i dificultats mal definits) i s'ha de resoldre amb el docent, no estirant l'escala.</p>
 </section>
 <section id="s9">
 <h2>9. Exemple numèric complet</h2>
@@ -787,7 +789,7 @@
 <p>L'índex estandarditzat \(l_z\) (Drasgow, Levine i Williams, 1985) és:</p>
 <div class="math-block">\[l_z = \frac{l_0 - \mathbb{E}[l_0]}{\sqrt{\mathrm{Var}[l_0]}}\]</div>
 <p>que, sota el model, es distribueix aproximadament com \(N(0, 1)\). Valors molt negatius (orientativament \(l_z &lt; -2\)) assenyalen un patró improbable sota el nivell estimat —típicament, encertar preguntes difícils i fallar les fàcils, descuits o respostes a l'atzar—: el diagnòstic, encara que el posterior el doni com a segur, pot no ser fiable per a aquest alumne. Valors propers a \(0\) indiquen coherència.</p>
-<p>Això quantifica el senyal qualitatiu de §11.6: l'entropia mesura com de concentrada està la creença del model, però no si el patró observat és compatible amb aquesta creença; el person-fit cobreix aquest flanc. <strong>Limitació:</strong> \(l_z\) és una aproximació asimptòtica; amb poques preguntes la seva distribució s'allunya de la normal i el llindar és orientatiu, un senyal de cautela, no una prova formal.</p>
+<p>Això quantifica el senyal qualitatiu de §11.6: l'entropia mesura com de concentrada està la creença del model, però no si el patró observat és compatible amb aquesta creença; el person-fit cobreix aquest flanc. <strong>Limitació:</strong> \(l_z\) és una aproximació asimptòtica; amb poques preguntes la seva distribució s'allunya de la normal i el llindar és orientatiu, un senyal de cautela, no una prova formal. En tests adaptatius la calibració és encara més delicada: la selecció tendeix a presentar ítems prop de la zona de màxima incertesa i l'índex es calcula fent servir el nivell estimat, no el veritable. Existeixen correccions i procediments específics per a aquesta situació, com \(l_z^*\) i treballs de person-fit en CAT, però aquí es manté \(l_z\) només com a alerta pràctica de baixa fiabilitat.</p>
 <h3>11.8. Validació del disseny per simulació (Monte Carlo)</h3>
 <p>El person-fit valida el diagnòstic d'un alumne concret; una qüestió diferent és si el test en conjunt —banc i paràmetres— separa bé els nivells. Com que els paràmetres són a priori i no calibrats (§11.1), no es pot respondre amb dades reals, però sí examinar el comportament del propi model mitjançant simulació de Monte Carlo.</p>
 <p>El procediment genera respondents sintètics situats en el \(\theta_i\) de cada hipòtesi. Per a un respondent de nivell \(\theta_i\), cada resposta es simula com un assaig de Bernoulli amb probabilitat \(P(A \mid \theta_i, q)\) donada per la ICC (§4.2), aplicant-li la mateixa selecció adaptativa (§6) i el mateix criteri d'aturada (§7) que a un alumne real. Repetint-ho moltes vegades per nivell s'estima la matriu de confusió:</p>
@@ -805,11 +807,13 @@
 <li><strong>van der Linden, W. J. &amp; Hambleton, R. K.</strong> (Eds.) (1997). <em>Handbook of Modern Item Response Theory</em>. Springer. [Referència enciclopèdica de models i aplicacions de la TRI.]</li>
 <li><strong>van der Linden, W. J. &amp; Glas, C. A. W.</strong> (Eds.) (2010). <em>Elements of Adaptive Testing</em>. Springer. [Selecció adaptativa d'ítems i informació.]</li>
 <li><strong>Drasgow, F., Levine, M. V. &amp; Williams, E. A.</strong> (1985). Appropriateness measurement with polychotomous item response models and standardized indices. <em>British Journal of Mathematical and Statistical Psychology</em>, 38(1), 67–86. [Índexs estandarditzats d'ajust de la persona (person-fit), \(l_z\).]</li>
+<li><strong>Snijders, T. A. B.</strong> (2001). Asymptotic null distribution of person fit statistics with estimated person parameter. <em>Psychometrika</em>, 66(3), 331–342. DOI: <a href="https://doi.org/10.1007/BF02294437" rel="noopener" target="_blank">10.1007/BF02294437</a>. [Correcció de l'ajust de persona quan el paràmetre s'estima.]</li>
+<li><strong>van Krimpen-Stoop, E. M. L. A. &amp; Meijer, R. R.</strong> (2002). Detection of person misfit in computerized adaptive tests with polytomous items. <em>Applied Psychological Measurement</em>, 26(2), 164–180. [Person-fit en tests adaptatius.]</li>
 <li><strong>López Pina, J. A.</strong> (2026). <em>Teoría de la Respuesta al Ítem: Fundamentos y modelos</em>. Editum. Ediciones de la Universidad de Murcia. DOI: <a href="https://doi.org/10.6018/editum.3178" rel="noopener" target="_blank">10.6018/editum.3178</a>. [En castellà; accés obert. TRI: fonaments i models.]</li>
 <li><strong>Wainer, H.</strong> (Ed.) (2000). <em>Computerized Adaptive Testing: A Primer</em> (2a ed.). Lawrence Erlbaum. [Fonaments de l'avaluació adaptativa.]</li>
 <li><strong>Gelman, A. et al.</strong> (2013). <em>Bayesian Data Analysis</em> (3a ed.). CRC Press. [Inferència bayesiana general.]</li>
 </ul>
-<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 1.7). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
+<p><strong>Com citar aquest document (APA 7):</strong> de Haro, J. J. (2026). <em>Fonaments matemàtics dels sistemes educatius adaptatius bayesians</em> (versió 2.0). https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html</p>
 <p><em>Llicència: <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener" target="_blank">CC BY-SA 4.0</a> · Juan José de Haro ·<a href="https://bilateria.org" rel="noopener" target="_blank">bilateria.org</a></em></p>
 </section>
 </div>
