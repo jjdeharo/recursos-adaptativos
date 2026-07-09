@@ -159,6 +159,27 @@ Lo verificado y correcto (ejemplo numérico completo, tablas de `H_stop`, la imp
 
 La regla `p_i ← p_i^λ` renormalizada tiene la **uniforme** como punto fijo: sin evidencia nueva, cualquier distribución deriva hacia ella. Verificado: un factor de error con prior `P(error) = 0.25` sin evidencia sube a 0.34 en 10 pasos, 0.40 en 20 y ≈ 0.47 en 40 con `λ = 0.95`, reapareciendo como «indeterminado» o «probable» sin que el alumno haya hecho nada: en práctica continua, el olvido **reintroducía el falso positivo que el hallazgo 1.2 corrigió**. La variante «mezclar con la uniforme» tenía el mismo defecto de forma explícita. Además, la redacción («antes de cada actualización») era ambigua sobre si se atenúan las distribuciones que no reciben evidencia; las dos lecturas fallaban (deriva a 0.5 o ausencia total de olvido). **Corrección aplicada:** olvido anclado al prior, `p_i ∝ p_i^λ · π_i^(1−λ)` (punto fijo = prior; el prior conserva peso exactamente 1 al desenrollar la recursión; con prior uniforme coincide con la regla anterior), atenuación de todas las distribuciones en cada paso, y variante de mezcla hacia el prior. Consecuencia asociada corregida: la muestra mínima por categoría debe contarse en ventana reciente (`W ≈ 1/(1−λ)`), porque la evidencia caduca con el olvido pero un contador acumulado no.
 
+## N1b. La calibración de `lambda` estaba subespecificada para recursos con varias distribuciones — Alta
+
+**Detectado al propagar N1 al código de `labcom` (2026-07-09), no en la revisión documental.**
+
+La corrección N1 pide atenuar **todas** las distribuciones en cada respuesta, y mantenía la regla `lambda = 1 - 1/W` con `W` = «respuestas recientes que deben dominar la estimación». Ambas cosas juntas son incoherentes en cuanto hay más de una distribución: cada una **envejece** una vez por respuesta, pero solo **recibe evidencia** cuando la pregunta le corresponde. Si la distribución `d` se actualiza en 1 de cada `K_d` respuestas, su memoria en intentos propios es `1/(K_d·(1-lambda))`, es decir, `K_d` veces menor que la memoria en respuestas.
+
+Verificado en `labcom` (6 tipos de problema, 6 dimensiones): cada respuesta actualiza las 6 dimensiones pero solo 1 de los 6 tipos. Con `lambda = 0.95` para todo, cada tipo tendría una memoria de `20/6 ≈ 3.3` intentos propios — bastante para **borrar el diagnóstico inicial**, que son 2 intentos por tipo. Aplicar N1 literalmente habría degradado el recurso.
+
+**Corrección aplicada (2026-07-09):** fijar la memoria objetivo `M` en **intentos de la propia distribución** (por defecto 20) y derivar un `lambda` por distribución:
+
+`lambda_d = (1 - 1/M)^(1/K_d)`
+
+Con `K_d = 1` se recupera `lambda = 1 - 1/M`. Con `M = 20`: `lambda = 0.95` para una dimensión evaluada en cada respuesta y `lambda = 0.95^(1/6) ≈ 0.9915` para cada una de 6 categorías (ambas ≈ 20 intentos propios de memoria; comprobado numéricamente para `K = 1, 3, 6, 10`).
+
+Dos consecuencias más, también aplicadas:
+
+- **La ventana de la muestra mínima se cuenta sin ponderar.** Un recuento ponderado por `lambda^k` haría que dos intentos consecutivos sumaran `1 + 0.95 = 1.95`, incumpliendo un umbral entero de `2` y endureciendo la puerta en silencio. La ventana es deslizante: intentos dentro de las últimas `1/(1-lambda_d)` respuestas.
+- **El contador con caducidad gobierna las puertas de dominio, no la interfaz.** Si el recurso muestra al alumno cuántos ejercicios ha resuelto, ese número es el total real y no caduca. Y una categoría que se queda sin evidencia dentro de su ventana ha vuelto a su prior: debe presentarse como *sin datos recientes*, no en rojo. Marcar como débil lo que el modelo ya no sostiene es acusar al alumno de algo que no ha mostrado.
+
+Editado: especificación «Refuerzo continuo sin parada» y «Valores por defecto», protocolo §13.2, fundamentos §3.5 y §7.6 (ES/CA/EN).
+
 ## N2. Reusar un ítem tras el feedback es evidencia contaminada sin descuento — Media-alta
 
 La metodología exige retroalimentación con explicación tras cada respuesta, permite reusar ítems con banco pequeño y contempla el reintento inmediato, pero un acierto sobre un ítem cuya solución acaba de mostrarse mide memoria del feedback, no dominio — y se tomaba como acierto pleno. Incoherente con el tratamiento de las pistas (`s < 1`). **Corrección aplicada:** el acierto en ítem reutilizado tras corrección se trata como las pistas (crédito parcial con `s` reducido, o exclusión de la actualización si la explicación dio la respuesta), y se recomienda la redundancia local mediante variantes parametrizadas en lugar de repetición literal.
@@ -196,6 +217,7 @@ La aproximación normal de `l_z` es débil con los 4-8 ítems de una etapa. **Co
 | # | Hallazgo | Gravedad | Estado |
 |---|----------|----------|--------|
 | N1 | Olvido exponencial deriva priors informativos hacia la uniforme (falso positivo de 1.2 reintroducido) + contador de muestra mínima sin caducidad | Alta | Corregido |
+| N1b | `lambda` subespecificada con varias distribuciones: un `lambda` común da memoria `M/K_d` intentos propios y borra el diagnóstico (detectado al propagar N1 al código) | Alta | Corregido |
 | N2 | Reuso de ítems tras feedback sin descuento de evidencia | Media-alta | Corregido |
 | N3 | Ítems de salida dependientes del formato (V/F deja pasar 61 % de no-dominantes) | Media | Corregido |
 | N4 | Ejemplo §9, §4.3 y protocolo §12 sin el techo de dominio | Media | Corregido |

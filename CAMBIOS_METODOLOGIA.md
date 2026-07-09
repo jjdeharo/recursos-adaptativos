@@ -2,6 +2,16 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — N1b: `lambda` se calibra por distribución (hallazgo surgido al propagar N1 al código)
+
+Al aplicar N1 al código de `labcom` se descubrió que la propia regla N1 estaba subespecificada: pedía atenuar **todas** las distribuciones en cada respuesta, pero mantenía `lambda = 1 - 1/W` con `W` en *respuestas*. Con varias distribuciones cada una envejece una vez por respuesta y solo recibe evidencia cuando la pregunta le corresponde, de modo que un `lambda` común deja a la distribución `d` una memoria de `M/K_d` intentos propios. En `labcom` (6 tipos, 6 dimensiones; cada respuesta actualiza las 6 dimensiones pero solo 1 tipo), `lambda = 0.95` habría dejado a cada tipo `20/6 ≈ 3.3` intentos de memoria y **habría borrado el diagnóstico inicial** de 2 intentos por tipo.
+
+- **Nueva regla:** fijar la memoria objetivo `M` en intentos *de la propia distribución* (por defecto `M = 20`) y derivar `lambda_d = (1 - 1/M)^(1/K_d)`, con `K_d` el número medio de respuestas entre dos actualizaciones de `d`. Con `K_d = 1` se recupera `lambda = 0.95`; con 6 categorías, `lambda = 0.95^(1/6) ≈ 0.9915`. Verificado numéricamente: la memoria queda en ~20 intentos propios para `K = 1, 3, 6, 10`.
+- **Ventana de la muestra mínima, sin ponderar.** Los intentos se cuentan dentro de las últimas `1/(1-lambda_d)` respuestas, sin peso: un recuento ponderado por `lambda^k` daría `1.95` con dos intentos consecutivos e incumpliría un umbral entero de `2`, endureciendo la puerta en silencio.
+- **El contador con caducidad no es el que ve el alumno.** Gobierna las puertas de dominio; el número de ejercicios resueltos que muestra la interfaz es el total real. Y una categoría sin evidencia dentro de su ventana ha vuelto a su prior: se presenta como «sin datos recientes», no como una debilidad (marcarla en rojo acusaría al alumno de algo que el modelo ya no sostiene).
+- Editado: especificación «Refuerzo continuo sin parada» y «Valores por defecto»; protocolo §13.2; fundamentos §3.5 (nueva derivación) y §7.6 (ES/CA/EN).
+- Ya aplicado en el código de `labcom` (commit `fcae24e` de ese repo), el único programa con olvido activo.
+
 ## 2026-07-09 — Tercera ronda: parche de T1 y aplicación de T4 y T8
 
 Tras la evaluación independiente de la tercera ronda (registrada en el estado del `INFORME_REVISION.md`), se cierran los huecos detectados en la corrección de T1 y se aplican T4 y T8. Editado en ES/CA/EN.
