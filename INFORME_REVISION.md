@@ -148,3 +148,59 @@ Ninguna de las dos ausencias es un error; ambas son huecos que debilitan la revi
 | 2.6 | Prompts no unificados; ejemplo fronterizo de hipótesis «no jerárquicas» | Editorial | Baja |
 
 Lo verificado y correcto (ejemplo numérico completo, tablas de `H_stop`, la implicación `p_min → H_stop`, la corrección del crédito parcial lineal→geométrico, la argumentación de la escala fija) da confianza en que el núcleo del método está bien construido; los hallazgos 1.1–1.3 son los que convendría abordar antes de que se generen muchos recursos con la especificación actual, porque afectan al comportamiento de los recursos generados y no solo a la exposición.
+
+---
+
+# Segunda ronda (2026-07-09)
+
+**Método:** relectura completa de los cuatro documentos ya en v2.0 (con los 11 hallazgos de la primera ronda aplicados), buscando fallos nuevos, con verificación numérica de los hallazgos N1–N3.
+
+## N1. El olvido exponencial deriva los priors informativos hacia la uniforme — Alta
+
+La regla `p_i ← p_i^λ` renormalizada tiene la **uniforme** como punto fijo: sin evidencia nueva, cualquier distribución deriva hacia ella. Verificado: un factor de error con prior `P(error) = 0.25` sin evidencia sube a 0.34 en 10 pasos, 0.40 en 20 y ≈ 0.47 en 40 con `λ = 0.95`, reapareciendo como «indeterminado» o «probable» sin que el alumno haya hecho nada: en práctica continua, el olvido **reintroducía el falso positivo que el hallazgo 1.2 corrigió**. La variante «mezclar con la uniforme» tenía el mismo defecto de forma explícita. Además, la redacción («antes de cada actualización») era ambigua sobre si se atenúan las distribuciones que no reciben evidencia; las dos lecturas fallaban (deriva a 0.5 o ausencia total de olvido). **Corrección aplicada:** olvido anclado al prior, `p_i ∝ p_i^λ · π_i^(1−λ)` (punto fijo = prior; el prior conserva peso exactamente 1 al desenrollar la recursión; con prior uniforme coincide con la regla anterior), atenuación de todas las distribuciones en cada paso, y variante de mezcla hacia el prior. Consecuencia asociada corregida: la muestra mínima por categoría debe contarse en ventana reciente (`W ≈ 1/(1−λ)`), porque la evidencia caduca con el olvido pero un contador acumulado no.
+
+## N2. Reusar un ítem tras el feedback es evidencia contaminada sin descuento — Media-alta
+
+La metodología exige retroalimentación con explicación tras cada respuesta, permite reusar ítems con banco pequeño y contempla el reintento inmediato, pero un acierto sobre un ítem cuya solución acaba de mostrarse mide memoria del feedback, no dominio — y se tomaba como acierto pleno. Incoherente con el tratamiento de las pistas (`s < 1`). **Corrección aplicada:** el acierto en ítem reutilizado tras corrección se trata como las pistas (crédito parcial con `s` reducido, o exclusión de la actualización si la explicación dio la respuesta), y se recomienda la redundancia local mediante variantes parametrizadas en lugar de repetición literal.
+
+## N3. Los «ítems de salida» heredan la dependencia del formato — Media
+
+Verificado (n = 3, ítem de salida en `b = 0.5`, `a_ef = 1.25`, techo 0.95): en V/F un no-dominante pasa 1 ítem el 61 % de las veces (37 % con dos); en abierta, exigir 2 de 2 bloquea al 25 % de quienes sí dominan. La especificación no decía ni de qué formato deben ser los ítems de salida ni cómo elegir entre 1 y 2. **Corrección aplicada:** evitar V/F en ítems de salida; con 4-5 opciones exigir 2 de 2; advertencia sobre el bloqueo en abierta; el filtro complementa a `p_min`, no decide en solitario.
+
+## N4. El ejemplo canónico §9 no aplicaba el techo de dominio — Media (coherencia)
+
+Fundamentos §9 usa `P(A|H₃,Q1) = 0.992` y `P(A|H₃,Q2) = 0.964`, por encima del techo 0.95 que la primera ronda convirtió en regla; §4.3 describía `P → 1` sin mencionar el techo y el protocolo §12 citaba el suelo de azar como condición pero no el techo. Misma clase de incoherencia que el antiguo 2.1: la excepción sin señalizar justo donde el lector implementa. **Corrección aplicada:** nota de simplificación en §9.1 (con los dos valores afectados), mención del techo en §4.3 y en la declaración de ejemplos ilustrativos de §4.4, y el techo añadido junto al suelo en el protocolo §12.
+
+## N5. Selección y parada indefinidas para el caso multifactorial factorizado — Media
+
+El procedimiento de selección y los criterios de parada estaban definidos sobre una sola distribución; §10.2 resolvía perfiles completos pero no las dimensiones paralelas. **Corrección aplicada:** ganancia total del ítem = suma de ganancias por distribución (la entropía conjunta factorizada es la suma de entropías), promediando sobre los resultados que el ítem modele; parada por factor (decidido al salir de la zona indeterminada con muestra mínima; los no decididos se reportan como indeterminados).
+
+## N6. «Ausente por defecto»: el prior informativo roza el umbral de confianza — Baja-media
+
+Con `P(error) = 0.2–0.3`, «ausente» arranca en 0.7–0.8 sin evidencia: un factor apenas preguntado podía reportarse «ausente» con aparente seguridad. **Corrección aplicada:** exigir muestra mínima por factor y distinguir en el reporte «ausente confirmado» de «sin evidencia suficiente».
+
+## N7. Modelo combinado A+D sin regla de reconciliación — Baja-media
+
+Nivel ordinal y factores de error se actualizan con la misma evidencia y se reportaban como hallazgos independientes, sin nada que impida un resultado incoherente («nivel avanzado» + errores «presentes»). **Corrección aplicada:** presentarlos como estimaciones marginales paralelas y, en caso de tensión, el error como matiz del nivel («domina X, aunque persiste el error Y»).
+
+## N8. Fórmula de utilidad subespecificada — Baja
+
+`utilidad = α·IG_normalizada + (1−α)·ajuste_de_dificultad` no definía la normalización ni el ajuste; `α = 0.65` no significa nada sin las escalas. **Corrección aplicada:** `IG_norm = IG(q)/max IG` entre candidatas y `ajuste = max(0, 1 − |b_q − E[θ]|/2)`, ambos en `[0, 1]`.
+
+## N9. `l_z` como criterio de etapa con N minúsculo — Baja
+
+La aproximación normal de `l_z` es débil con los 4-8 ítems de una etapa. **Corrección aplicada:** comparar aciertos observados frente a esperados con margen de ~1 desviación típica (o test binomial exacto) y tratarlo como señal orientativa, no como bloqueo duro.
+
+## Resumen de la segunda ronda
+
+| # | Hallazgo | Gravedad | Estado |
+|---|----------|----------|--------|
+| N1 | Olvido exponencial deriva priors informativos hacia la uniforme (falso positivo de 1.2 reintroducido) + contador de muestra mínima sin caducidad | Alta | Corregido |
+| N2 | Reuso de ítems tras feedback sin descuento de evidencia | Media-alta | Corregido |
+| N3 | Ítems de salida dependientes del formato (V/F deja pasar 61 % de no-dominantes) | Media | Corregido |
+| N4 | Ejemplo §9, §4.3 y protocolo §12 sin el techo de dominio | Media | Corregido |
+| N5 | Selección y parada indefinidas con dimensiones paralelas | Media | Corregido |
+| N6 | «Ausente» declarable sin evidencia por el prior informativo | Baja-media | Corregido |
+| N7 | Combinado A+D sin reconciliación nivel↔factores | Baja-media | Corregido |
+| N8 | Utilidad de refuerzo sin escalas definidas | Baja | Corregido |
+| N9 | `l_z` de etapa con aproximación normal débil | Baja | Corregido |

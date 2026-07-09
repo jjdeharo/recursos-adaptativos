@@ -113,6 +113,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - No facis servir taules fixes globals si cada pregunta pot generar les seves pròpies versemblances.
 - La qualitat del diagnòstic no depèn només de l'algorisme: depèn també de com estiguin definides les hipòtesis, categories, dificultats, conceptes i errors. Si aquestes classificacions estan mal conformades, si els errors rellevants no estan ben identificats o si el banc cobreix malament els casos importants, les versemblances generades poden representar malament la realitat i esbiaixar l'adaptació.
 - En el diagnòstic final no calculis una `theta` esperada (no té sentit sense ordre). Si el model és nominal excloent, pots reportar la hipòtesi MAP i la seva probabilitat. Si el model és multifactorial, reporta per a cada factor si queda **present**, **absent** o **indeterminat**, amb la seva probabilitat marginal o confiança associada.
+- Amb prior informatiu (`P(error) ≈ 0.2`–`0.3`), l'absència arrenca ja a `0.7`–`0.8` sense cap evidència: no declaris un factor **absent** només perquè la seva marginal superi el llindar de confiança. Exigeix a més la seva mostra mínima d'evidència i distingeix en el report «absent confirmat» (amb evidència) de «sense evidència suficient» (el valor per defecte del prior).
 
 ## Respostes amb crèdit parcial
 
@@ -149,6 +150,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - No posis en una sola distribució dimensions que poden coexistir: utilitza distribucions separades.
 - Si diverses dimensions diagnòstiques interactuen de manera forta, pots substituir aquestes distribucions independents per una sola distribució sobre perfils complets; el més important és no forçar com a excloents factors que en realitat poden coexistir.
 - El nivell per categoria guia què practicar; el diagnòstic per dimensió guia què explicar o reforçar.
+- Si combines una distribució ordinal de nivell amb factors d'error (model combinat), tots dos són estimacions marginals paral·leles alimentades per la mateixa evidència, no troballes independents. Comprova la coherència del resultat final: si el nivell estimat és alt i algun error queda «present», presenta-ho com un matís del nivell («domina X, tot i que persisteix l'error Y»), no com a conclusions contradictòries juxtaposades.
 
 ## Preguntes i activitats
 
@@ -177,10 +179,12 @@ Per a cada candidata disponible:
 
 Selecciona la candidata amb un guany esperat d'informació més gran quan la finalitat principal sigui diagnòstica i l'objectiu sigui estimar un nivell global.
 
+Si l'estat són diverses distribucions paral·leles (factors d'error o dimensions diagnòstiques), aplica el mateix procediment amb el **guany total** de l'ítem: la suma dels guanys esperats de cada distribució (en la representació factoritzada, l'entropia conjunta és la suma d'entropies, així que la reducció esperada conjunta és la suma de reduccions). Fes la mitjana sobre els resultats que l'ítem modeli (per opció, si hi ha distractors diagnòstics).
+
 En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de problema o conceptes, utilitza una selecció en dues fases:
 
 1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase. Tingues present que `2` és el mínim defensable, no un valor còmode: amb oblit actiu la marginal per categoria és volàtil, així que apuja la mostra mínima si el banc ho permet. Si hi ha moltes categories, aquesta fase pot consumir la sessió (amb `10` categories i `2` intents ja són `20` preguntes): agrupa categories afins en blocs o redueix la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.
-2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és combinar guany d'informació amb adequació de dificultat, penalitzant preguntes massa allunyades de la zona de treball.
+2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és `utilitat = α * IG_norm + (1 - α) * ajust`, amb les dues escales definides a `[0, 1]`: `IG_norm = IG(q) / max IG` entre les candidates del moment, i `ajust = max(0, 1 - |b_q - E[theta]| / 2)`, que val `1` quan la dificultat coincideix amb el nivell estimat (`E[theta] = Σ p_i * theta_i`) i `0` quan s'allunya un interval complet de nivell. Sense definir les dues escales en el mateix rang, el pes `α` no significa res.
 
 No facis servir l'entropia de Shannon com a únic criteri permanent quan la finalitat principal sigui practicar o reforçar. Shannon indica on hi ha més incertesa diagnòstica; el reforç ha d'atendre també, i preferentment, allò que l'alumne domina menys.
 
@@ -209,6 +213,11 @@ No confonguis aquest problema amb un simple criteri de desempat:
 - si en una zona diagnòstica només hi ha un ítem útil, la IA ha de reconèixer que el banc és insuficient per a una adaptació variada en aquella zona;
 - en aquest cas no simulis varietat amb una falsa aleatorització: reutilitza l'ítem només quan sigui necessari, canvia temporalment d'objectiu pedagògic o deixa el resultat com a limitat per la mida del banc.
 
+Evidència d'un ítem reutilitzat:
+
+- si l'ítem es reutilitza després que l'alumne hagi vist la seva correcció o explicació (inclòs el reintent immediat), l'encert posterior no és evidència plena de domini: pot reflectir només memòria del feedback. Tracta'l com les pistes: crèdit parcial amb `s` reduït (tant menor com més explícita fou l'explicació mostrada) o, si l'explicació va donar la resposta, exclou-lo de l'actualització bayesiana i fes-lo servir només com a pràctica;
+- la millor redundància local no és repetir el mateix ítem, sinó disposar de **variants parametritzades** del mateix tipus (mateix concepte, dificultat i format amb dades diferents): cada variant compta com a ítem nou i no arrossega la contaminació del feedback.
+
 ## Criteri d'aturada
 
 Atura la sessió quan es compleixin criteris raonables de tancament, per exemple:
@@ -230,6 +239,8 @@ Després de complir el mínim de preguntes, comprova la confiança del diagnòst
 
 Ara bé, la separació només afegeix exigència si `Δ_min > 2 * p_min - 1`. Amb `p_min = 0.80`, exigir `max(p_i) >= p_min` ja força una separació `>= 0.60`, de manera que un `Δ_min` de 0.3–0.4 seria tan redundant com l'entropia. Per això la separació és útil sobretot **com a alternativa a un `p_min` alt, no com a afegit**: quan hi ha moltes hipòtesis i exigir `max(p_i) >= 0.80` és poc pràctic, tanca amb un `max(p_i)` moderat (per exemple `>= 0.50`) **i** `Δ_min >= 0.3–0.4`, que exigeix que la guanyadora vagi clarament per davant de la segona encara que la massa restant estigui repartida. Amb `n = 2`, separació i `p_min` són equivalents (`sep = 2 * max - 1`).
 
+En models multifactorials, avalua l'aturada **per factor**: un factor queda decidit quan la seva marginal surt de la zona indeterminada (per exemple, `P(error) >= 0.7` present, `<= 0.3` absent) i té la seva mostra mínima d'evidència. Tanca quan tots els factors estiguin decidits, quan cap ítem aporti guany apreciable sobre els indeterminats o en assolir el màxim pràctic; els factors sense decidir es reporten com a indeterminats, no es forcen.
+
 Si es tanca per màxim de preguntes, banc exhaurit o utilitat marginal baixa sense assolir el criteri de confiança triat, presenta el resultat com a provisional.
 
 Regles mínimes:
@@ -244,8 +255,11 @@ Regles mínimes:
 - En aquest mode, l'estat estimat no és un diagnòstic tancat, sinó una estimació viva que s'actualitza amb cada resposta.
 - No apliquis `H_stop` ni `p_min` per tancar la sessió; utilitza'ls, si de cas, només per informar del grau de confiança assolit.
 - Mantén la selecció en dues fases durant tota la sessió: diagnòstic mínim per categoria i, després, reforç del que menys es domina.
-- L'estat de l'alumne pot canviar mentre practica: aplica oblit exponencial perquè l'estimació segueixi el seu estat actual. Abans de cada actualització, atenua el posterior elevant-lo a `lambda` i renormalitzant: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- L'estat de l'alumne pot canviar mentre practica: aplica oblit exponencial perquè l'estimació segueixi el seu estat actual. Abans de cada actualització, atenua el posterior **cap al prior** `pi_i` i renormalitza: `p_i <- p_i^lambda * pi_i^(1 - lambda)` (dividit per la suma). Amb prior uniforme, això coincideix amb la forma simple `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- **No atenuïs cap a la uniforme quan el prior sigui informatiu.** La forma simple té la uniforme com a punt fix: un factor d'error amb prior `P(error) ≈ 0.25` que passi un temps sense rebre evidència deriva sol cap al 50 % (≈ 0.40 després de 20 passos amb `lambda = 0.95`) i reapareix com a «indeterminat» o «probable» sense que l'alumne hagi fet res — el mateix fals positiu que el prior informatiu evita. Ancorat al prior, l'oblit descarta l'evidència antiga (la de fa `k` passos pesa `lambda^k`) però el prior conserva sempre pes complet, i una distribució sense evidència nova roman en el seu prior en lloc de degradar-se.
+- Aplica l'atenuació a cada distribució en cada pas de la sessió, també a les que no reben evidència en aquella resposta: així totes segueixen el pas del temps i, gràcies a l'ancoratge, les no observades tornen al seu prior, no a la uniforme.
 - Fes servir `lambda ≈ 0.9`–`0.98` en pràctica o reforç continu (regla pràctica: `lambda = 1 - 1/W`, amb `W` el nombre de respostes recents que han de dominar l'estimació). En recursos diagnòstics de sessió curta fes servir `lambda = 1` (sense oblit): allà només afegiria soroll.
+- Amb oblit actiu, compta la mostra mínima per categoria o dimensió sobre una finestra recent (intents dins de les últimes `W ≈ 1/(1 - lambda)` respostes), no sobre tota la sessió: l'evidència caduca amb l'oblit, però un comptador acumulat no, i una categoria mostrejada només al principi continuaria comptant com a diagnosticada amb el seu posterior ja degradat.
 - Amb oblit actiu, presenta la confiança com a referida a l'estat recent de l'alumne.
 - Si necessites modelar explícitament l'aprenentatge (per exemple, més probabilitat de pujar de nivell just després d'una explicació), fes servir un model de transició (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
 
@@ -265,8 +279,8 @@ Per donar una etapa per superada, convé exigir almenys:
 
 Compte amb el percentatge brut d'encerts com a criteri: si dins de l'etapa tries els ítems per màxima guany d'informació, la taxa d'encert de tots els alumnes tendeix per disseny cap a `(1+c)/2` (≈ 50 % sense atzar, ≈ 62 % amb quatre opcions), de manera que un llindar fix com «60 % d'encerts» pot bloquejar alumnes que sí que dominen l'etapa i el seu efecte depèn del format de les preguntes. Per mesurar el rendiment de manera comparable, fes servir una d'aquestes dues vies:
 
-- **Ítems de sortida (recomanat):** exigeix encertar 1-2 ítems de dificultat representativa de l'objectiu de l'etapa, seleccionats **sense** criteri informatiu (no per màxima IG). En fixar la dificultat, l'encert sí que informa sobre el domini.
-- **Consistència amb el model:** exigeix que la taxa observada no quedi gaire per sota de l'esperada sota la hipòtesi de domini local (és l'ajust de persona `l_z` dels fonaments aplicat com a criteri d'etapa).
+- **Ítems de sortida (recomanat):** exigeix encertar 1-2 ítems de dificultat representativa de l'objectiu de l'etapa, seleccionats **sense** criteri informatiu (no per màxima IG). En fixar la dificultat, l'encert sí que informa sobre el domini. El format importa: evita vertader/fals per als ítems de sortida (un sol ítem V/F deixa passar per atzar la majoria dels qui no dominen, `P(encert | no domini) ≈ 0.6`); amb 4-5 opcions exigeix encertar-los tots dos; amb oberta tingues present que exigir 2 de 2 bloqueja ≈ 1 de cada 4 alumnes que sí que dominen. El filtre de sortida complementa la confiança local `p_min`, que ja criba: la seva funció és caçar una calibració dolenta, no decidir en solitari.
+- **Consistència amb el model:** exigeix que la taxa observada no quedi gaire per sota de l'esperada sota la hipòtesi de domini local (és l'ajust de persona `l_z` dels fonaments aplicat com a criteri d'etapa). Amb els pocs ítems d'una etapa l'aproximació normal de `l_z` és feble: compara encerts observats davant d'esperats amb un marge de ~1 desviació típica (o un test binomial exacte) i tracta-ho com a senyal orientatiu, no com a bloqueig dur.
 
 Tot això ho aplica el mateix recurs de manera automàtica, a partir de les dificultats que ja coneix: no requereix que el docent conegui la metodologia ni configuri res, llevat que ho vulgui fer.
 

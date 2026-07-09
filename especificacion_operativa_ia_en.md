@@ -113,6 +113,7 @@ This must be done after each relevant interaction.
 - Do not use fixed global tables if each question can generate its own likelihoods.
 - Diagnostic quality does not depend only on the algorithm: it also depends on how the hypotheses, categories, difficulties, concepts, and errors are defined. If those classifications are poorly structured, if the relevant errors are not well identified, or if the bank covers important cases poorly, the generated likelihoods may misrepresent reality and bias the adaptation.
 - In the final diagnosis do not compute an expected `theta` (meaningless without order). If the model is exclusive nominal, you may report the MAP hypothesis and its probability. If the model is multifactorial, report for each factor whether it is **present**, **absent**, or **undetermined**, together with its marginal probability or confidence.
+- With an informative prior (`P(error) ≈ 0.2`–`0.3`), absence already starts at `0.7`–`0.8` with no evidence at all: do not declare a factor **absent** merely because its marginal exceeds the confidence threshold. Also require its minimum sample of evidence, and distinguish in the report between "confirmed absent" (with evidence) and "insufficient evidence" (the prior's default value).
 
 ## Partial Credit Responses
 
@@ -149,6 +150,7 @@ This must be done after each relevant interaction.
 - Do not merge into a single distribution dimensions that can coexist: use separate distributions.
 - If several diagnostic dimensions interact strongly, you may replace those independent distributions with a single distribution over full profiles; the key is not to force as mutually exclusive factors that can in fact coexist.
 - The level by category guides what to practise; the diagnosis by dimension guides what to explain or reinforce.
+- If you combine an ordinal level distribution with error factors (combined model), both are parallel marginal estimates fed by the same evidence, not independent findings. Check the coherence of the final result: if the estimated level is high and some error remains "present", present it as a nuance of the level ("masters X, although error Y persists"), not as juxtaposed contradictory conclusions.
 
 ## Questions and Activities
 
@@ -177,10 +179,12 @@ For each available candidate:
 
 Select the candidate with the highest expected information gain when the main purpose is diagnostic and the goal is to estimate a global level.
 
+If the state consists of several parallel distributions (error factors or diagnostic dimensions), apply the same procedure with the item's **total gain**: the sum of the expected gains over each distribution (in the factorised representation, the joint entropy is the sum of entropies, so the expected joint reduction is the sum of reductions). Average over the outcomes the item models (per option, if there are diagnostic distractors).
+
 In adaptive practice or reinforcement resources with multiple categories, problem types, or concepts, use a two-phase selection:
 
 1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase. Bear in mind that `2` is the defensible minimum, not a comfortable value: with active forgetting the per-category marginal is volatile, so raise the minimum sample if the bank allows. If there are many categories, this phase can consume the session (with `10` categories and `2` attempts that is already `20` questions): group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.
-2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is to combine information gain with difficulty appropriateness, penalising questions too far from the working zone.
+2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is `utility = α * IG_norm + (1 - α) * fit`, with both scales defined in `[0, 1]`: `IG_norm = IG(q) / max IG` among the current candidates, and `fit = max(0, 1 - |b_q - E[theta]| / 2)`, which equals `1` when the difficulty matches the estimated level (`E[theta] = Σ p_i * theta_i`) and `0` when it is a full level interval away. Without both scales defined on the same range, the weight `α` means nothing.
 
 Do not use Shannon entropy as the sole permanent criterion when the main purpose is to practise or reinforce. Shannon indicates where there is the most diagnostic uncertainty; reinforcement must also attend — and preferably give priority — to what the learner has least mastered.
 
@@ -209,6 +213,11 @@ Do not confuse this problem with a simple tie-breaking rule:
 - if a diagnostic area has only one useful item, the AI should recognise that the bank is insufficient for varied adaptation in that area;
 - in that case do not fake variety with randomisation: reuse the item only when necessary, temporarily shift the pedagogical objective, or mark the result as limited by the size of the bank.
 
+Evidence from a reused item:
+
+- if an item is reused after the learner has seen its correction or explanation (including the immediate retry), a subsequent correct answer is not full evidence of mastery: it may reflect only memory of the feedback. Treat it like hints: partial credit with a reduced `s` (the more explicit the explanation shown, the lower) or, if the explanation gave away the answer, exclude it from the Bayesian update and use it only as practice;
+- the best local redundancy is not repeating the same item but having **parameterised variants** of the same type (same concept, difficulty, and format with different data): each variant counts as a new item and carries no feedback contamination.
+
 ## Stopping Criterion
 
 Stop the session when reasonable closing criteria are met, for example:
@@ -230,6 +239,8 @@ After the minimum number of questions has been met, check the diagnostic's confi
 
 However, the separation only adds a requirement if `Δ_min > 2 * p_min - 1`. With `p_min = 0.80`, requiring `max(p_i) >= p_min` already forces a separation `>= 0.60`, so a `Δ_min` of 0.3–0.4 would be as redundant as the entropy. That is why separation is useful mainly **as an alternative to a high `p_min`, not as an addition**: when there are many hypotheses and requiring `max(p_i) >= 0.80` is impractical, close with a moderate `max(p_i)` (for example `>= 0.50`) **and** `Δ_min >= 0.3–0.4`, which requires the winner to be clearly ahead of the second even if the remaining mass is spread out. With `n = 2`, separation and `p_min` are equivalent (`sep = 2 * max - 1`).
 
+In multifactorial models, evaluate stopping **per factor**: a factor is decided when its marginal leaves the undetermined zone (for example, `P(error) >= 0.7` present, `<= 0.3` absent) and has its minimum sample of evidence. Close when all factors are decided, when no item provides an appreciable gain on the undetermined ones, or when the practical maximum is reached; undecided factors are reported as undetermined, not forced.
+
 If the session closes due to the maximum number of questions, an exhausted bank, or low marginal utility without reaching the chosen confidence criterion, present the result as provisional.
 
 Minimum rules:
@@ -244,8 +255,11 @@ Minimum rules:
 - In that mode, the estimated state is not a closed diagnosis but a live estimate that updates with each response.
 - Do not apply `H_stop` or `p_min` to close the session; use them, if at all, only to report the level of confidence reached.
 - Maintain the two-phase selection throughout the session: minimum diagnosis per category, then reinforcement of what is least mastered.
-- The learner's state can change while they practise: apply exponential forgetting so the estimate tracks their current state. Before each update, attenuate the posterior by raising it to `lambda` and renormalising: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- The learner's state can change while they practise: apply exponential forgetting so the estimate tracks their current state. Before each update, attenuate the posterior **toward the prior** `pi_i` and renormalise: `p_i <- p_i^lambda * pi_i^(1 - lambda)` (divided by the sum). With a uniform prior this coincides with the simple form `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- **Do not attenuate toward the uniform when the prior is informative.** The simple form has the uniform distribution as its fixed point: an error factor with prior `P(error) ≈ 0.25` that goes some time without receiving evidence drifts on its own toward 50 % (≈ 0.40 after 20 steps with `lambda = 0.95`) and reappears as "undetermined" or "probable" without the learner having done anything — the very false positive the informative prior is there to avoid. Anchored to the prior, forgetting discards old evidence (evidence from `k` steps ago weighs `lambda^k`) but the prior always keeps full weight, and a distribution with no new evidence stays at its prior instead of degrading.
+- Apply the attenuation to every distribution at every step of the session, including those that receive no evidence from that response: this way all of them track the passage of time and, thanks to the anchoring, unobserved ones return to their prior, not to the uniform.
 - Use `lambda ≈ 0.9`–`0.98` in continuous practice or reinforcement (practical rule: `lambda = 1 - 1/W`, where `W` is the number of recent responses that should dominate the estimate). In short-session diagnostic resources use `lambda = 1` (no forgetting): there it would only add noise.
+- With forgetting active, count the minimum sample per category or dimension over a recent window (attempts within the last `W ≈ 1/(1 - lambda)` responses), not over the whole session: evidence expires with forgetting, but a cumulative counter does not, and a category sampled only at the start would still count as diagnosed while its posterior has already degraded.
 - With forgetting active, present the confidence as referring to the learner's recent state.
 - If you need to model learning explicitly (for example, a higher probability of moving up a level right after an explanation), use a transition model (Bayesian Knowledge Tracing); see `matematicas.html §3.5`.
 
@@ -265,8 +279,8 @@ To consider a stage passed, it is advisable to require at least:
 
 Be careful with the raw percentage of correct answers as a criterion: if within the stage you select items by maximum information gain, every learner's success rate tends by design toward `(1+c)/2` (≈ 50 % with no guessing, ≈ 62 % with four options), so a fixed threshold such as "60 % correct" may block learners who do master the stage, and its effect depends on the item format. To measure performance in a comparable way, use one of these two routes:
 
-- **Exit items (recommended):** require passing 1-2 items of difficulty representative of the stage goal, selected **without** an informative criterion (not by maximum IG). By fixing the difficulty, a correct answer does inform about mastery.
-- **Model consistency:** require that the observed rate not fall well below the rate expected under the local-mastery hypothesis (this is the `l_z` person-fit statistic from the foundations applied as a stage criterion).
+- **Exit items (recommended):** require passing 1-2 items of difficulty representative of the stage goal, selected **without** an informative criterion (not by maximum IG). By fixing the difficulty, a correct answer does inform about mastery. Format matters: avoid true/false for exit items (a single T/F item lets most non-masters through by chance, `P(correct | no mastery) ≈ 0.6`); with 4-5 options require passing both; with open-ended items bear in mind that requiring 2 out of 2 blocks ≈ 1 in 4 learners who do master the stage. The exit filter complements the local confidence `p_min`, which already screens: its role is to catch bad calibration, not to decide on its own.
+- **Model consistency:** require that the observed rate not fall well below the rate expected under the local-mastery hypothesis (this is the `l_z` person-fit statistic from the foundations applied as a stage criterion). With the few items of a stage, the normal approximation of `l_z` is weak: compare observed versus expected correct answers with a margin of ~1 standard deviation (or an exact binomial test) and treat it as an indicative signal, not a hard block.
 
 The resource itself applies all of this automatically, from the difficulties it already knows: it does not require the teacher to understand the methodology or to configure anything, unless they choose to.
 

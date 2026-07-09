@@ -114,6 +114,7 @@ Esto debe hacerse después de cada interacción relevante.
 - No uses tablas fijas globales si cada pregunta puede generar sus propias verosimilitudes.
 - La calidad del diagnóstico no depende solo del algoritmo: depende también de cómo estén definidas las hipótesis, categorías, dificultades, conceptos y errores. Si esas clasificaciones están mal conformadas, si los errores relevantes no están bien identificados o si el banco cubre mal los casos importantes, las verosimilitudes generadas pueden representar mal la realidad y sesgar la adaptación.
 - En el diagnóstico final no calcules una `theta` esperada (no tiene sentido sin orden). Si el modelo es nominal excluyente, puedes reportar la hipótesis MAP y su probabilidad. Si el modelo es multifactorial, reporta por cada factor si queda **presente**, **ausente** o **indeterminado**, con su probabilidad marginal o confianza asociada.
+- Con prior informativo (`P(error) ≈ 0.2`–`0.3`), la ausencia arranca ya en `0.7`–`0.8` sin evidencia alguna: no declares un factor **ausente** solo porque su marginal supere el umbral de confianza. Exige además su muestra mínima de evidencia y distingue en el reporte «ausente confirmado» (con evidencia) de «sin evidencia suficiente» (el valor por defecto del prior).
 
 ## Respuestas con crédito parcial
 
@@ -150,6 +151,7 @@ Esto debe hacerse después de cada interacción relevante.
 - No metas en una sola distribución dimensiones que pueden coexistir: usa distribuciones separadas.
 - Si varias dimensiones diagnósticas interactúan de manera fuerte, puedes sustituir las distribuciones independientes por una sola distribución sobre perfiles completos; lo importante es no forzar como excluyentes factores que en realidad pueden coexistir.
 - El nivel por categoría guía qué practicar; el diagnóstico por dimensión guía qué explicar o reforzar.
+- Si combinas una distribución ordinal de nivel con factores de error (modelo combinado), ambos son estimaciones marginales paralelas alimentadas por la misma evidencia, no hallazgos independientes. Comprueba la coherencia del resultado final: si el nivel estimado es alto y algún error queda «presente», preséntalo como matiz del nivel («domina X, aunque persiste el error Y»), no como conclusiones contradictorias yuxtapuestas.
 
 ## Preguntas y actividades
 
@@ -178,10 +180,12 @@ Para cada candidata disponible:
 
 Selecciona la candidata con mayor ganancia esperada de información cuando la finalidad principal sea diagnóstica y el objetivo sea estimar un nivel global.
 
+Si el estado son varias distribuciones paralelas (factores de error o dimensiones diagnósticas), aplica el mismo procedimiento con la **ganancia total** del ítem: la suma de las ganancias esperadas de cada distribución (en la representación factorizada, la entropía conjunta es la suma de entropías, así que la reducción esperada conjunta es la suma de reducciones). Promedia sobre los resultados que el ítem modele (por opción, si hay distractores diagnósticos).
+
 En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
 
 1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase. Ten presente que `2` es el mínimo defendible, no un valor cómodo: con olvido activo la marginal por categoría es volátil, así que sube la muestra mínima si el banco lo permite. Si hay muchas categorías, esta fase puede consumir la sesión (con `10` categorías y `2` intentos son ya `20` preguntas): agrupa categorías afines en bloques o reduce la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.
-2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es combinar ganancia de información con adecuación de dificultad, penalizando preguntas demasiado alejadas de la zona de trabajo.
+2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es `utilidad = α * IG_norm + (1 - α) * ajuste`, con las dos escalas definidas en `[0, 1]`: `IG_norm = IG(q) / max IG` entre las candidatas del momento, y `ajuste = max(0, 1 - |b_q - E[theta]| / 2)`, que vale `1` cuando la dificultad coincide con el nivel estimado (`E[theta] = Σ p_i * theta_i`) y `0` cuando se aleja un intervalo completo de nivel. Sin definir ambas escalas en el mismo rango, el peso `α` no significa nada.
 
 No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
 
@@ -210,6 +214,11 @@ No confundas este problema con un simple criterio de desempate:
 - si en una zona diagnóstica solo hay un ítem útil, la IA debe reconocer que el banco es insuficiente para una adaptación variada en esa zona;
 - en ese caso no simules variedad con una falsa aleatorización: reutiliza el ítem solo cuando sea necesario, cambia temporalmente de objetivo pedagógico o deja el resultado como limitado por el tamaño del banco.
 
+Evidencia de un ítem reutilizado:
+
+- si el ítem se reutiliza después de que el alumno viera su corrección o explicación (incluido el reintento inmediato), el acierto posterior no es evidencia plena de dominio: puede reflejar solo memoria del feedback. Trátalo como las pistas: crédito parcial con `s` reducido (tanto menor cuanto más explícita fue la explicación mostrada) o, si la explicación dio la respuesta, exclúyelo de la actualización bayesiana y úsalo solo como práctica;
+- la mejor redundancia local no es repetir el mismo ítem, sino disponer de **variantes parametrizadas** del mismo tipo (mismo concepto, dificultad y formato con datos distintos): cada variante cuenta como ítem nuevo y no arrastra la contaminación del feedback.
+
 ## Criterio de parada
 
 Detén la sesión cuando se cumplan criterios razonables de cierre, por ejemplo:
@@ -231,6 +240,8 @@ Tras cumplir el mínimo de preguntas, comprueba la confianza del diagnóstico. C
 
 Ahora bien, la separación solo añade exigencia si `Δ_min > 2 * p_min - 1`. Con `p_min = 0.80`, exigir `max(p_i) >= p_min` ya fuerza una separación `>= 0.60`, así que un `Δ_min` de 0.3–0.4 sería tan redundante como la entropía. Por eso la separación es útil sobre todo **como alternativa a un `p_min` alto, no como añadido**: cuando hay muchas hipótesis y exigir `max(p_i) >= 0.80` es poco práctico, cierra con un `max(p_i)` moderado (por ejemplo `>= 0.50`) **y** `Δ_min >= 0.3–0.4`, que exige que la ganadora vaya claramente por delante de la segunda aunque la masa restante esté repartida. Con `n = 2`, separación y `p_min` son equivalentes (`sep = 2 * max - 1`).
 
+En modelos multifactoriales, evalúa la parada **por factor**: un factor queda decidido cuando su marginal sale de la zona indeterminada (por ejemplo, `P(error) >= 0.7` presente, `<= 0.3` ausente) y tiene su muestra mínima de evidencia. Cierra cuando todos los factores estén decididos, cuando ningún ítem aporte ganancia apreciable sobre los indeterminados o al alcanzar el máximo práctico; los factores sin decidir se reportan como indeterminados, no se fuerzan.
+
 Si se cierra por máximo de preguntas, banco agotado o utilidad marginal baja sin alcanzar el criterio de confianza elegido, presenta el resultado como provisional.
 
 Reglas mínimas:
@@ -245,8 +256,11 @@ Reglas mínimas:
 - En ese modo, el estado estimado no es un diagnóstico cerrado, sino una estimación viva que se actualiza con cada respuesta.
 - No apliques `H_stop` ni `p_min` para cerrar la sesión; úsalos, si acaso, solo para informar del grado de confianza alcanzado.
 - Mantén la selección en dos fases durante toda la sesión: diagnóstico mínimo por categoría y, después, refuerzo de lo menos dominado.
-- El estado del alumno puede cambiar mientras practica: aplica olvido exponencial para que la estimación siga su estado actual. Antes de cada actualización, atenúa el posterior elevándolo a `lambda` y renormalizando: `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- El estado del alumno puede cambiar mientras practica: aplica olvido exponencial para que la estimación siga su estado actual. Antes de cada actualización, atenúa el posterior **hacia el prior** `pi_i` y renormaliza: `p_i <- p_i^lambda * pi_i^(1 - lambda)` (dividido por la suma). Con prior uniforme, esto coincide con la forma simple `p_i <- p_i^lambda / Σ_j p_j^lambda`.
+- **No atenúes hacia la uniforme cuando el prior sea informativo.** La forma simple tiene la uniforme como punto fijo: un factor de error con prior `P(error) ≈ 0.25` que pase un tiempo sin recibir evidencia deriva solo hacia el 50 % (≈ 0.40 tras 20 pasos con `lambda = 0.95`) y reaparece como «indeterminado» o «probable» sin que el alumno haya hecho nada — el mismo falso positivo que el prior informativo evita. Anclado al prior, el olvido descarta la evidencia antigua (la de hace `k` pasos pesa `lambda^k`) pero el prior conserva siempre peso completo, y una distribución sin evidencia nueva permanece en su prior en lugar de degradarse.
+- Aplica la atenuación a cada distribución en cada paso de la sesión, también a las que no reciben evidencia en esa respuesta: así todas siguen el paso del tiempo y, gracias al anclaje, las no observadas vuelven a su prior, no a la uniforme.
 - Usa `lambda ≈ 0.9`–`0.98` en práctica o refuerzo continuo (regla práctica: `lambda = 1 - 1/W`, con `W` el número de respuestas recientes que deben dominar la estimación). En recursos diagnósticos de sesión corta usa `lambda = 1` (sin olvido): ahí solo añadiría ruido.
+- Con olvido activo, cuenta la muestra mínima por categoría o dimensión sobre una ventana reciente (intentos dentro de las últimas `W ≈ 1/(1 - lambda)` respuestas), no sobre toda la sesión: la evidencia caduca con el olvido, pero un contador acumulado no, y una categoría muestreada solo al principio seguiría contando como diagnosticada con su posterior ya degradado.
 - Con olvido activo, presenta la confianza como referida al estado reciente del alumno.
 - Si necesitas modelar explícitamente el aprendizaje (por ejemplo, mayor probabilidad de subir de nivel justo tras una explicación), usa un modelo de transición (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
 
@@ -266,8 +280,8 @@ Para dar una etapa por superada, conviene exigir al menos:
 
 Cuidado con el porcentaje bruto de aciertos como criterio: si dentro de la etapa eliges los ítems por máxima ganancia de información, la tasa de acierto de todos los alumnos tiende por diseño hacia `(1+c)/2` (≈ 50 % sin azar, ≈ 62 % con cuatro opciones), así que un umbral fijo como «60 % de aciertos» puede bloquear a alumnos que sí dominan la etapa y su efecto depende del formato de las preguntas. Para medir el rendimiento de forma comparable, usa una de estas dos vías:
 
-- **Ítems de salida (recomendado):** exige acertar 1-2 ítems de dificultad representativa del objetivo de la etapa, seleccionados **sin** criterio informativo (no por máxima IG). Al fijar la dificultad, el acierto sí informa sobre el dominio.
-- **Consistencia con el modelo:** exige que la tasa observada no quede muy por debajo de la esperada bajo la hipótesis de dominio local (es el ajuste de persona `l_z` de los fundamentos aplicado como criterio de etapa).
+- **Ítems de salida (recomendado):** exige acertar 1-2 ítems de dificultad representativa del objetivo de la etapa, seleccionados **sin** criterio informativo (no por máxima IG). Al fijar la dificultad, el acierto sí informa sobre el dominio. El formato importa: evita verdadero/falso para los ítems de salida (un solo ítem V/F deja pasar por azar a la mayoría de quienes no dominan, `P(acierto | no dominio) ≈ 0.6`); con 4-5 opciones exige acertar los 2; con abierta ten presente que exigir 2 de 2 bloquea a ≈ 1 de cada 4 alumnos que sí dominan. El filtro de salida complementa la confianza local `p_min`, que ya criba: su función es cazar una calibración mala, no decidir en solitario.
+- **Consistencia con el modelo:** exige que la tasa observada no quede muy por debajo de la esperada bajo la hipótesis de dominio local (es el ajuste de persona `l_z` de los fundamentos aplicado como criterio de etapa). Con los pocos ítems de una etapa la aproximación normal de `l_z` es débil: compara aciertos observados frente a esperados con un margen de ~1 desviación típica (o un test binomial exacto) y trátalo como señal orientativa, no como bloqueo duro.
 
 Todo esto lo aplica el propio recurso de forma automática, a partir de las dificultades que ya conoce: no requiere que el docente conozca la metodología ni configure nada, salvo que quiera hacerlo.
 
