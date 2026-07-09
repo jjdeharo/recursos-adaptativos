@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.0**
+**Version 2.1**
 
 ## Purpose
 
@@ -31,6 +31,40 @@ Attach this document to the AI and use the following prompt:
 3. If the information has already been provided, do not repeat questions — proceed directly to implementation.
 4. The result must be a static web resource in `HTML + CSS + JavaScript`, preferably without a backend, unless another format is explicitly requested. It may be organised into one or several files if that improves clarity, maintainability, or reuse.
 
+## Profile and Mode: Which Sections Apply
+
+Using the information above, classify the resource **before implementing**. This classification decides which sections of this document you must apply; do not mix rules from different profiles or modes.
+
+**Profile** (what is estimated; the decision criteria are in "Model Choice"):
+
+- `A` · **Ordinal**: ordered mastery levels, global or per category.
+- `B` · **Exclusive nominal**: alternative hypotheses; only one can be true for each learner.
+- `C` · **Multifactorial**: errors or factors that can coexist.
+- `A+C` · **Combined**: an ordinal level and error factors at the same time.
+
+**Mode** (how the session ends):
+
+- `Diagnosis`: the session converges and closes with a result.
+- `Practice`: no planned end; a live estimate with forgetting.
+- `Pathway`: successive stages with promotion between them.
+
+| Section | Applies only if |
+|---|---|
+| Learner state (`theta` scale) | profile `A` or `A+C` (`B` and `C` have no `theta`) |
+| Likelihoods · IRT 3PL part | profile `A` or the level part of `A+C` |
+| Likelihoods · nominal and profile part | profile `B`, `C`, or `A+C` |
+| Partial-credit responses | there are graded or multi-step items |
+| Chance floor in composite items | there are multi-component items |
+| Multidimensional diagnosis | profile `C`, `A+C`, or several parallel distributions |
+| Adaptive selection · pedagogical blocks | profile `A+C` or several parallel distributions |
+| Adaptive selection · two phases and utility `α` | `Practice` mode |
+| Stopping criterion | `Diagnosis` or `Pathway` mode |
+| Continuous practice without stopping | `Practice` mode |
+| Stage-based pathways | `Pathway` mode |
+| Validation and reliability | diagnostic purpose or stage promotion |
+
+Sections not listed always apply. Examples of improper mixing this table prevents: enabling forgetting (`lambda < 1`) in a short-session diagnosis; computing an expected `theta` in profiles `B` or `C`; requiring exit items outside a pathway; building pedagogical blocks with a single distribution.
+
 ## Design Rules
 
 - The resource must not be linear if the purpose requires adaptation.
@@ -48,7 +82,7 @@ Attach this document to the AI and use the following prompt:
 ## Learner State
 
 - Represent the learner's state as a probability distribution over `n` hypotheses.
-- If there is no reliable prior information, use a uniform distribution. This rule holds for **level** hypotheses; not for binary **error factors**. A uniform prior over the `2^k` profiles (or over `{present, absent}` for each factor) amounts to claiming that each error has a 50 % prior probability of being present: it is not neutral, it is a strong claim about its prevalence, and it biases the first few questions toward false positives (errors the student does not have shown as "indeterminate" or "probable"). For error factors, start from a moderate informative prior; see "Likelihoods".
+- Prior for **level** hypotheses: if there is no reliable prior information, use a uniform distribution. Prior for binary **error factors**: never uniform; use the moderate informative prior from "Likelihoods" (`P(error) ≈ 0.2`–`0.3`). *Why:* a uniform over the `2^k` profiles (or over `{present, absent}` for each factor) amounts to claiming that each error has a 50 % prior probability of being present; it is not neutral and biases the first few questions toward false positives (errors the student does not have shown as "indeterminate" or "probable").
 - If the hypotheses are hierarchical, assign them ordered, centred `theta` values.
 - If the teacher does not set values, use a symmetric scale centred at 0.
 - The `theta` scale is fixed and depends only on the number of hypotheses, not on the question bank. With `n` hierarchical hypotheses, use values centred on `0` with intervals of `2`: `theta_i = 2 * (i - 1) - (n - 1)`, so that `theta` runs over `{-(n-1), ..., +(n-1)}` and `theta_max = n - 1`. Examples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -58,8 +92,7 @@ Attach this document to the AI and use the following prompt:
 - If the teacher gives numeric `b_q` values outside the interval, clamp them to the interval.
 - Never recompute `theta` from the extremes of the bank. A single atypically hard or easy question must not redefine the scale: if you stretch `theta` to accommodate it, you saturate the likelihoods of the rest of the bank (all probabilities pinned to `c_q` or to `1`) and the posterior makes overconfident jumps on a single answer.
 - If most of the bank's difficulties fell outside the interval, do not stretch the scale: review the definition of levels and difficulties with the teacher, because the design is inconsistent.
-- Comparability invariant: with `a_ef = 1.25` and intervals of `2` between adjacent hypotheses, the product `a_ef * Δtheta = 2.5` equalizes the **maximum slope** of the ICC across formats, whatever `n` is (as `n` grows so does `theta_max`, but the spacing between adjacent hypotheses stays the same). Keep this invariant across resources so that confidences and convergence speeds remain comparable. That comparability is strict only between resources with the same number of hypotheses `n`: with the fixed scale, the margin between the extreme level and the hardest item is `(n - 1) / 2`, so with `n = 2` (mastered / not mastered) the extreme items confirm weakly (the probability that the top level answers the hardest item correctly is ≈ 0.65 for open, ≈ 0.77 for 4 options) and it is advisable to compensate with more questions or to define the scale from a target probability `P*`.
-- The invariant equalizes the slope, **not the maximum strength of the evidence**. On a failure, the `(1 - c)` factor cancels in the ratio and the likelihood ratio between adjacent hypotheses tends to `e^(a * Δtheta)` with the **nominal** `a` (`= a_ef / (1 - c)`), not with `a_ef`. That is why a failure on an easy item with higher pseudo-guessing carries far more evidence than the same failure on an open question: with `Δtheta = 2`, the failure likelihood ratio is ≈ 12 for open (`c = 0`), ≈ 28 for 4 options (`c = 0.25`), and ≈ 148 for true/false (`c = 0.5`). To avoid these near-deterministic posterior jumps, apply the mastery ceiling of the ordinal case (see "Likelihoods").
+- Keep the comparability invariant `a_ef * Δtheta = 2.5` across resources (with `a_ef = 1.25` and intervals of `2` between adjacent hypotheses); with `n = 2`, additionally compensate with more questions or define the scale from a target probability `P*`. *What it guarantees and what it does not:* the invariant equalizes the **maximum slope** of the ICC across formats for any `n`, but comparability of confidences and speeds is strict only among resources with the same `n` — the margin between the extreme level and the hardest item is `(n - 1) / 2`, and with `n = 2` extreme items confirm weakly (P ≈ 0.65 open-ended, ≈ 0.77 with 4 options) —. Nor does it equalize the maximum strength of the evidence of a failure: in the failure likelihood ratio the `(1 - c)` factor cancels and the ratio tends to `e^(a * Δtheta)` with the **nominal** `a` (≈ 12 open-ended, ≈ 28 with 4 options, ≈ 148 for true/false with `Δtheta = 2`); those jumps are capped by the mastery ceiling in "Likelihoods".
 
 ## Bayesian Update
 
@@ -104,7 +137,7 @@ This must be done after each relevant interaction.
 - If the hypotheses are not hierarchical, distinguish two cases.
 - If they are **mutually exclusive alternatives** (for example, strategy A / strategy B / correct mastery), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
 - If the errors or needs **can coexist**, do not force them into a single nominal distribution. Model one dimension per factor (`longer-decimal`, `zero-ignoring`, etc.) or, equivalently, a distribution over **full profiles** (`2^k` combinations for `k` factors).
-- **Prior over error factors: not uniform.** Conceptual errors are usually a minority, so assign each factor a low prior probability of being present (by default `P(error) ≈ 0.2`–`0.3`) rather than the uniform `0.5`. A uniform prior here is not neutral: it assumes each student has each error with probability `0.5` and produces false positives in the first few questions. The resource applies this default automatically; the teacher may adjust their group's prevalence if they wish, but is not required to.
+- **Prior over error factors: not uniform.** Assign each factor a low prior probability of being present (default `P(error) ≈ 0.2`–`0.3`), never the uniform `0.5`. The resource applies this value automatically; the teacher may adjust their group's prevalence if they wish, but is not required to. *Why:* conceptual errors are usually a minority; the uniform is not neutral (it assumes each student has each error with probability `0.5`) and produces false positives in the first few questions.
 - In that multifactorial case, each question should define how each profile responds. The minimum is a probability of success by profile; better still is an option-level distribution `P(R = r | profile, q)` so that the chosen distractor carries evidence, not only correct/incorrect.
 - If you start from simple factors, assign each value by asking: "if the student had this error, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
 - Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis or mastery profile around `0.9`–`0.95`, never `1`.
@@ -238,11 +271,12 @@ If using `p_min`, calculate the indicative threshold:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-After the minimum number of questions has been met, check the diagnostic's confidence. When `H_stop` is derived from the same `p_min`, the condition `max(p_i) >= p_min` already implies `H <= H_stop`: checking both is harmless but **redundant**, it adds no requirement. The control that does add something different is the **separation** from the second hypothesis:
+After the minimum number of questions has been met, apply **one** of these two confidence closures:
 
-`P(winner) - P(second) >= Δ_min`
+- **Few hypotheses** (`n <= 4`, the usual case): close when `max(p_i) >= p_min` (default `0.80`).
+- **Many hypotheses**, where requiring `0.80` is impractical: close when `max(p_i)` reaches a moderate value (for example `>= 0.50`) **and** the winner separates from the runner-up: `P(winner) - P(second) >= Δ_min`, with `Δ_min ≈ 0.3`–`0.4`.
 
-However, the separation only adds a requirement if `Δ_min > 2 * p_min - 1`. With `p_min = 0.80`, requiring `max(p_i) >= p_min` already forces a separation `>= 0.60`, so a `Δ_min` of 0.3–0.4 would be as redundant as the entropy. That is why separation is useful mainly **as an alternative to a high `p_min`, not as an addition**: when there are many hypotheses and requiring `max(p_i) >= 0.80` is impractical, close with a moderate `max(p_i)` (for example `>= 0.50`) **and** `Δ_min >= 0.3–0.4`, which requires the winner to be clearly ahead of the second even if the remaining mass is spread out. With `n = 2`, separation and `p_min` are equivalent (`sep = 2 * max - 1`).
+Do not combine redundant checks believing they add stringency. *Why:* when `H_stop` is derived from the same `p_min` (formula above), `max(p_i) >= p_min` already implies `H <= H_stop`; and with `p_min = 0.80` the separation is already `>= 0.60`, so adding a `Δ_min` of `0.3`–`0.4` is inert (it would only add stringency if `Δ_min > 2 * p_min - 1`). Separation is an **alternative** to a high `p_min`, not an addition. With `n = 2` both are equivalent (`sep = 2 * max - 1`).
 
 In multifactorial models, evaluate stopping **per factor**: a factor is decided when its marginal leaves the undetermined zone (for example, `P(error) >= 0.7` present, `<= 0.3` absent) and has its minimum sample of evidence. Close when all factors are decided, when no item provides an appreciable gain on the undetermined ones, or when the practical maximum is reached; undecided factors are reported as undetermined, not forced.
 
@@ -338,7 +372,7 @@ If it is a learning pathway or activity, also add:
 - help used;
 - areas to reinforce.
 
-Do not declare high mastery based on very few attempts. If the result makes claims by category or dimension, require a minimum sample in those categories or dimensions before presenting them as firm. If the estimate is global, the minimum sample may refer to the session as a whole; limit or mark the estimate as provisional when evidence is scarce.
+Do not declare high mastery based on very few attempts. If the result makes claims by category or dimension, require a minimum sample in those categories or dimensions before presenting them as firm (with forgetting active, that sample is counted over the distribution's recent window, not over the historical total; see "Continuous Practice Without Stopping"). If the estimate is global, the minimum sample may refer to the session as a whole; limit or mark the estimate as provisional when evidence is scarce.
 
 Do not return only a score or label.
 
@@ -408,6 +442,43 @@ These checks increase diagnostic honesty without requiring empirical data. Apply
   - Indicative criterion: if any relevant hypothesis falls below `0.70` correct classification under the model itself, or if two hypotheses are systematically confused, do not present the bank as well separated; add more items, review difficulties/likelihoods, or explicitly state the limitation.
 
 See `matematicas.html §11.7–§11.8` for the formulas and the full framing.
+
+## Pre-Delivery Verification
+
+Check the generated resource against this list. Conditional blocks apply only if they match the profile and mode declared in "Profile and Mode".
+
+**Always:**
+
+- Every response updates the posterior (likelihood × prior, normalised); there are no ad hoc raise/lower-difficulty rules in its place.
+- `a` derived per item (`a = 1.25 / (1 - c_q)`) and the mastery ceiling `P(correct) <= 0.95` applied in the likelihood.
+- Fixed `theta` scale according to `n` (if the profile uses `theta`), with difficulties inside the central half.
+- The result is not just a score: the recommendation and next step carry more visual weight than the label, and errors are communicated as hypotheses to check.
+- Teacher checklist generated (about content, not parameters).
+- Minimum accessibility and privacy by default (no learner data leaves the browser).
+
+**If the profile is `C` or `A+C`:**
+
+- Error prior `0.2`–`0.3`, not uniform.
+- No factor declared present or absent without its minimum sample of evidence; the report distinguishes "confirmed absent" from "insufficient evidence".
+- Stopping evaluated per factor; undecided ones are reported as undetermined, not forced.
+- In `A+C`: selection by pedagogical blocks with purpose-based weights; the minimum-gain stop is evaluated on raw IG, not on the normalised utility.
+
+**If the mode is `Practice`:**
+
+- Forgetting anchored to the prior, with a per-distribution `lambda_d` according to its update frequency.
+- Minimum sample counted over a recent window; the counter visible to the learner is the real total.
+- Distribution with no recent evidence → "no data", never red.
+- An item whose correction was already shown does not return as full evidence: parameterised variants or reduced partial credit.
+
+**If the mode is `Pathway`:**
+
+- Promotion with local stage evidence, plus exit items (no true/false) or model consistency; never a fixed percent-correct threshold under maximum-IG selection.
+- On repeating a stage: local estimate reset and exercises regenerated as variants.
+
+**If the purpose is diagnostic:**
+
+- Separate Monte Carlo validation utility (or teacher view), seeded and reproducible, with balanced accuracy, undetermined rate, average length, and an alert below `0.70`.
+- If it could not be run, it is marked "validation pending execution", without claiming the bank has been checked.
 
 ## Note on the Model
 

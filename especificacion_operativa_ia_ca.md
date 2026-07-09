@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.0**
+**Versió 2.1**
 
 ## Propòsit
 
@@ -31,6 +31,40 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 3. Si la informació ja ha estat donada, no repeteixis preguntes i passa a implementar.
 4. El resultat ha de ser un recurs web estàtic en `HTML + CSS + JavaScript`, preferentment sense backend, llevat que s'hagi demanat explícitament un altre format. Es pot organitzar en un o diversos fitxers si això millora la claredat, el manteniment o la reutilització.
 
+## Perfil i mode: quines seccions apliquen
+
+Amb la informació anterior, classifica el recurs **abans d'implementar**. Aquesta classificació decideix quines seccions d'aquest document has d'aplicar; no barregis regles de perfils o modes diferents.
+
+**Perfil** (què s'estima; els criteris de decisió són a «Elecció del model»):
+
+- `A` · **Ordinal**: nivells ordenats de domini, globals o per categoria.
+- `B` · **Nominal excloent**: hipòtesis alternatives; només una pot ser certa en cada alumne.
+- `C` · **Multifactorial**: errors o factors que poden coexistir.
+- `A+C` · **Combinat**: nivell ordinal i factors d'error alhora.
+
+**Mode** (com acaba la sessió):
+
+- `Diagnòstic`: la sessió convergeix i es tanca amb un resultat.
+- `Pràctica`: sense final previst; estimació viva amb oblit.
+- `Itinerari`: etapes successives amb promoció entre elles.
+
+| Secció | Aplica només si |
+|---|---|
+| Estat de l'alumne (escala `theta`) | perfil `A` o `A+C` (en `B` i `C` no existeix `theta`) |
+| Versemblances · part IRT 3PL | perfil `A` o la part de nivell de `A+C` |
+| Versemblances · part nominal i per perfils | perfil `B`, `C` o `A+C` |
+| Respostes amb crèdit parcial | hi ha ítems amb graus o per passos |
+| Sòl d'atzar en ítems compostos | hi ha ítems de diversos components |
+| Diagnòstic multidimensional | perfil `C`, `A+C`, o diverses distribucions en paral·lel |
+| Selecció adaptativa · blocs pedagògics | perfil `A+C` o diverses distribucions en paral·lel |
+| Selecció adaptativa · dues fases i utilitat `α` | mode `Pràctica` |
+| Criteri d'aturada | mode `Diagnòstic` o `Itinerari` |
+| Reforç continu sense aturada | mode `Pràctica` |
+| Itineraris per etapes | mode `Itinerari` |
+| Validació i fiabilitat | finalitat diagnòstica o promoció d'etapes |
+
+Les seccions no llistades apliquen sempre. Exemples de barreja indeguda que aquesta taula evita: activar oblit (`lambda < 1`) en un diagnòstic de sessió curta; calcular una `theta` esperada en perfils `B` o `C`; exigir ítems de sortida fora d'un itinerari; muntar blocs pedagògics amb una sola distribució.
+
 ## Regles de disseny
 
 - El recurs no ha de ser lineal si la finalitat exigeix adaptació.
@@ -48,7 +82,7 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 ## Estat de l'alumne
 
 - Representa l'estat de l'alumne com una distribució de probabilitat sobre `n` hipòtesis.
-- Si no hi ha informació prèvia fiable, utilitza una distribució uniforme. Aquesta regla val per a hipòtesis de **nivell**; per a **factors d'error** binaris, no. Un prior uniforme sobre els `2^k` perfils (o sobre `{present, absent}` de cada factor) equival a afirmar que cada error té un 50 % de probabilitat a priori d'estar present: no és neutre, és una afirmació forta sobre la seva prevalença i esbiaixa les primeres preguntes cap al fals positiu (errors que l'alumne no té mostrats com a «indeterminats» o «probables»). Per a factors d'error, parteix d'un prior informatiu moderat; vegeu «Versemblances».
+- Prior d'hipòtesis de **nivell**: si no hi ha informació prèvia fiable, utilitza una distribució uniforme. Prior de **factors d'error** binaris: mai uniforme; fes servir el prior informatiu moderat de «Versemblances» (`P(error) ≈ 0.2`–`0.3`). *Per què:* un uniforme sobre els `2^k` perfils (o sobre `{present, absent}` de cada factor) equival a afirmar que cada error té un 50 % de probabilitat a priori d'estar present; no és neutre i esbiaixa les primeres preguntes cap al fals positiu (errors que l'alumne no té mostrats com a «indeterminats» o «probables»).
 - Si les hipòtesis són jeràrquiques, assigna-les valors `theta` ordenats i centrats.
 - Si el docent no fixa valors, utilitza una escala simètrica centrada en 0.
 - L'escala `theta` és fixa i depèn només del nombre d'hipòtesis, no del banc de preguntes. Amb `n` hipòtesis jeràrquiques, fes servir valors centrats en `0` amb intervals de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, és a dir, `theta` recorre `{-(n-1), ..., +(n-1)}` i `theta_max = n - 1`. Exemples: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -58,8 +92,7 @@ Adjunta aquest document a la IA i utilitza aquest prompt:
 - Si el docent dona valors numèrics de `b_q` fora de l'interval, retalla'ls (clamp) a l'interval.
 - No recalculis mai `theta` a partir dels extrems del banc. Una sola pregunta atípicament difícil o fàcil no ha de redefinir l'escala: si estires `theta` per acomodar-la, satures les versemblances de la resta del banc (totes les probabilitats queden enganxades a `c_q` o a `1`) i el posterior fa salts sobreconfiats amb una sola resposta.
 - Si la majoria de les dificultats del banc quedés fora de l'interval, no estiris l'escala: revisa amb el docent la definició de nivells i dificultats, perquè el disseny és incoherent.
-- Invariant de comparabilitat: amb `a_ef = 1.25` i intervals de `2` entre hipòtesis adjacents, el producte `a_ef * Δtheta = 2.5` iguala la **pendent màxima** de la ICC entre formats, sigui quin sigui `n` (en créixer `n` creix `theta_max`, però l'espaiat entre hipòtesis adjacents es manté). Mantén aquest invariant entre recursos perquè les confiances i velocitats de convergència siguin comparables. Aquesta comparabilitat és estricta només entre recursos amb el mateix nombre d'hipòtesis `n`: amb l'escala fixa, el marge entre el nivell extrem i l'ítem més difícil és `(n - 1) / 2`, de manera que amb `n = 2` (domina / no domina) els ítems extrems confirmen feblement (probabilitat que el nivell alt encerti l'ítem més difícil ≈ 0.65 en oberta, ≈ 0.77 en 4 opcions) i convé compensar amb més preguntes o definir l'escala des d'una probabilitat objectiu `P*`.
-- L'invariant iguala la pendent, **no la força màxima de l'evidència**. En una fallada, el factor `(1 - c)` es cancel·la en el quocient i la raó de versemblances entre hipòtesis adjacents tendeix a `e^(a * Δtheta)` amb la `a` **nominal** (`= a_ef / (1 - c)`), no amb `a_ef`. Per això una fallada en un ítem fàcil amb més pseudoatzar aporta molta més evidència que la mateixa fallada en una pregunta oberta: amb `Δtheta = 2`, la raó de versemblança de fallada és ≈ 12 en oberta (`c = 0`), ≈ 28 en 4 opcions (`c = 0.25`) i ≈ 148 en vertader/fals (`c = 0.5`). Per evitar aquests salts de posterior gairebé deterministes, aplica el sostre de domini del cas ordinal (vegeu «Versemblances»).
+- Mantén entre recursos l'invariant de comparabilitat `a_ef * Δtheta = 2.5` (amb `a_ef = 1.25` i intervals de `2` entre hipòtesis adjacents); amb `n = 2` compensa a més amb més preguntes o defineix l'escala des d'una probabilitat objectiu `P*`. *Què garanteix i què no:* l'invariant iguala la **pendent màxima** de la ICC entre formats per a qualsevol `n`, però la comparabilitat de confiances i velocitats és estricta només entre recursos amb el mateix `n` — el marge entre el nivell extrem i l'ítem més difícil és `(n - 1) / 2`, i amb `n = 2` els ítems extrems confirmen feblement (P ≈ 0.65 en oberta, ≈ 0.77 en 4 opcions) —. Tampoc no iguala la força màxima de l'evidència d'una fallada: en el quocient de versemblances de fallada el factor `(1 - c)` es cancel·la i la raó tendeix a `e^(a * Δtheta)` amb la `a` **nominal** (≈ 12 en oberta, ≈ 28 en 4 opcions, ≈ 148 en vertader/fals amb `Δtheta = 2`); aquests salts els acota el sostre de domini de «Versemblances».
 
 ## Actualització bayesiana
 
@@ -104,7 +137,7 @@ Això s'ha de fer després de cada interacció rellevant.
 - Si les hipòtesis no són jeràrquiques, distingeix dos casos.
 - Si són **alternatives excloents** (per exemple, estratègia A / estratègia B / domini correcte), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
 - Si els errors o necessitats **poden coexistir**, no els forcis dins d'una sola distribució nominal. Modela una dimensió per factor (`error llarg`, `error del zero`, etc.) o, de manera equivalent, una distribució sobre **perfils complets** (`2^k` combinacions possibles de `k` factors).
-- **Prior dels factors d'error: no uniforme.** Els errors conceptuals solen ser minoritaris, així que assigna a cada factor una probabilitat a priori baixa d'estar present (per defecte `P(error) ≈ 0.2`–`0.3`) en lloc de l'uniforme `0.5`. Un prior uniforme aquí no és neutre: parteix que cada alumne té cada error amb probabilitat `0.5` i produeix falsos positius en les primeres preguntes. El recurs aplica aquest valor per defecte de manera automàtica; el docent pot ajustar la prevalença del seu grup si ho vol, però no hi està obligat.
+- **Prior dels factors d'error: no uniforme.** Assigna a cada factor una probabilitat a priori baixa d'estar present (per defecte `P(error) ≈ 0.2`–`0.3`), mai l'uniforme `0.5`. El recurs aplica aquest valor de manera automàtica; el docent pot ajustar la prevalença del seu grup si ho vol, però no hi està obligat. *Per què:* els errors conceptuals solen ser minoritaris; l'uniforme no és neutre (afirma que cada alumne té cada error amb probabilitat `0.5`) i produeix falsos positius en les primeres preguntes.
 - En aquest cas multifactorial, cada pregunta ha de definir com respon cada perfil. El mínim és una probabilitat d'encert per perfil; encara millor és una distribució per opció `P(R = r | perfil, q)` per aprofitar quin distractor ha triat l'alumne, i no només encert/error.
 - Si parteixes de factors simples, assigna cada valor responent: «si l'alumne tingués aquest error, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que l'error distorsiona; alt si l'error no interfereix.
 - Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi o perfil de domini al voltant de `0.9`–`0.95`, mai `1`.
@@ -238,11 +271,12 @@ Si fas servir `p_min`, calcula el llindar orientatiu:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-Després de complir el mínim de preguntes, comprova la confiança del diagnòstic. Quan `H_stop` es deriva del mateix `p_min`, la condició `max(p_i) >= p_min` ja implica `H <= H_stop`: comprovar totes dues és inofensiu però **redundant**, no afegeix exigència. El control que sí aporta alguna cosa diferent és la **separació** respecte a la segona hipòtesi:
+Després de complir el mínim de preguntes, aplica **un** d'aquests dos tancaments de confiança:
 
-`P(guanyadora) - P(segona) >= Δ_min`
+- **Poques hipòtesis** (`n <= 4`, l'habitual): tanca quan `max(p_i) >= p_min` (per defecte `0.80`).
+- **Moltes hipòtesis**, on exigir `0.80` és poc pràctic: tanca quan `max(p_i)` assoleixi un valor moderat (per exemple `>= 0.50`) **i** la guanyadora se separi de la segona: `P(guanyadora) - P(segona) >= Δ_min`, amb `Δ_min ≈ 0.3`–`0.4`.
 
-Ara bé, la separació només afegeix exigència si `Δ_min > 2 * p_min - 1`. Amb `p_min = 0.80`, exigir `max(p_i) >= p_min` ja força una separació `>= 0.60`, de manera que un `Δ_min` de 0.3–0.4 seria tan redundant com l'entropia. Per això la separació és útil sobretot **com a alternativa a un `p_min` alt, no com a afegit**: quan hi ha moltes hipòtesis i exigir `max(p_i) >= 0.80` és poc pràctic, tanca amb un `max(p_i)` moderat (per exemple `>= 0.50`) **i** `Δ_min >= 0.3–0.4`, que exigeix que la guanyadora vagi clarament per davant de la segona encara que la massa restant estigui repartida. Amb `n = 2`, separació i `p_min` són equivalents (`sep = 2 * max - 1`).
+No combinis comprovacions redundants pensant que afegeixen exigència. *Per què:* quan `H_stop` es deriva del mateix `p_min` (fórmula anterior), `max(p_i) >= p_min` ja implica `H <= H_stop`; i amb `p_min = 0.80` la separació ja és `>= 0.60`, de manera que afegir-hi un `Δ_min` de `0.3`–`0.4` és inert (només afegiria exigència si `Δ_min > 2 * p_min - 1`). La separació és una **alternativa** a un `p_min` alt, no un afegit. Amb `n = 2` totes dues són equivalents (`sep = 2 * max - 1`).
 
 En models multifactorials, avalua l'aturada **per factor**: un factor queda decidit quan la seva marginal surt de la zona indeterminada (per exemple, `P(error) >= 0.7` present, `<= 0.3` absent) i té la seva mostra mínima d'evidència. Tanca quan tots els factors estiguin decidits, quan cap ítem aporti guany apreciable sobre els indeterminats o en assolir el màxim pràctic; els factors sense decidir es reporten com a indeterminats, no es forcen.
 
@@ -338,7 +372,7 @@ Si és un itinerari o activitat d'aprenentatge, afegeix-hi a més:
 - ajudes utilitzades;
 - àrees a reforçar.
 
-No declaris un domini alt basant-te en molt pocs intents. Si el resultat fa afirmacions per categoria o dimensió, exigeix una mostra mínima en aquestes categories o dimensions abans de presentar-les com a fermes. Si l'estimació és global, la mostra mínima pot referir-se al conjunt de la sessió; limita o marca com a provisional l'estimació quan l'evidència sigui escassa.
+No declaris un domini alt basant-te en molt pocs intents. Si el resultat fa afirmacions per categoria o dimensió, exigeix una mostra mínima en aquestes categories o dimensions abans de presentar-les com a fermes (amb oblit actiu, aquesta mostra es compta sobre la finestra recent de la distribució, no sobre el total històric; vegeu «Reforç continu sense aturada»). Si l'estimació és global, la mostra mínima pot referir-se al conjunt de la sessió; limita o marca com a provisional l'estimació quan l'evidència sigui escassa.
 
 No retornis només una nota o etiqueta.
 
@@ -408,6 +442,43 @@ Aquestes comprovacions augmenten l'honestedat del diagnòstic sense requerir dad
   - Criteri orientatiu: si alguna hipòtesi rellevant queda per sota de `0.70` de classificació correcta sota el propi model, o si dues hipòtesis es confonen de manera sistemàtica, no presentis el banc com a ben separat; afegeix més ítems, revisa dificultats/versemblances o declara explícitament la limitació.
 
 Consulta `matematicas.html §11.7–§11.8` per a les fórmules i l'enquadrament complet.
+
+## Verificació abans de lliurar
+
+Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només si corresponen al perfil i mode declarats a «Perfil i mode».
+
+**Sempre:**
+
+- Cada resposta actualitza el posterior (versemblança × prior, normalitzat); no hi ha regles ad hoc de pujar/baixar dificultat en el seu lloc.
+- `a` derivada per ítem (`a = 1.25 / (1 - c_q)`) i sostre de domini `P(encert) <= 0.95` aplicats en la versemblança.
+- Escala `theta` fixa segons `n` (si el perfil usa `theta`), amb les dificultats dins de la meitat central.
+- El resultat no és només una nota: la recomanació i el pas següent pesen visualment més que l'etiqueta, i els errors es comuniquen com a hipòtesis a comprovar.
+- Llista de comprovació docent generada (sobre contingut, no sobre paràmetres).
+- Accessibilitat mínima i privacitat per defecte (cap dada de l'alumne surt del navegador).
+
+**Si el perfil és `C` o `A+C`:**
+
+- Prior d'error `0.2`–`0.3`, no uniforme.
+- Cap factor declarat present o absent sense la seva mostra mínima d'evidència; el report distingeix «absent confirmat» de «sense evidència suficient».
+- Aturada avaluada per factor; els no decidits es reporten com a indeterminats, no es forcen.
+- En `A+C`: selecció per blocs pedagògics amb pesos segons la finalitat; l'aturada per guany mínim s'avalua sobre la IG crua, no sobre la utilitat normalitzada.
+
+**Si el mode és `Pràctica`:**
+
+- Oblit ancorat al prior, amb `lambda_d` per distribució segons la seva freqüència d'actualització.
+- Mostra mínima comptada en finestra recent; el comptador visible per a l'alumne és el total real.
+- Distribució sense evidència recent → «sense dades», mai vermell.
+- Un ítem la correcció del qual ja s'ha mostrat no torna com a evidència plena: variants parametritzades o crèdit parcial reduït.
+
+**Si el mode és `Itinerari`:**
+
+- Promoció amb evidència local de l'etapa, més ítems de sortida (sense vertader/fals) o consistència amb el model; mai un llindar fix de percentatge d'encerts sota selecció per màxima IG.
+- En repetir una etapa: estimació local reiniciada i exercicis regenerats com a variants.
+
+**Si la finalitat és diagnòstica:**
+
+- Utilitat de validació Monte Carlo a part (o en vista docent), sembrada i reproduïble, amb exactitud equilibrada, taxa d'indeterminats, longitud mitjana i alerta per sota de `0.70`.
+- Si no s'ha pogut executar, queda marcada com a «validació pendent d'executar», sense afirmar que el banc està comprovat.
 
 ## Nota sobre el model
 

@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.0**
+**Versión 2.1**
 
 ## Propósito
 
@@ -31,6 +31,40 @@ Adjunta este documento a la IA y usa este prompt:
 3. Si la información ya está dada, no repitas preguntas y pasa a implementar.
 4. El resultado debe ser un recurso web estático en `HTML + CSS + JavaScript`, preferentemente sin backend, salvo que se pida explícitamente otro formato. Puede organizarse en uno o varios archivos si eso mejora la claridad, el mantenimiento o la reutilización.
 
+## Perfil y modo: qué secciones aplican
+
+Con la información anterior, clasifica el recurso **antes de implementar**. Esta clasificación decide qué secciones de este documento debes aplicar; no mezcles reglas de perfiles o modos distintos.
+
+**Perfil** (qué se estima; los criterios de decisión están en «Elección del modelo»):
+
+- `A` · **Ordinal**: niveles ordenados de dominio, globales o por categoría.
+- `B` · **Nominal excluyente**: hipótesis alternativas; solo una puede ser cierta en cada alumno.
+- `C` · **Multifactorial**: errores o factores que pueden coexistir.
+- `A+C` · **Combinado**: nivel ordinal y factores de error a la vez.
+
+**Modo** (cómo termina la sesión):
+
+- `Diagnóstico`: la sesión converge y se cierra con un resultado.
+- `Práctica`: sin final previsto; estimación viva con olvido.
+- `Itinerario`: etapas sucesivas con promoción entre ellas.
+
+| Sección | Aplica solo si |
+|---|---|
+| Estado del alumno (escala `theta`) | perfil `A` o `A+C` (en `B` y `C` no existe `theta`) |
+| Verosimilitudes · parte IRT 3PL | perfil `A` o la parte de nivel de `A+C` |
+| Verosimilitudes · parte nominal y por perfiles | perfil `B`, `C` o `A+C` |
+| Respuestas con crédito parcial | hay ítems con grados o por pasos |
+| Suelo de azar en ítems compuestos | hay ítems de varios componentes |
+| Diagnóstico multidimensional | perfil `C`, `A+C`, o varias distribuciones en paralelo |
+| Selección adaptativa · bloques pedagógicos | perfil `A+C` o varias distribuciones en paralelo |
+| Selección adaptativa · dos fases y utilidad `α` | modo `Práctica` |
+| Criterio de parada | modo `Diagnóstico` o `Itinerario` |
+| Refuerzo continuo sin parada | modo `Práctica` |
+| Itinerarios por etapas | modo `Itinerario` |
+| Validación y fiabilidad | finalidad diagnóstica o promoción de etapas |
+
+Las secciones no listadas aplican siempre. Ejemplos de mezcla indebida que esta tabla evita: activar olvido (`lambda < 1`) en un diagnóstico de sesión corta; calcular una `theta` esperada en perfiles `B` o `C`; exigir ítems de salida fuera de un itinerario; montar bloques pedagógicos con una sola distribución.
+
 ## Reglas de diseño
 
 - El recurso no debe ser lineal si la finalidad exige adaptación.
@@ -49,7 +83,7 @@ Adjunta este documento a la IA y usa este prompt:
 ## Estado del alumno
 
 - Representa el estado del alumno como una distribución de probabilidad sobre `n` hipótesis.
-- Si no hay información previa fiable, usa distribución uniforme. Esta regla vale para hipótesis de **nivel**; para **factores de error** binarios, no. Un prior uniforme sobre los `2^k` perfiles (o sobre `{presente, ausente}` de cada factor) equivale a afirmar que cada error tiene un 50 % de probabilidad a priori de estar presente: no es neutral, es una afirmación fuerte sobre su prevalencia y sesga las primeras preguntas hacia el falso positivo (errores que el alumno no tiene mostrados como «indeterminados» o «probables»). Para factores de error, parte de un prior informativo moderado; véase «Verosimilitudes».
+- Prior de hipótesis de **nivel**: si no hay información previa fiable, usa distribución uniforme. Prior de **factores de error** binarios: nunca uniforme; usa el prior informativo moderado de «Verosimilitudes» (`P(error) ≈ 0.2`–`0.3`). *Por qué:* un uniforme sobre los `2^k` perfiles (o sobre `{presente, ausente}` de cada factor) equivale a afirmar que cada error tiene un 50 % de probabilidad a priori de estar presente; no es neutral y sesga las primeras preguntas hacia el falso positivo (errores que el alumno no tiene mostrados como «indeterminados» o «probables»).
 - Si las hipótesis son jerárquicas, asígnales valores `theta` ordenados y centrados.
 - Si el docente no fija valores, usa una escala simétrica centrada en 0.
 - La escala `theta` es fija y depende solo del número de hipótesis, no del banco de preguntas. Con `n` hipótesis jerárquicas, usa valores centrados en `0` con intervalos de `2`: `theta_i = 2 * (i - 1) - (n - 1)`, es decir, `theta` recorre `{-(n-1), ..., +(n-1)}` y `theta_max = n - 1`. Ejemplos: `n = 2` → `{-1, +1}`; `n = 3` → `{-2, 0, +2}`; `n = 4` → `{-3, -1, +1, +3}`; `n = 5` → `{-4, -2, 0, +2, +4}`.
@@ -59,8 +93,7 @@ Adjunta este documento a la IA y usa este prompt:
 - Si el docente da valores numéricos de `b_q` fuera del intervalo, recórtalos (clamp) al intervalo.
 - No recalcules nunca `theta` a partir de los extremos del banco. Una sola pregunta atípicamente difícil o fácil no debe redefinir la escala: si estiras `theta` para acomodarla, saturas las verosimilitudes del resto del banco (todas las probabilidades quedan pegadas a `c_q` o a `1`) y el posterior da saltos sobreconfiados con una sola respuesta.
 - Si la mayoría de las dificultades del banco quedara fuera del intervalo, no estires la escala: revisa con el docente la definición de niveles y dificultades, porque el diseño es incoherente.
-- Invariante de comparabilidad: con `a_ef = 1.25` e intervalos de `2` entre hipótesis adyacentes, el producto `a_ef * Δtheta = 2.5` iguala la **pendiente máxima** de la ICC entre formatos, sea cual sea `n` (al crecer `n` crece `theta_max`, pero el espaciado entre hipótesis adyacentes se mantiene). Mantén este invariante entre recursos para que las confianzas y velocidades de convergencia sean comparables. Esa comparabilidad es estricta solo entre recursos con el mismo número de hipótesis `n`: con la escala fija, el margen entre el nivel extremo y el ítem más difícil es `(n - 1) / 2`, así que con `n = 2` (domina / no domina) los ítems extremos confirman débilmente (probabilidad de que el nivel alto acierte el ítem más difícil ≈ 0.65 en abierta, ≈ 0.77 en 4 opciones) y conviene compensar con más preguntas o definir la escala desde una probabilidad objetivo `P*`.
-- El invariante iguala la pendiente, **no la fuerza máxima de la evidencia**. En un fallo, el factor `(1 - c)` se cancela en el cociente y la razón de verosimilitudes entre hipótesis adyacentes tiende a `e^(a * Δtheta)` con la `a` **nominal** (`= a_ef / (1 - c)`), no con `a_ef`. Por eso un fallo en un ítem fácil con mayor pseudoazar aporta mucha más evidencia que el mismo fallo en una pregunta abierta: con `Δtheta = 2`, la razón de verosimilitud de fallo es ≈ 12 en abierta (`c = 0`), ≈ 28 en 4 opciones (`c = 0.25`) y ≈ 148 en verdadero/falso (`c = 0.5`). Para evitar esos saltos de posterior casi deterministas, aplica el techo de dominio del caso ordinal (véase «Verosimilitudes»).
+- Mantén entre recursos el invariante de comparabilidad `a_ef * Δtheta = 2.5` (con `a_ef = 1.25` e intervalos de `2` entre hipótesis adyacentes); con `n = 2` compensa además con más preguntas o define la escala desde una probabilidad objetivo `P*`. *Qué garantiza y qué no:* el invariante iguala la **pendiente máxima** de la ICC entre formatos para cualquier `n`, pero la comparabilidad de confianzas y velocidades es estricta solo entre recursos con el mismo `n` — el margen entre el nivel extremo y el ítem más difícil es `(n - 1) / 2`, y con `n = 2` los ítems extremos confirman débilmente (P ≈ 0.65 en abierta, ≈ 0.77 en 4 opciones) —. Tampoco iguala la fuerza máxima de la evidencia de un fallo: en el cociente de verosimilitudes de fallo el factor `(1 - c)` se cancela y la razón tiende a `e^(a * Δtheta)` con la `a` **nominal** (≈ 12 en abierta, ≈ 28 en 4 opciones, ≈ 148 en verdadero/falso con `Δtheta = 2`); esos saltos los acota el techo de dominio de «Verosimilitudes».
 
 ## Actualización bayesiana
 
@@ -105,7 +138,7 @@ Esto debe hacerse después de cada interacción relevante.
 - Si las hipótesis no son jerárquicas, distingue dos casos.
 - Si son **alternativas excluyentes** (por ejemplo, estrategia A / estrategia B / dominio correcto), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
 - Si los errores o necesidades **pueden coexistir**, no los metas en una sola distribución nominal. Modela una dimensión por factor (`error largo`, `error cero`, etc.) o, de forma equivalente, una distribución sobre **perfiles completos** (`2^k` combinaciones posibles de `k` factores).
-- **Prior de los factores de error: no uniforme.** Los errores conceptuales suelen ser minoritarios, así que asigna a cada factor una probabilidad a priori baja de estar presente (por defecto `P(error) ≈ 0.2`–`0.3`) en lugar del uniforme `0.5`. Un prior uniforme aquí no es neutral: parte de que cada alumno tiene cada error con probabilidad `0.5` y produce falsos positivos en las primeras preguntas. El recurso aplica este valor por defecto de forma automática; el docente puede ajustar la prevalencia de su grupo si lo desea, pero no está obligado.
+- **Prior de los factores de error: no uniforme.** Asigna a cada factor una probabilidad a priori baja de estar presente (por defecto `P(error) ≈ 0.2`–`0.3`), nunca el uniforme `0.5`. El recurso aplica este valor de forma automática; el docente puede ajustar la prevalencia de su grupo si lo desea, pero no está obligado. *Por qué:* los errores conceptuales suelen ser minoritarios; el uniforme no es neutral (afirma que cada alumno tiene cada error con probabilidad `0.5`) y produce falsos positivos en las primeras preguntas.
 - En ese caso multifactorial, cada pregunta debe definir cómo responde cada perfil. Lo mínimo es una probabilidad de acierto por perfil; mejor aún, una distribución por opción `P(R = r | perfil, q)` para aprovechar qué distractor ha elegido el alumno, no solo si acertó o falló.
 - Si partes de factores simples, asigna cada valor respondiendo: «si el alumno tuviera este error, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
 - Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis o perfil de dominio en torno a `0.9`–`0.95`, nunca `1`.
@@ -239,11 +272,12 @@ Si usas `p_min`, calcula el umbral orientativo:
 
 `H_stop = -p_min * log2(p_min) - (1 - p_min) * log2((1 - p_min) / (n - 1))`
 
-Tras cumplir el mínimo de preguntas, comprueba la confianza del diagnóstico. Cuando `H_stop` se deriva del mismo `p_min`, la condición `max(p_i) >= p_min` ya implica `H <= H_stop`: comprobar las dos es inofensivo pero **redundante**, no añade exigencia. El control que sí aporta algo distinto es la **separación** respecto a la segunda hipótesis:
+Tras cumplir el mínimo de preguntas, aplica **uno** de estos dos cierres de confianza:
 
-`P(ganadora) - P(segunda) >= Δ_min`
+- **Pocas hipótesis** (`n <= 4`, lo habitual): cierra cuando `max(p_i) >= p_min` (por defecto `0.80`).
+- **Muchas hipótesis**, donde exigir `0.80` es poco práctico: cierra cuando `max(p_i)` alcance un valor moderado (por ejemplo `>= 0.50`) **y** la ganadora se separe de la segunda: `P(ganadora) - P(segunda) >= Δ_min`, con `Δ_min ≈ 0.3`–`0.4`.
 
-Ahora bien, la separación solo añade exigencia si `Δ_min > 2 * p_min - 1`. Con `p_min = 0.80`, exigir `max(p_i) >= p_min` ya fuerza una separación `>= 0.60`, así que un `Δ_min` de 0.3–0.4 sería tan redundante como la entropía. Por eso la separación es útil sobre todo **como alternativa a un `p_min` alto, no como añadido**: cuando hay muchas hipótesis y exigir `max(p_i) >= 0.80` es poco práctico, cierra con un `max(p_i)` moderado (por ejemplo `>= 0.50`) **y** `Δ_min >= 0.3–0.4`, que exige que la ganadora vaya claramente por delante de la segunda aunque la masa restante esté repartida. Con `n = 2`, separación y `p_min` son equivalentes (`sep = 2 * max - 1`).
+No combines comprobaciones redundantes creyendo que añaden exigencia. *Por qué:* cuando `H_stop` se deriva del mismo `p_min` (fórmula anterior), `max(p_i) >= p_min` ya implica `H <= H_stop`; y con `p_min = 0.80` la separación ya es `>= 0.60`, así que añadirle un `Δ_min` de `0.3`–`0.4` es inerte (solo añadiría exigencia si `Δ_min > 2 * p_min - 1`). La separación es una **alternativa** a un `p_min` alto, no un añadido. Con `n = 2` ambas son equivalentes (`sep = 2 * max - 1`).
 
 En modelos multifactoriales, evalúa la parada **por factor**: un factor queda decidido cuando su marginal sale de la zona indeterminada (por ejemplo, `P(error) >= 0.7` presente, `<= 0.3` ausente) y tiene su muestra mínima de evidencia. Cierra cuando todos los factores estén decididos, cuando ningún ítem aporte ganancia apreciable sobre los indeterminados o al alcanzar el máximo práctico; los factores sin decidir se reportan como indeterminados, no se fuerzan.
 
@@ -339,7 +373,7 @@ Si es un itinerario o actividad de aprendizaje, añade además:
 - ayudas usadas;
 - áreas a reforzar.
 
-No declares un dominio alto basándote en muy pocos intentos. Si el resultado hace afirmaciones por categoría o dimensión, exige una muestra mínima en esas categorías o dimensiones antes de presentarlas como firmes. Si la estimación es global, la muestra mínima puede referirse al conjunto de la sesión; limita o marca como provisional la estimación cuando la evidencia sea escasa.
+No declares un dominio alto basándote en muy pocos intentos. Si el resultado hace afirmaciones por categoría o dimensión, exige una muestra mínima en esas categorías o dimensiones antes de presentarlas como firmes (con olvido activo, esa muestra se cuenta sobre la ventana reciente de la distribución, no sobre el total histórico; véase «Refuerzo continuo sin parada»). Si la estimación es global, la muestra mínima puede referirse al conjunto de la sesión; limita o marca como provisional la estimación cuando la evidencia sea escasa.
 
 No devuelvas solo una nota o etiqueta.
 
@@ -409,6 +443,43 @@ Estas comprobaciones aumentan la honestidad del diagnóstico sin requerir datos 
   - Criterio orientativo: si alguna hipótesis relevante queda por debajo de `0.70` de clasificación correcta bajo el propio modelo, o si dos hipótesis se confunden de forma sistemática, no presentes el banco como bien separado; añade más ítems, revisa dificultades/verosimilitudes o declara explícitamente la limitación.
 
 Consulta `matematicas.html §11.7–§11.8` para las fórmulas y el encuadre completo.
+
+## Verificación antes de entregar
+
+Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo si corresponden al perfil y modo declarados en «Perfil y modo».
+
+**Siempre:**
+
+- Cada respuesta actualiza el posterior (verosimilitud × prior, normalizado); no hay reglas ad hoc de subir/bajar dificultad en su lugar.
+- `a` derivada por ítem (`a = 1.25 / (1 - c_q)`) y techo de dominio `P(acierto) <= 0.95` aplicados en la verosimilitud.
+- Escala `theta` fija según `n` (si el perfil usa `theta`), con las dificultades dentro de la mitad central.
+- El resultado no es solo una nota: la recomendación y el siguiente paso pesan visualmente más que la etiqueta, y los errores se comunican como hipótesis a comprobar.
+- Lista de comprobación docente generada (sobre contenido, no sobre parámetros).
+- Accesibilidad mínima y privacidad por defecto (ningún dato del alumno sale del navegador).
+
+**Si el perfil es `C` o `A+C`:**
+
+- Prior de error `0.2`–`0.3`, no uniforme.
+- Ningún factor declarado presente o ausente sin su muestra mínima de evidencia; el reporte distingue «ausente confirmado» de «sin evidencia suficiente».
+- Parada evaluada por factor; los no decididos se reportan como indeterminados, no se fuerzan.
+- En `A+C`: selección por bloques pedagógicos con pesos según la finalidad; la parada por ganancia mínima se evalúa sobre la IG cruda, no sobre la utilidad normalizada.
+
+**Si el modo es `Práctica`:**
+
+- Olvido anclado al prior, con `lambda_d` por distribución según su frecuencia de actualización.
+- Muestra mínima contada en ventana reciente; el contador visible para el alumno es el total real.
+- Distribución sin evidencia reciente → «sin datos», nunca rojo.
+- Un ítem cuya corrección ya se mostró no vuelve como evidencia plena: variantes parametrizadas o crédito parcial reducido.
+
+**Si el modo es `Itinerario`:**
+
+- Promoción con evidencia local de la etapa, más ítems de salida (sin verdadero/falso) o consistencia con el modelo; nunca un umbral fijo de porcentaje de aciertos bajo selección por máxima IG.
+- Al repetir una etapa: estimación local reiniciada y ejercicios regenerados como variantes.
+
+**Si la finalidad es diagnóstica:**
+
+- Utilidad de validación Monte Carlo aparte (o en vista docente), sembrada y reproducible, con exactitud equilibrada, tasa de indeterminados, longitud media y alerta por debajo de `0.70`.
+- Si no se pudo ejecutar, queda marcada como «validación pendiente de ejecutar», sin afirmar que el banco está comprobado.
 
 ## Nota sobre el modelo
 

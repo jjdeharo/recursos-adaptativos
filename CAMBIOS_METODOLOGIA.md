@@ -2,6 +2,16 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — Especificación operativa v2.1: remodelación estructural (sin cambios de reglas)
+
+La especificación había crecido de ~1.100 a ~7.300 palabras con las tres rondas de revisión y presentaba tres problemas estructurales para una IA ejecutora, medidos antes de tocar nada: no enrutaba por tipo de recurso (entre el 18 % y el 35 % del texto era irrelevante según el perfil, y seis secciones son mutuamente excluyentes en la práctica); en varias reglas clave el imperativo estaba enterrado tras la justificación y la verificación numérica; y no había forma de autoverificación final. Ninguna regla cambia de contenido; cambia dónde y cómo se enuncia. Editado en ES/CA/EN.
+
+- **Nueva sección «Perfil y modo: qué secciones aplican»** tras el flujo obligatorio: la IA clasifica el recurso en perfil (`A` ordinal / `B` nominal excluyente / `C` multifactorial / `A+C` combinado) y modo (`Diagnóstico` / `Práctica` / `Itinerario`), y una tabla indica qué secciones aplican a cada combinación. Motivo: es la corrección estructural de la clase de fallo N1b (reglas escritas para un caso aplicadas a otro); ejemplos de mezcla indebida citados en la propia tabla (olvido en diagnóstico corto, `theta` esperada en perfiles nominales, ítems de salida fuera de itinerario, bloques con una sola distribución).
+- **Regla antes que justificación** en los cuatro puntos donde estaba invertida: prior uniforme/factores («Estado del alumno»), invariante de comparabilidad (dos viñetas fusionadas en una, regla primero), prior de factores de error («Verosimilitudes») y cierre de confianza («Criterio de parada», ahora formulado como elección explícita entre dos cierres: `p_min` alto con pocas hipótesis, o `max` moderado + `Δ_min` con muchas). Las justificaciones y cifras se conservan íntegras tras el marcador «*Por qué:*»: un modelo que entiende por qué existe una regla se desvía menos de ella.
+- **Nueva sección «Verificación antes de entregar»**: lista de comprobación final indexada por perfil y modo (siempre / `C`-`A+C` / `Práctica` / `Itinerario` / diagnóstico), que resume las invariantes que el recurso generado debe cumplir.
+- **Cosido un hueco de coherencia interna**: «Resultado final» no mencionaba que, con olvido activo, la muestra mínima se cuenta sobre la ventana reciente (N1b); ahora remite a «Refuerzo continuo sin parada».
+- Qué NO se hizo, deliberadamente: no se recortó contenido (las justificaciones numéricas son las que fijan el comportamiento; el tamaño, ~13k tokens, no es problema para ninguna ventana actual) y no se partió en varios archivos (todo el modelo de distribución es «adjunta un archivo»).
+
 ## 2026-07-09 — Propagación al código: N1 (labcom) y N6 (bayes-nominal, bayes-acentuacion)
 
 Segunda tanda de propagación de los hallazgos al **código** de los programas de ejemplo, tras auditar los seis.
