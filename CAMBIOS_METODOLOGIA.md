@@ -2,6 +2,23 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — Propagación de hallazgos de la revisión al código de los programas de ejemplo
+
+Los hallazgos del `INFORME_REVISION.md` se habían aplicado a la documentación (protocolo, especificación y fundamentos); esta entrada registra su propagación al **código** de los programas de ejemplo (repos hermanos), tras auditar los seis uno a uno.
+
+- **1.3 · Techo de dominio `P(acierto) ≤ 0.95` (slip) en los cuatro programas con 3PL ordinal.** El 3PL puro dejaba `P(acierto) → 1` en ítems fáciles, fuente de actualizaciones casi deterministas ante un fallo. Añadido `min(0.95, …)` en la verosimilitud:
+  - **bayes-acentuacion** (`pMax` en `motor.js`).
+  - **bayes-test** (`P_MAX` en los tres duplicados de `probabilidadAcierto`: `index.html`, `scripts/simulate.js`, `validacion.html`); recalculada la documentación afectada (fórmula, tabla y ejemplo numérico del README y `ayuda.html`). La validación Monte Carlo pasa a ≈ 91.7 / 90.5 / 92.5 % de clasificación por nivel (antes ≈ 91 / 88 / 94: el techo simetriza algo los niveles).
+  - **bayes-itinerario** (`P_MAX` en `lik`).
+  - **labcom** (`BAYES_P_MAX` en `index.html` y `validacion-banco.html` + fórmula IRT en la documentación ES/EN/CA/EU/GA); su umbral de nivel «dominado» `BAYES_LEVEL_HIGH_MIN` se reajusta solo de 96 % a 95 %.
+  - **bayes-temperatura** ya tenía el techo (0.90, modelo por tabla) y **bayes-nominal** ya topaba sus verosimilitudes a 0.9 (techo nominal «nunca 1»): sin cambios.
+
+- **1.1 · Criterio de superación de etapa en bayes-itinerario.** Sustituido el umbral fijo `PHASE_PASS_RATIO = 0.60` (inservible bajo selección por máxima ganancia de información, donde la tasa de acierto tiende a `(1+c)/2`) por **consistencia con el modelo** (`phaseConsistent`): los aciertos observados no deben quedar a más de ~1 SD por debajo de los esperados bajo el nivel local estimado. Actualizados interfaz, `ayuda.html` y `README.md`.
+
+- **3.2 · Person-fit EN VIVO (no solo al cierre) en los seis programas.** Antes el `l_z` solo se calculaba al final. Ahora, si tras suficientes respuestas el patrón es inverosímil para el nivel estimado (`l_z < -2`), el recurso hace una **pausa de reconducción con tacto** e invita a seguir con calma en lugar de seguir consumiendo banco. Con enfriamiento para no insistir; no altera la maquinaria psicométrica ni la dificultad. En `bayes-test` se refactorizó el auto-avance a `advanceAfterAnswer()`; en `labcom` aplica solo a la fase diagnóstica y reutiliza la cadena i18n `practiceReportFitWarning`.
+
+- **Segunda pasada del resto de hallazgos (1.4, 2.1–2.6):** sin cambios de código. `2.1` ya conforme (la `a` se deriva de `a_ef = 1.25` en los cuatro 3PL, sin `a = 1.5` fijo); `1.4` y `2.2` no aplican (los programas usan `n = 3` niveles o factores binarios independientes, no el caso débil `n = 2` ni el cierre por separación con muchas hipótesis); `2.3` no aplica (ninguna pista se usa para reacertar un ítem ya puntuado); `2.4`/`2.5` no aplican. Privacidad y ausencia de límite de tiempo (`3.2`) ya se cumplían en los seis.
+
 ## 2026-07-08 (noche) — Coherencia editorial menor (prompt, ejemplo §9, nota de 2 intentos)
 
 - **Prompt de entrada unificado.** README decía «siguiendo exactamente sus reglas operativas» y la guía docente «…aplicables»; ambos se alinean con la forma canónica de la especificación: «…siguiendo las reglas operativas aplicables al tipo de recurso solicitado» (README + 6 ejemplos de la guía docente, ES/CA/EN).
