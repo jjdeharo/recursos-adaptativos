@@ -76,8 +76,8 @@ Això s'ha de fer després de cada interacció rellevant.
 
 - Si la finalitat principal és estimar un nivell ordenat de domini, utilitza hipòtesis ordinals i IRT 3PL.
 - Si la finalitat principal és identificar una estratègia o error excloent, utilitza hipòtesis nominals amb versemblances explícites per pregunta.
-- Si diversos errors, habilitats o necessitats poden coexistir, utilitza dimensions separades o perfils complets.
-- Si el recurs ha d'estimar nivell i diagnosticar errors, combina una distribució ordinal global amb distribucions diagnòstiques paral·leles.
+- Si diversos errors, habilitats o necessitats poden coexistir, utilitza dimensions separades o perfils complets. La IA decideix l'arquitectura: utilitza dimensions separades quan cada factor s'interpreta i es corregeix per separat; utilitza perfils complets quan la resposta esperada canvia per combinacions de factors, un error n'emmascara un altre o la intervenció pedagògica depèn de la combinació. Si `2^k` perfils és inviable, agrupa factors relacionats o diagnostica per fases.
+- Si el recurs ha d'estimar nivell i diagnosticar errors, combina una distribució ordinal global amb distribucions diagnòstiques paral·leles i organitza-les en **blocs pedagògics** (`nivell`, `errors`, `categories`, etc.). No preguntis al docent per pesos tècnics: infereix-los de la finalitat expressada.
 - No forcis errors coexistents dins d'una escala ordinal única.
 
 ## Versemblances
@@ -146,11 +146,11 @@ Això s'ha de fer després de cada interacció rellevant.
 
 - Si necessites saber no només el nivell global sinó quines habilitats o passos fallen, mantén diverses distribucions bayesianes en paral·lel: una per categoria o nivell i una per cada dimensió diagnòstica (habilitat, pas, tipus d'error).
 - Actualitza cada distribució amb l'evidència que li correspon: el resultat global pot alimentar la creença de nivell; cada subcriteri ha d'alimentar només la seva dimensió. No facis servir el mateix encert/error global per actualitzar diverses dimensions independents si la pregunta exigeix diverses habilitats alhora, perquè dupliques evidència i atribueixes malament la causa de l'error.
-- Cada dimensió pot tenir el seu propi sòl d'atzar `c` segons el seu nombre d'opcions, de manera que els seus percentatges no són directament comparables entre si: la referència comuna és el valor latent `theta`.
+- Cada dimensió pot tenir el seu propi sòl d'atzar `c` segons el seu nombre d'opcions, de manera que els percentatges no són directament comparables entre dimensions. En dimensions ordinals, la referència comuna és el valor latent `theta`; en factors nominals d'error, no calculis `theta`: reporta probabilitats marginals, estat (`present`, `absent`, `indeterminat`) i mostra mínima d'evidència.
 - No posis en una sola distribució dimensions que poden coexistir: utilitza distribucions separades.
-- Si diverses dimensions diagnòstiques interactuen de manera forta, pots substituir aquestes distribucions independents per una sola distribució sobre perfils complets; el més important és no forçar com a excloents factors que en realitat poden coexistir.
+- Si diverses dimensions diagnòstiques interactuen de manera forta, substitueix les distribucions independents per una sola distribució sobre perfils complets. Utilitza perfils complets quan la resposta esperada canvia per combinacions de factors, quan un error n'emmascara un altre o quan la intervenció depèn de la combinació; utilitza dimensions separades quan els factors s'evidencien i s'interpreten de manera raonablement independent. No preguntis al docent per aquesta decisió en termes tècnics: dedueix-la de la descripció pedagògica dels errors.
 - El nivell per categoria guia què practicar; el diagnòstic per dimensió guia què explicar o reforçar.
-- Si combines una distribució ordinal de nivell amb factors d'error (model combinat), tots dos són estimacions marginals paral·leles alimentades per la mateixa evidència, no troballes independents. Comprova la coherència del resultat final: si el nivell estimat és alt i algun error queda «present», presenta-ho com un matís del nivell («domina X, tot i que persisteix l'error Y»), no com a conclusions contradictòries juxtaposades.
+- Si combines una distribució ordinal de nivell amb factors d'error (model combinat), tots dos són estimacions marginals paral·leles alimentades per la mateixa evidència, no troballes independents. Agrupa'ls per blocs pedagògics per a la selecció (`nivell`, `errors`, `categories`), comprova la coherència del resultat final i, si el nivell estimat és alt i algun error queda «present», presenta-ho com un matís del nivell («domina X, tot i que persisteix l'error Y»), no com a conclusions contradictòries juxtaposades.
 
 ## Preguntes i activitats
 
@@ -179,7 +179,12 @@ Per a cada candidata disponible:
 
 Selecciona la candidata amb un guany esperat d'informació més gran quan la finalitat principal sigui diagnòstica i l'objectiu sigui estimar un nivell global.
 
-Si l'estat són diverses distribucions paral·leles (factors d'error o dimensions diagnòstiques), aplica el mateix procediment amb el **guany total** de l'ítem: la suma dels guanys esperats de cada distribució (en la representació factoritzada, l'entropia conjunta és la suma d'entropies, així que la reducció esperada conjunta és la suma de reduccions). Fes la mitjana sobre els resultats que l'ítem modeli (per opció, si hi ha distractors diagnòstics).
+Si l'estat són diverses distribucions paral·leles (factors d'error o dimensions diagnòstiques), calcula el guany esperat de cada distribució i agrupa'l per **blocs pedagògics**. Dins de cada bloc pots sumar els guanys de les seves distribucions (`IG_bloc = Σ IG_d`), perquè l'entropia conjunta factoritzada és la suma d'entropies. Per combinar blocs, normalitza cadascun entre les candidates disponibles (`IG_bloc_norm(q) = IG_bloc(q) / max IG_bloc`) i utilitza pesos automàtics segons la finalitat. Valors per defecte: si la finalitat se centra en un bloc, `w = 0.7` per a aquell bloc i `0.3` repartit entre els altres; si és mixta, pesos iguals per bloc (`w_b = 1 / nombre de blocs`), no pel nombre brut de dimensions. Un bloc està **decidit** quan assoleix el seu criteri de confiança: el de nivell, quan `max(p_i) >= p_min` amb el mínim de preguntes complert; el d'errors, quan tots els seus factors estan decidits (marginal fora de la zona indeterminada, amb la seva mostra mínima). Quan un bloc queda decidit, reparteix el seu pes proporcionalment entre els blocs encara incerts. No demanis aquests pesos al docent. Fes la mitjana sobre els resultats que l'ítem modeli (per opció, si hi ha distractors diagnòstics).
+
+Dues cauteles amb aquesta utilitat combinada:
+
+- no està en bits: la normalització reescala el millor candidat de cada bloc a `1` encara que els seus guanys siguin minúsculs, així que el criteri d'aturada «la millor pregunta aporta molt poca informació» s'ha d'avaluar sobre la **IG crua total** (en bits), mai sobre la utilitat normalitzada;
+- pel mateix motiu, un bloc gairebé exhaurit pot quedar sobrerepresentat just abans de creuar el seu criteri de «decidit»; si això resulta visible, pondera els guanys crus del bloc (fent servir la mitjana per dimensió en lloc de la suma) o normalitza per l'entropia restant del bloc en comptes del màxim.
 
 En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de problema o conceptes, utilitza una selecció en dues fases:
 
@@ -339,6 +344,18 @@ En la vista de l'alumne, la recomanació pedagògica i el pas següent han de te
 
 Si el model diagnostica un error concret (per exemple, «confon massa amb pes», amb la seva probabilitat), comunica-l'hi a l'alumne com una **hipòtesi a comprovar junts**, no com una sentència («comprovem si…»), especialment a primària. L'etiqueta d'error amb la seva probabilitat és apropiada per a la vista docent.
 
+## Revisió docent del contingut
+
+La validació sota el model no substitueix la revisió del contingut, que només el docent pot fer bé. En lliurar el recurs, genera una llista de comprovació breu en llenguatge docent, sense tecnicismes, centrada en allò que el docent pot validar millor que el sistema:
+
+- Aquests errors, són errors reals del teu alumnat?
+- Hi ha alguna pregunta massa fàcil o massa difícil per al curs?
+- Les respostes correctes i les explicacions són correctes?
+- Falta algun cas important del tema?
+- El llenguatge és adequat per a l'edat?
+
+Presenta-la a la conversa en lliurar el recurs o a la vista docent, mai a la de l'alumne. No demanis al docent que revisi paràmetres, priors ni probabilitats: si assenyala un problema amb les seves paraules, ajusta tu el banc o el model.
+
 ## Restriccions d'implementació
 
 - La interfície ha de ser comprensible per a l'alumnat i el professorat.
@@ -374,13 +391,17 @@ Si el docent no especifica paràmetres:
 - No tractar com a binària una resposta que admet graus: utilitza crèdit parcial.
 - No declarar domini alt amb una mostra insuficient.
 
-## Validació i fiabilitat (opcional)
+## Validació i fiabilitat
 
-Aquestes comprovacions no formen part del flux obligatori: són una capa opcional que augmenta l'honestedat del diagnòstic sense requerir dades empíriques. Aplica-les quan la finalitat sigui diagnòstica i el resultat s'hagi d'usar per decidir.
+Aquestes comprovacions augmenten l'honestedat del diagnòstic sense requerir dades empíriques. Aplica-les quan la finalitat sigui diagnòstica o el resultat s'hagi d'usar per decidir. La validació del disseny ha de quedar preparada encara que la IA treballi en un xat sense capacitat d'execució.
 
 - **Ajust del patró individual (person-fit).** En tancar una sessió, avalua si el patró de respostes és coherent amb el nivell estimat. Calcula l'índex estandarditzat `l_z` a partir de les probabilitats d'encert que el model assigna a les preguntes respostes sota la hipòtesi més probable. Si `l_z` és molt negatiu (orientativament `< -2`), marca el diagnòstic com a poc fiable encara que el posterior sigui alt: sol indicar respostes incoherents amb la dificultat, descuits o atzar. És un senyal de cautela, no una prova formal; amb poques preguntes és només orientatiu.
 - **Detecció d'atzar o ansietat durant la sessió (no només al tancament).** No esperis al tancament per calcular l'ajust: si durant la sessió el person-fit o una ratxa inversemblant (fallar preguntes fàcils i encertar-ne de difícils, o respondre massa de pressa) suggereixen resposta a l'atzar o ansietat, el recurs hauria de poder **pausar i reconduir** («sembla que vas molt de pressa, seguim amb calma?») en lloc de continuar consumint banc. Fes-ho amb tacte, sense acusar, i reprèn amb normalitat.
-- **Separabilitat del disseny (Monte Carlo).** Com a propietat del test (no de l'alumne), estima amb quina fiabilitat el banc distingeix els nivells: genera respondents sintètics situats en el `theta` de cada hipòtesi, fes-los el test reutilitzant la mateixa selecció adaptativa i el mateix criteri d'aturada, i construeix la matriu de confusió (nivell real enfront de diagnosticat). Presenta-la com a fiabilitat sota el model, mai com a validesa empírica: els respondents surten del propi model, així que mesura si el disseny discrimina els nivells, no si els paràmetres reflecteixen la realitat. **Aquesta validació és una eina del creador del recurs, no de l'alumnat: no s'ha de mostrar en la interfície de l'alumne.** Implementa-la en un fitxer o utilitat a part que l'autor pugui executar en dissenyar o revisar el test, no en el material que rep l'alumne.
+- **Separabilitat del disseny (Monte Carlo).** Com a propietat del test (no de l'alumne), estima amb quina fiabilitat el banc distingeix els nivells: genera respondents sintètics situats en el `theta` de cada hipòtesi, fes-los el test reutilitzant la mateixa selecció adaptativa i el mateix criteri d'aturada, i construeix la matriu de confusió (nivell real enfront de diagnosticat). Presenta-la com a fiabilitat sota el model, mai com a validesa empírica: els respondents surten del propi model, així que mesura si el disseny discrimina els nivells, no si els paràmetres reflecteixen la realitat. **Aquesta validació és una eina del creador del recurs, no de l'alumnat: no s'ha de mostrar en la interfície de l'alumne.**
+  - Si l'entorn de la IA permet executar codi (CLI, entorn local, notebook), genera i executa la simulació en construir el recurs.
+  - Si la IA treballa en xat sense execució, no afirmis que la validació està feta: implementa una utilitat de validació en un fitxer separat o en una vista docent/autora oculta a l'alumnat, amb un botó per executar-la al navegador, i marca el disseny com a «validació pendent d'executar».
+  - Fes servir per defecte almenys `500` simulacions per hipòtesi o perfil (`1000` si el navegador ho suporta amb fluïdesa). Reporta matriu de confusió, exactitud equilibrada, taxa per hipòtesi/perfil, taxa de resultats indeterminats i longitud mitjana de la sessió.
+  - Criteri orientatiu: si alguna hipòtesi rellevant queda per sota de `0.70` de classificació correcta sota el propi model, o si dues hipòtesis es confonen de manera sistemàtica, no presentis el banc com a ben separat; afegeix més ítems, revisa dificultats/versemblances o declara explícitament la limitació.
 
 Consulta `matematicas.html §11.7–§11.8` per a les fórmules i l'enquadrament complet.
 

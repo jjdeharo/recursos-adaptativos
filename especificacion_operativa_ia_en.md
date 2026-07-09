@@ -76,8 +76,8 @@ This must be done after each relevant interaction.
 
 - If the main purpose is to estimate an ordered level of mastery, use ordinal hypotheses and IRT 3PL.
 - If the main purpose is to identify a mutually exclusive strategy or error, use nominal hypotheses with explicit likelihoods per question.
-- If several errors, skills, or needs can coexist, use separate dimensions or full profiles.
-- If the resource must estimate level and diagnose errors, combine a global ordinal distribution with parallel diagnostic distributions.
+- If several errors, skills, or needs can coexist, use separate dimensions or full profiles. The AI decides the architecture: use separate dimensions when each factor is interpreted and remediated separately; use full profiles when the expected response changes because of factor combinations, one error masks another, or the pedagogical intervention depends on the combination. If `2^k` profiles is impractical, group related factors or diagnose in phases.
+- If the resource must estimate level and diagnose errors, combine a global ordinal distribution with parallel diagnostic distributions and organise them into **pedagogical blocks** (`level`, `errors`, `categories`, etc.). Do not ask the teacher for technical weights: infer them from the stated purpose.
 - Do not force coexisting errors into a single ordinal scale.
 
 ## Likelihoods
@@ -146,11 +146,11 @@ This must be done after each relevant interaction.
 
 - If you need to know not only the overall level but also which skills or steps are failing, maintain several Bayesian distributions in parallel: one per category or level, and one for each diagnostic dimension (skill, step, error type).
 - Update each distribution with the evidence that belongs to it: the overall outcome may feed the level belief; each sub-criterion must feed only its own dimension. Do not use the same global correct/incorrect result to update several independent dimensions if the question requires multiple skills at once, because that duplicates evidence and misattributes the cause of the error.
-- Each dimension may have its own chance floor `c` depending on its number of options, so their percentages are not directly comparable across dimensions: the common reference is the latent value `theta`.
+- Each dimension may have its own chance floor `c` depending on its number of options, so percentages are not directly comparable across dimensions. In ordinal dimensions, the common reference is the latent value `theta`; in nominal error factors, do not compute `theta`: report marginal probabilities, status (`present`, `absent`, `undetermined`), and the minimum evidence sample.
 - Do not merge into a single distribution dimensions that can coexist: use separate distributions.
-- If several diagnostic dimensions interact strongly, you may replace those independent distributions with a single distribution over full profiles; the key is not to force as mutually exclusive factors that can in fact coexist.
+- If several diagnostic dimensions interact strongly, replace the independent distributions with a single distribution over full profiles. Use full profiles when the expected response changes because of factor combinations, when one error masks another, or when the intervention depends on the combination; use separate dimensions when the factors are evidenced and interpreted reasonably independently. Do not ask the teacher for this decision in technical terms: infer it from the pedagogical description of the errors.
 - The level by category guides what to practise; the diagnosis by dimension guides what to explain or reinforce.
-- If you combine an ordinal level distribution with error factors (combined model), both are parallel marginal estimates fed by the same evidence, not independent findings. Check the coherence of the final result: if the estimated level is high and some error remains "present", present it as a nuance of the level ("masters X, although error Y persists"), not as juxtaposed contradictory conclusions.
+- If you combine an ordinal level distribution with error factors (combined model), both are parallel marginal estimates fed by the same evidence, not independent findings. Group them into pedagogical blocks for selection (`level`, `errors`, `categories`), check the coherence of the final result, and if the estimated level is high and some error remains "present", present it as a nuance of the level ("masters X, although error Y persists"), not as juxtaposed contradictory conclusions.
 
 ## Questions and Activities
 
@@ -179,7 +179,12 @@ For each available candidate:
 
 Select the candidate with the highest expected information gain when the main purpose is diagnostic and the goal is to estimate a global level.
 
-If the state consists of several parallel distributions (error factors or diagnostic dimensions), apply the same procedure with the item's **total gain**: the sum of the expected gains over each distribution (in the factorised representation, the joint entropy is the sum of entropies, so the expected joint reduction is the sum of reductions). Average over the outcomes the item models (per option, if there are diagnostic distractors).
+If the state consists of several parallel distributions (error factors or diagnostic dimensions), compute the expected gain for each distribution and group it by **pedagogical blocks**. Within each block you may sum the gains of its distributions (`IG_block = Σ IG_d`), because factorised joint entropy is the sum of entropies. To combine blocks, normalise each one among the available candidates (`IG_block_norm(q) = IG_block(q) / max IG_block`) and use automatic weights according to purpose. Defaults: if the purpose centres on one block, `w = 0.7` for that block and `0.3` shared among the rest; if mixed, equal weights per block (`w_b = 1 / number of blocks`), not by raw number of dimensions. A block is **decided** when it reaches its confidence criterion: the level block, when `max(p_i) >= p_min` with the minimum number of questions met; the errors block, when all its factors are decided (marginal outside the undetermined zone, with its minimum sample). When a block becomes decided, share its weight proportionally among the still uncertain blocks. Do not ask the teacher for these weights. Average over the outcomes the item models (per option, if there are diagnostic distractors).
+
+Two cautions with this combined utility:
+
+- it is not in bits: normalisation rescales each block's best candidate to `1` even if its gains are minuscule, so the stopping criterion "the best remaining question provides very little information" must be evaluated on the **total raw IG** (in bits), never on the normalised utility;
+- for the same reason, a nearly exhausted block can be overrepresented just before crossing its "decided" criterion; if that becomes visible, weight the block's raw gains (using the mean per dimension instead of the sum) or normalise by the block's remaining entropy instead of the maximum.
 
 In adaptive practice or reinforcement resources with multiple categories, problem types, or concepts, use a two-phase selection:
 
@@ -339,6 +344,18 @@ In the student's view, the pedagogical recommendation and the next step should c
 
 If the model diagnoses a specific error (for example, "confuses mass with weight", with its probability), communicate it to the student as a **hypothesis to check together**, not as a verdict ("let's check whether…"), especially in primary school. The error label with its probability is appropriate for the teacher's view.
 
+## Teacher Review of the Content
+
+Validation under the model does not replace content review, which only the teacher can do well. When delivering the resource, generate a short checklist in teacher language, free of jargon, focused on what the teacher can validate better than the system:
+
+- Are these errors real errors of your students?
+- Is any question too easy or too hard for the grade?
+- Are the correct answers and the explanations correct?
+- Is any important case of the topic missing?
+- Is the language appropriate for the age?
+
+Present it in the conversation when delivering the resource or in the teacher view, never in the student's. Do not ask the teacher to review parameters, priors, or probabilities: if they point out a problem in their own words, you adjust the bank or the model.
+
 ## Implementation Constraints
 
 - The interface must be comprehensible to both learners and teachers.
@@ -374,13 +391,17 @@ If the teacher does not specify parameters:
 - Do not treat as binary a response that admits degrees: use partial credit.
 - Do not declare high mastery with an insufficient sample.
 
-## Validation and reliability (optional)
+## Validation and reliability
 
-These checks are not part of the mandatory flow: they are an optional layer that increases the honesty of the diagnosis without requiring empirical data. Apply them when the purpose is diagnostic and the result will be used to make decisions.
+These checks increase diagnostic honesty without requiring empirical data. Apply them when the purpose is diagnostic or the result will be used for decisions. Design validation must be prepared even when the AI is working in a chat environment with no execution capability.
 
 - **Individual pattern fit (person-fit).** When closing a session, assess whether the response pattern is coherent with the estimated level. Compute the standardized index `l_z` from the probabilities of a correct answer that the model assigns to the answered questions under the most probable hypothesis. If `l_z` is strongly negative (as a rough guide, `< -2`), flag the diagnosis as unreliable even if the posterior is high: it usually indicates responses inconsistent with difficulty, slips, or guessing. It is a caution signal, not a formal test; with few questions it is only indicative.
 - **Detecting random answering or anxiety during the session (not only at close).** Do not wait until the close to compute the fit: if during the session the person-fit or an implausible streak (failing easy questions and getting hard ones right, or answering too fast) suggests random answering or anxiety, the resource should be able to **pause and redirect** ("you seem to be going very fast, shall we continue calmly?") instead of continuing to consume the bank. Do it tactfully, without accusing, and resume normally.
-- **Design separability (Monte Carlo).** As a property of the test (not of the student), estimate how reliably the bank distinguishes the levels: generate synthetic respondents located at the `theta` of each hypothesis, run the test on them reusing the same adaptive selection and the same stopping criterion, and build the confusion matrix (true level versus diagnosed). Present it as reliability under the model, never as empirical validity: the respondents come from the model itself, so it measures whether the design discriminates the levels, not whether the parameters reflect reality. **This validation is a tool for the resource's author, not for students: it must not be shown in the student interface.** Implement it in a separate file or utility that the author can run when designing or reviewing the test, not in the material the student receives.
+- **Design separability (Monte Carlo).** As a property of the test (not of the student), estimate how reliably the bank distinguishes the levels: generate synthetic respondents located at the `theta` of each hypothesis, run the test on them reusing the same adaptive selection and the same stopping criterion, and build the confusion matrix (true level versus diagnosed). Present it as reliability under the model, never as empirical validity: the respondents come from the model itself, so it measures whether the design discriminates the levels, not whether the parameters reflect reality. **This validation is a tool for the resource's author, not for students: it must not be shown in the student interface.**
+  - If the AI environment can execute code (CLI, local environment, notebook), generate and run the simulation while building the resource.
+  - If the AI is working in chat without execution, do not claim that validation has been performed: implement a validation utility in a separate file or in a teacher/author view hidden from students, with a button to run it in the browser, and mark the design as "validation pending execution".
+  - Use at least `500` simulations per hypothesis or profile by default (`1000` if the browser handles it smoothly). Report the confusion matrix, balanced accuracy, rate per hypothesis/profile, undetermined-rate, and mean session length.
+  - Indicative criterion: if any relevant hypothesis falls below `0.70` correct classification under the model itself, or if two hypotheses are systematically confused, do not present the bank as well separated; add more items, review difficulties/likelihoods, or explicitly state the limitation.
 
 See `matematicas.html §11.7–§11.8` for the formulas and the full framing.
 

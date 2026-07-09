@@ -77,8 +77,8 @@ Esto debe hacerse después de cada interacción relevante.
 
 - Si la finalidad principal es estimar un nivel ordenado de dominio, usa hipótesis ordinales e IRT 3PL.
 - Si la finalidad principal es identificar una estrategia o error excluyente, usa hipótesis nominales con verosimilitudes explícitas por pregunta.
-- Si varios errores, habilidades o necesidades pueden coexistir, usa dimensiones separadas o perfiles completos.
-- Si el recurso debe estimar nivel y diagnosticar errores, combina una distribución ordinal global con distribuciones diagnósticas paralelas.
+- Si varios errores, habilidades o necesidades pueden coexistir, usa dimensiones separadas o perfiles completos. La IA decide la arquitectura: usa dimensiones separadas cuando cada factor se interpreta y se corrige por separado; usa perfiles completos cuando la respuesta esperada cambia por combinaciones de factores, un error enmascara otro o la intervención pedagógica depende de la combinación. Si `2^k` perfiles es inviable, agrupa factores relacionados o diagnostica por fases.
+- Si el recurso debe estimar nivel y diagnosticar errores, combina una distribución ordinal global con distribuciones diagnósticas paralelas y organízalas en **bloques pedagógicos** (`nivel`, `errores`, `categorías`, etc.). No preguntes al docente por pesos técnicos: infiérelos de la finalidad expresada.
 - No fuerces errores coexistentes dentro de una escala ordinal única.
 
 ## Verosimilitudes
@@ -147,11 +147,11 @@ Esto debe hacerse después de cada interacción relevante.
 
 - Si necesitas saber no solo el nivel global sino qué habilidades o pasos fallan, mantén varias distribuciones bayesianas en paralelo: una por categoría o nivel y otra por cada dimensión diagnóstica (habilidad, paso, tipo de error).
 - Actualiza cada distribución con la evidencia que le corresponde: el resultado global puede alimentar la creencia de nivel; cada subcriterio debe alimentar solo su dimensión. No uses el mismo acierto/fallo global para actualizar varias dimensiones independientes si la pregunta exige varias habilidades a la vez, porque duplicas evidencia y atribuyes mal la causa del error.
-- Cada dimensión puede tener su propio suelo de azar `c` según su número de opciones, por lo que sus porcentajes no son directamente comparables entre sí: la referencia común es el valor latente `theta`.
+- Cada dimensión puede tener su propio suelo de azar `c` según su número de opciones, por lo que sus porcentajes no son directamente comparables entre sí. En dimensiones ordinales, la referencia común es el valor latente `theta`; en factores nominales de error no calcules `theta`: reporta probabilidades marginales, estado (`presente`, `ausente`, `indeterminado`) y muestra mínima de evidencia.
 - No metas en una sola distribución dimensiones que pueden coexistir: usa distribuciones separadas.
-- Si varias dimensiones diagnósticas interactúan de manera fuerte, puedes sustituir las distribuciones independientes por una sola distribución sobre perfiles completos; lo importante es no forzar como excluyentes factores que en realidad pueden coexistir.
+- Si varias dimensiones diagnósticas interactúan de manera fuerte, sustituye las distribuciones independientes por una sola distribución sobre perfiles completos. Usa perfiles completos cuando la respuesta esperada cambia por combinaciones de factores, cuando un error enmascara otro o cuando la intervención depende de la combinación; usa dimensiones separadas cuando los factores se evidencian e interpretan de forma razonablemente independiente. No preguntes al docente por esta decisión en términos técnicos: dedúcela de la descripción pedagógica de los errores.
 - El nivel por categoría guía qué practicar; el diagnóstico por dimensión guía qué explicar o reforzar.
-- Si combinas una distribución ordinal de nivel con factores de error (modelo combinado), ambos son estimaciones marginales paralelas alimentadas por la misma evidencia, no hallazgos independientes. Comprueba la coherencia del resultado final: si el nivel estimado es alto y algún error queda «presente», preséntalo como matiz del nivel («domina X, aunque persiste el error Y»), no como conclusiones contradictorias yuxtapuestas.
+- Si combinas una distribución ordinal de nivel con factores de error (modelo combinado), ambos son estimaciones marginales paralelas alimentadas por la misma evidencia, no hallazgos independientes. Agrúpalos por bloques pedagógicos para la selección (`nivel`, `errores`, `categorías`), comprueba la coherencia del resultado final y, si el nivel estimado es alto y algún error queda «presente», preséntalo como matiz del nivel («domina X, aunque persiste el error Y»), no como conclusiones contradictorias yuxtapuestas.
 
 ## Preguntas y actividades
 
@@ -180,7 +180,12 @@ Para cada candidata disponible:
 
 Selecciona la candidata con mayor ganancia esperada de información cuando la finalidad principal sea diagnóstica y el objetivo sea estimar un nivel global.
 
-Si el estado son varias distribuciones paralelas (factores de error o dimensiones diagnósticas), aplica el mismo procedimiento con la **ganancia total** del ítem: la suma de las ganancias esperadas de cada distribución (en la representación factorizada, la entropía conjunta es la suma de entropías, así que la reducción esperada conjunta es la suma de reducciones). Promedia sobre los resultados que el ítem modele (por opción, si hay distractores diagnósticos).
+Si el estado son varias distribuciones paralelas (factores de error o dimensiones diagnósticas), calcula la ganancia esperada de cada distribución y agrúpala por **bloques pedagógicos**. Dentro de cada bloque puedes sumar las ganancias de sus distribuciones (`IG_bloque = Σ IG_d`), porque la entropía conjunta factorizada es la suma de entropías. Para combinar bloques, normaliza cada uno entre las candidatas disponibles (`IG_bloque_norm(q) = IG_bloque(q) / max IG_bloque`) y usa pesos automáticos según la finalidad. Valores por defecto: si la finalidad se centra en un bloque, `w = 0.7` para ese bloque y `0.3` repartido entre los demás; si es mixta, pesos iguales por bloque (`w_b = 1 / número de bloques`), no por número bruto de dimensiones. Un bloque está **decidido** cuando alcanza su criterio de confianza: el de nivel, cuando `max(p_i) >= p_min` con el mínimo de preguntas cumplido; el de errores, cuando todos sus factores están decididos (marginal fuera de la zona indeterminada, con su muestra mínima). Cuando un bloque queda decidido, reparte su peso proporcionalmente entre los bloques aún inciertos. No pidas estos pesos al docente. Promedia sobre los resultados que el ítem modele (por opción, si hay distractores diagnósticos).
+
+Dos cautelas con esta utilidad combinada:
+
+- no está en bits: la normalización reescala el mejor candidato de cada bloque a `1` aunque sus ganancias sean minúsculas, así que el criterio de parada «la mejor pregunta aporta muy poca información» debe evaluarse sobre la **IG cruda total** (en bits), nunca sobre la utilidad normalizada;
+- por lo mismo, un bloque casi agotado puede quedar sobrerrepresentado justo antes de cruzar su criterio de «decidido»; si eso resulta visible, pondera las ganancias crudas del bloque (usando la media por dimensión en lugar de la suma) o normaliza por la entropía restante del bloque en vez de por el máximo.
 
 En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de problema o conceptos, usa una selección en dos fases:
 
@@ -340,6 +345,18 @@ En la vista del alumno, la recomendación pedagógica y el siguiente paso deben 
 
 Si el modelo diagnostica un error concreto (por ejemplo, «confunde masa con peso», con su probabilidad), comunícaselo al alumno como una **hipótesis a comprobar juntos**, no como una sentencia («comprobemos si…»), especialmente en primaria. La etiqueta de error con su probabilidad es apropiada para la vista docente.
 
+## Revisión docente del contenido
+
+La validación bajo el modelo no sustituye la revisión del contenido, que solo el docente puede hacer bien. Al entregar el recurso, genera una lista de comprobación breve en lenguaje docente, sin tecnicismos, centrada en lo que el docente puede validar mejor que el sistema:
+
+- ¿Estos errores son errores reales de tu alumnado?
+- ¿Hay alguna pregunta demasiado fácil o demasiado difícil para el curso?
+- ¿Las respuestas correctas y las explicaciones son correctas?
+- ¿Falta algún caso importante del tema?
+- ¿El lenguaje es adecuado para la edad?
+
+Preséntala en la conversación al entregar el recurso o en la vista docente, nunca en la del alumno. No pidas al docente que revise parámetros, priors ni probabilidades: si señala un problema con sus palabras, ajusta tú el banco o el modelo.
+
 ## Restricciones de implementación
 
 - La interfaz debe ser comprensible para alumnado y profesorado.
@@ -375,13 +392,17 @@ Si el docente no especifica parámetros:
 - No tratar como binaria una respuesta que admite grados: usa crédito parcial.
 - No declarar dominio alto con muestra insuficiente.
 
-## Validación y fiabilidad (opcional)
+## Validación y fiabilidad
 
-Estas comprobaciones no forman parte del flujo obligatorio: son una capa opcional que aumenta la honestidad del diagnóstico sin requerir datos empíricos. Aplícalas cuando la finalidad sea diagnóstica y el resultado vaya a usarse para decidir.
+Estas comprobaciones aumentan la honestidad del diagnóstico sin requerir datos empíricos. Aplícalas cuando la finalidad sea diagnóstica o el resultado vaya a usarse para decidir. La validación del diseño debe quedar preparada aunque la IA trabaje en un chat sin capacidad de ejecución.
 
 - **Ajuste del patrón individual (person-fit).** Al cerrar una sesión, evalúa si el patrón de respuestas es coherente con el nivel estimado. Calcula el índice estandarizado `l_z` a partir de las probabilidades de acierto que el modelo asigna a las preguntas respondidas bajo la hipótesis más probable. Si `l_z` es muy negativo (orientativamente `< -2`), marca el diagnóstico como poco fiable aunque el posterior sea alto: suele indicar respuestas incoherentes con la dificultad, descuidos o azar. Es señal de cautela, no prueba formal; con pocas preguntas es solo orientativo.
 - **Detección de azar o ansiedad durante la sesión (no solo al cierre).** No esperes al cierre para calcular el ajuste: si durante la sesión el person-fit o una racha inverosímil (fallar preguntas fáciles y acertar difíciles, o responder demasiado rápido) sugieren respuesta al azar o ansiedad, el recurso debería poder **pausar y reconducir** («parece que vas muy rápido, ¿seguimos con calma?») en lugar de seguir consumiendo banco. Hazlo con tacto, sin acusar, y reanuda con normalidad.
-- **Separabilidad del diseño (Monte Carlo).** Como propiedad del test (no del alumno), estima con qué fiabilidad el banco distingue los niveles: genera respondentes sintéticos situados en el `theta` de cada hipótesis, hazles el test reutilizando la misma selección adaptativa y el mismo criterio de parada, y construye la matriz de confusión (nivel real frente a diagnosticado). Preséntala como fiabilidad bajo el modelo, nunca como validez empírica: los respondentes salen del propio modelo, así que mide si el diseño discrimina los niveles, no si los parámetros reflejan la realidad. **Esta validación es una herramienta del creador del recurso, no del alumnado: no debe mostrarse en la interfaz del alumno.** Impleméntala en un archivo o utilidad aparte que el autor pueda ejecutar al diseñar o revisar el test, no en el material que recibe el alumno.
+- **Separabilidad del diseño (Monte Carlo).** Como propiedad del test (no del alumno), estima con qué fiabilidad el banco distingue los niveles: genera respondentes sintéticos situados en el `theta` de cada hipótesis, hazles el test reutilizando la misma selección adaptativa y el mismo criterio de parada, y construye la matriz de confusión (nivel real frente a diagnosticado). Preséntala como fiabilidad bajo el modelo, nunca como validez empírica: los respondentes salen del propio modelo, así que mide si el diseño discrimina los niveles, no si los parámetros reflejan la realidad. **Esta validación es una herramienta del creador del recurso, no del alumnado: no debe mostrarse en la interfaz del alumno.**
+  - Si el entorno de la IA permite ejecutar código (CLI, entorno local, notebook), genera y ejecuta la simulación al construir el recurso.
+  - Si la IA trabaja en chat sin ejecución, no afirmes que la validación está hecha: implementa una utilidad de validación en un archivo separado o en una vista docente/autora oculta al alumnado, con botón para ejecutarla en el navegador, y marca el diseño como «validación pendiente de ejecutar».
+  - Usa por defecto al menos `500` simulaciones por hipótesis o perfil (`1000` si el navegador lo soporta con fluidez). Reporta matriz de confusión, exactitud equilibrada, tasa por hipótesis/perfil, tasa de resultados indeterminados y longitud media de la sesión.
+  - Criterio orientativo: si alguna hipótesis relevante queda por debajo de `0.70` de clasificación correcta bajo el propio modelo, o si dos hipótesis se confunden de forma sistemática, no presentes el banco como bien separado; añade más ítems, revisa dificultades/verosimilitudes o declara explícitamente la limitación.
 
 Consulta `matematicas.html §11.7–§11.8` para las fórmulas y el encuadre completo.
 

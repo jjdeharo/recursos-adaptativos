@@ -204,3 +204,160 @@ La aproximación normal de `l_z` es débil con los 4-8 ítems de una etapa. **Co
 | N7 | Combinado A+D sin reconciliación nivel↔factores | Baja-media | Corregido |
 | N8 | Utilidad de refuerzo sin escalas definidas | Baja | Corregido |
 | N9 | `l_z` de etapa con aproximación normal débil | Baja | Corregido |
+
+---
+
+# Tercera ronda (2026-07-09) — Puntos para estudiar y rectificar si procede
+
+**Autor de esta tercera revisión:** Codex.  
+**Estado:** T1, T2 y T3 aplicados a especificación, protocolo y fundamentos (ES/CA/EN) el 2026-07-09. Tras la evaluación independiente de la ronda (Claude, 2026-07-09): T1 parcheado (defaults de `w_b`, definición de «bloque decidido», parada sobre IG cruda), T4 y T8 aplicados. Pendientes de estudio: T5, T6, T7, T9.
+
+## Criterio rector
+
+La metodología debe mantener una separación clara de responsabilidades:
+
+- El **docente** expresa la intención educativa en lenguaje natural: qué quiere trabajar, con qué curso, qué errores observa, qué resultado espera y qué desea modificar.
+- La **IA** toma las decisiones metodológicas y técnicas: modelo, parámetros, priors, ponderaciones, criterio de parada, validación, tipo de banco necesario y forma de presentar la incertidumbre.
+- La especificación no debe trasladar al docente decisiones que no puede entender sin conocer la metodología. Cuando falte una decisión técnica, la solución no debe ser “preguntar al docente”, sino definir una regla operativa para que la IA la tome y, como mucho, explique el supuesto en lenguaje comprensible.
+
+Los hallazgos siguientes se formulan desde ese criterio: el problema no es que el docente no aporte más datos técnicos, sino que algunas decisiones todavía quedan insuficientemente automatizadas para la IA.
+
+## T1. Modelo combinado nivel + errores: falta ponderación automática de objetivos — Media-alta
+
+La especificación permite combinar una distribución ordinal global con distribuciones diagnósticas paralelas de errores, y para varias distribuciones recomienda usar la suma de ganancias esperadas. Eso es correcto si todas las dimensiones tienen el mismo peso pedagógico, pero no siempre ocurre.
+
+Riesgo: si hay muchos factores de error, la suma de sus ganancias puede dominar la selección y desplazar el diagnóstico de nivel; si hay pocas dimensiones diagnósticas, el nivel global puede absorber casi toda la decisión. En recursos mixtos (“nivel y además errores”), el comportamiento dependerá del número de factores más que de la finalidad educativa.
+
+No debe pedirse al docente que fije pesos. La IA debería decidirlos a partir de la finalidad expresada:
+
+- si el objetivo principal es nivel, priorizar la distribución ordinal y usar errores como diagnóstico secundario;
+- si el objetivo principal es detectar errores, priorizar factores;
+- si el recurso es mixto, usar ponderación normalizada por bloques, no por número bruto de dimensiones;
+- si un bloque ya está decidido, desplazar peso hacia los bloques aún inciertos.
+
+Una regla posible: calcular ganancia por bloques pedagógicos (`nivel`, `errores`, `categorías`) y no por dimensión individual, normalizando cada bloque antes de combinarlos.
+
+**Corrección aplicada (2026-07-09):** la especificación, el protocolo y los fundamentos pasan a usar bloques pedagógicos con normalización por bloque y pesos automáticos inferidos de la finalidad educativa. Los pesos no se piden al docente.
+
+**Parche posterior (2026-07-09, tras evaluación independiente):** la corrección dejaba tres huecos, ahora cerrados en los tres documentos (ES/CA/EN): (a) valores por defecto de los pesos (`w = 0.7` para el bloque central de la finalidad y `0.3` repartido; iguales por bloque si es mixta); (b) definición de «bloque decidido» (nivel: `max(p_i) ≥ p_min` con mínimo de preguntas; errores: todos los factores fuera de la zona indeterminada con muestra mínima); (c) la utilidad normalizada no está en bits —reescala el mejor candidato de cada bloque a 1 aunque sus ganancias sean minúsculas—, así que el criterio de parada por ganancia mínima debe evaluarse sobre la IG cruda total, nunca sobre la utilidad, y para el sobrepeso de bloques casi agotados se documentan alternativas (media por dimensión sobre ganancias crudas, o normalización por entropía restante).
+
+## T2. Falta criterio operativo para elegir entre factores independientes y perfiles completos — Media
+
+La metodología distingue bien entre factores paralelos y perfiles completos, pero deja poco operacional cuándo la IA debe pasar de una representación factorizada a una distribución sobre perfiles. El texto reconoce que la factorización ignora correlaciones, pero no da una regla de decisión.
+
+Riesgo: en errores que interactúan, el recurso puede devolver combinaciones marginales poco plausibles o seleccionar preguntas que parecen óptimas por factor pero no discriminan perfiles reales de alumnado.
+
+No debe preguntarse al docente por “independencia condicional” ni por “perfiles completos”. La IA debería decidir así:
+
+- usar factores independientes cuando cada error afecta a preguntas separables y la interpretación final es por error;
+- usar perfiles completos cuando la respuesta esperada cambia por combinaciones de errores, cuando un error enmascara otro o cuando la intervención pedagógica depende de la combinación;
+- si `2^k` perfiles es inviable, agrupar errores relacionados o diagnosticar por fases.
+
+La pregunta al docente, si hace falta, debe ser pedagógica: “¿estos errores pueden aparecer juntos o uno suele impedir/ver tapar al otro?”, no técnica.
+
+**Corrección aplicada (2026-07-09):** la especificación, el protocolo y los fundamentos incorporan el criterio automático: factores independientes si los errores se evidencian e interpretan por separado; perfiles completos si la combinación cambia la respuesta esperada, enmascara errores o determina la intervención; agrupación o diagnóstico por fases si `2^k` perfiles es inviable.
+
+## T3. Validación Monte Carlo generada siempre que proceda, ejecutada si el entorno lo permite — Media-alta
+
+La validación por simulación se describe correctamente como separabilidad bajo el modelo, no como validez empírica. Pero queda como capa opcional y no fija criterios mínimos de aceptación.
+
+Riesgo: una IA puede generar un recurso diagnóstico con banco pobre, ejecutar o no ejecutar la simulación, y no tener una regla clara para decidir si el recurso es utilizable, provisional o necesita más ítems.
+
+Para recursos diagnósticos o recursos que deciden promoción de etapa, la validación debería quedar preparada durante la generación, no como carga metodológica del docente. En entornos con ejecución (CLI, notebook, entorno local), la IA debería ejecutarla; en chats sin ejecución, debería generar una utilidad para ejecutarla en navegador y marcarla como pendiente. La especificación debería indicar:
+
+- número mínimo de simulaciones por hipótesis o perfil;
+- métricas mínimas: diagonal de matriz de confusión por nivel, exactitud equilibrada, tasa de indeterminados y longitud media;
+- criterio de fallo: si un nivel/perfil no se distingue suficientemente, ampliar banco, revisar dificultades/verosimilitudes o marcar explícitamente la limitación;
+- salida para docente: “este recurso distingue bien A/B, pero no separa C/D con fiabilidad”, sin tecnicismos innecesarios.
+
+**Corrección aplicada (2026-07-09):** la especificación, el protocolo y los fundamentos ya distinguen entre entornos ejecutables y chats sin ejecución. En diagnóstico o promoción de etapa, la IA debe ejecutar Monte Carlo si puede; si no puede, debe generar una utilidad de validación separada o una vista docente/autora, marcar la validación como pendiente y no afirmar que el banco está comprobado. Se añaden valores por defecto (`500`–`1000` simulaciones por hipótesis/perfil), métricas mínimas y umbral orientativo de alerta (`< 0.70` de clasificación correcta bajo el propio modelo o confusión sistemática).
+
+## T4. La revisión docente debe ser de contenido, no metodológica — Media
+
+El README y la guía docente insisten correctamente en que el docente no necesita conocer la metodología. Sin embargo, la calidad depende mucho de hipótesis, dificultad, errores, cobertura y redundancia local. Falta convertir esa dependencia en una revisión docente sencilla y no técnica.
+
+Riesgo: el docente puede aceptar un recurso generado por IA sin revisar lo único que sí puede validar bien: adecuación curricular, corrección de enunciados, respuestas, distractores, lenguaje y errores típicos reales.
+
+No conviene pedir al docente que revise parámetros bayesianos. Sí conviene que la IA genere automáticamente una lista de comprobación en lenguaje docente:
+
+- “¿Estos errores son errores reales de tu alumnado?”
+- “¿Hay alguna pregunta demasiado fácil/difícil para el curso?”
+- “¿Las respuestas correctas y explicaciones son correctas?”
+- “¿Falta algún caso importante del tema?”
+- “¿El lenguaje es adecuado para la edad?”
+
+Esto preserva el principio de mínima carga metodológica y mejora la calidad del banco.
+
+**Corrección aplicada (2026-07-09):** nueva sección «Revisión docente del contenido» en la especificación (la IA genera la lista de comprobación al entregar el recurso, en conversación o vista docente, nunca en la del alumno; si el docente señala un problema con sus palabras, la IA ajusta el banco o el modelo), párrafo en el protocolo §21 y aviso en la guía docente §6 («Revisa el contenido, no la técnica»), en ES/CA/EN.
+
+## T5. Crédito parcial: la selección sigue siendo demasiado binaria en tareas por pasos — Media
+
+La actualización con crédito parcial está bien corregida, pero la selección de la siguiente actividad permite seguir usando la aproximación binaria de acierto/fallo pleno. En tareas procedimentales, lo más diagnóstico suele ser qué paso falla, no si el ejercicio completo se acierta o falla.
+
+Riesgo: en recursos de matemáticas, programación, resolución de problemas o procedimientos largos, la IA puede elegir ítems por una ganancia estimada que no refleja la evidencia parcial que realmente observará.
+
+No debe pedirse al docente que modele la distribución de puntuaciones parciales. La IA debería aplicar una regla automática:
+
+- si el ejercicio tiene subcriterios definidos, calcular la ganancia esperada por componentes cuando sea posible;
+- si no se conoce la distribución de `s`, usar escenarios discretos plausibles (`0`, parcial bajo, parcial alto, `1`) en lugar de solo acierto/fallo;
+- reservar la aproximación binaria para ítems realmente binarios o cuando el crédito parcial sea marginal.
+
+## T6. El techo de dominio como recorte duro puede introducir una discontinuidad artificial — Baja-media
+
+El techo `P(acierto) <= 0.95` corrige un problema real: evita saltos casi deterministas por fallos en ítems fáciles. Pero al formularlo como recorte duro, la curva queda aplanada por arriba y puede perder discriminación entre niveles altos en ítems fáciles.
+
+Riesgo: dos niveles altos pueden recibir exactamente la misma verosimilitud en ítems con probabilidad recortada, reduciendo información útil y creando una discontinuidad no psicométrica.
+
+Conviene estudiar si es mejor formularlo como modelo con parámetro de descuido (*slip*) o 4PL con asíntota superior, ajustando entonces la discriminación efectiva para no romper la comparabilidad. No es urgente, porque el recorte resuelve el fallo principal, pero la formulación actual es más pragmática que elegante.
+
+## T7. Prior de errores: falta traducción automática desde lenguaje natural del docente — Baja-media
+
+El prior informativo `P(error) ≈ 0.2`–`0.3` corrige el falso positivo del prior uniforme. Pero también puede sesgar hacia falso negativo cuando el docente describe un error muy frecuente en su grupo.
+
+No debe pedirse al docente una prevalencia numérica. La IA puede inferir ajustes suaves desde lenguaje natural:
+
+- “muchos”, “la mayoría”, “muy frecuente” → prior más alto, por ejemplo `0.4`;
+- “algunos”, “a veces” → mantener `0.2`–`0.3`;
+- “casos aislados”, “pocos” → prior más bajo, por ejemplo `0.1`–`0.2`.
+
+La especificación debería definir esta traducción como heurística automática y permitir que el recurso explique: “parto de que este error puede ser frecuente porque así se ha descrito”.
+
+## T8. Ambigüedad terminológica: `theta` como referencia común en dimensiones nominales — Baja
+
+La especificación dice que cada dimensión puede tener su propio suelo de azar y que sus porcentajes no son directamente comparables; añade que la referencia común es `theta`. Esto es válido para dimensiones ordinales, pero no para factores nominales de error, donde no hay `theta` con significado.
+
+Riesgo: una IA puede intentar calcular o comparar `theta` en diagnósticos nominales, justo lo que otros apartados prohíben.
+
+Conviene separar:
+
+- en dimensiones ordinales, la referencia latente puede ser `theta`;
+- en factores nominales, solo se reportan probabilidades marginales, estado (`presente`, `ausente`, `indeterminado`) y evidencia mínima;
+- no debe existir `theta` esperada para errores sin orden.
+
+**Corrección aplicada (2026-07-09):** la distinción ordinal/nominal ya estaba incorporada en la especificación y el protocolo (sin registrar); se completa el punto que faltaba, fundamentos §2.4, en ES/CA/EN (con remisión a §10.3).
+
+## T9. El informe histórico puede confundirse con estado vigente — Baja (documental)
+
+El propio `INFORME_REVISION.md` contiene hallazgos antiguos ya corregidos, seguidos de rondas posteriores. Eso es útil como histórico, pero puede inducir a pensar que fallos ya aplicados siguen vigentes si se lee parcialmente.
+
+Sugerencia documental: añadir al inicio un índice de estado o una nota visible:
+
+- primera ronda: hallazgos históricos, aplicados;
+- segunda ronda: hallazgos históricos, aplicados;
+- tercera ronda: puntos propuestos para estudio, no aplicados.
+
+Esto evitaría duplicar en futuros informes problemas que ya fueron corregidos.
+
+## Resumen priorizado de la tercera ronda
+
+| # | Punto a estudiar | Gravedad | Estado |
+|---|------------------|----------|--------|
+| T1 | Ponderación automática en recursos mixtos nivel + errores | Media-alta | Aplicado y parcheado |
+| T3 | Validación Monte Carlo generada siempre que proceda, ejecutada si el entorno lo permite | Media-alta | Aplicado |
+| T2 | Criterio IA para elegir factores independientes vs perfiles completos | Media | Aplicado |
+| T4 | Revisión docente de contenido, no metodológica | Media | Aplicado |
+| T5 | Selección demasiado binaria en tareas con crédito parcial | Media | Para estudiar |
+| T6 | Techo de dominio como recorte duro en vez de modelo de slip/asíntota | Baja-media | Para estudiar |
+| T7 | Priors de errores ajustables desde lenguaje natural del docente | Baja-media | Para estudiar |
+| T8 | Uso ambiguo de `theta` en dimensiones nominales | Baja | Aplicado |
+| T9 | Separar mejor histórico corregido y estado vigente del informe | Baja | Para estudiar |
