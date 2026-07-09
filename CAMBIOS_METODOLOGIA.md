@@ -2,6 +2,10 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — Especificación operativa: URLs completas a protocolo y fundamentos
+
+Las tres remisiones a `documentacion.html` y `matematicas.html` (propósito, transición BKT en §refuerzo continuo, validación Monte Carlo) usaban solo el nombre de archivo. Es papel mojado en el flujo real de uso: la guía docente y el propio README instruyen a adjuntar únicamente la especificación, así que una IA sin ese nombre de archivo en su contexto no puede resolverlo. Añadida la URL completa de GitHub Pages junto a cada mención (con ancla `#s3` o `#s11` donde procede), y una frase en «Propósito» que autoriza a actuar solo con la especificación si la IA no puede navegar, en vez de inventar contenido de los documentos remitidos. Editado en ES/CA/EN (cada versión enlaza a su propio idioma).
+
 ## 2026-07-09 — Especificación operativa v2.1: remodelación estructural (sin cambios de reglas)
 
 La especificación había crecido de ~1.100 a ~7.300 palabras con las tres rondas de revisión y presentaba tres problemas estructurales para una IA ejecutora, medidos antes de tocar nada: no enrutaba por tipo de recurso (entre el 18 % y el 35 % del texto era irrelevante según el perfil, y seis secciones son mutuamente excluyentes en la práctica); en varias reglas clave el imperativo estaba enterrado tras la justificación y la verificación numérica; y no había forma de autoverificación final. Ninguna regla cambia de contenido; cambia dónde y cómo se enuncia. Editado en ES/CA/EN.

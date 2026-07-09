@@ -6,7 +6,7 @@
 
 Este documento sirve para que una IA implemente recursos educativos adaptativos bayesianos de forma fiable.  
 Es una especificación operativa breve.  
-Si hace falta fundamento teórico, ejemplos o justificación matemática, consulta `documentacion.html` y `matematicas.html`.
+Si hace falta fundamento teórico, ejemplos o justificación matemática, consulta el protocolo (https://jjdeharo.github.io/recursos-adaptativos/documentacion.html) y los fundamentos matemáticos (https://jjdeharo.github.io/recursos-adaptativos/matematicas.html). Si solo tienes adjunto este archivo y no puedes navegar, actúa con lo que aquí se especifica; no inventes contenido de esos documentos.
 Si hubiera conflicto entre ambos documentos, prevalece este.
 
 ## Instrucción de uso
@@ -305,7 +305,7 @@ Reglas mínimas:
 - Ese contador con caducidad gobierna las puertas de «muestra mínima» para afirmar dominio, no lo que se muestra al alumno: si la interfaz enseña cuántos ejercicios ha resuelto, ese número es el total real y no caduca.
 - Si una categoría se queda sin evidencia dentro de la ventana, su creencia ya ha vuelto al prior: preséntala como **sin datos recientes**, no como una debilidad. Marcar en rojo lo que el modelo ya no sostiene es acusar al alumno de algo que no ha mostrado.
 - Con olvido activo, presenta la confianza como referida al estado reciente del alumno.
-- Si necesitas modelar explícitamente el aprendizaje (por ejemplo, mayor probabilidad de subir de nivel justo tras una explicación), usa un modelo de transición (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
+- Si necesitas modelar explícitamente el aprendizaje (por ejemplo, mayor probabilidad de subir de nivel justo tras una explicación), usa un modelo de transición (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5` (https://jjdeharo.github.io/recursos-adaptativos/matematicas.html#s3).
 
 ## Itinerarios por etapas
 
@@ -442,7 +442,7 @@ Estas comprobaciones aumentan la honestidad del diagnóstico sin requerir datos 
   - Usa por defecto al menos `500` simulaciones por hipótesis o perfil (`1000` si el navegador lo soporta con fluidez). Reporta matriz de confusión, exactitud equilibrada, tasa por hipótesis/perfil, tasa de resultados indeterminados y longitud media de la sesión.
   - Criterio orientativo: si alguna hipótesis relevante queda por debajo de `0.70` de clasificación correcta bajo el propio modelo, o si dos hipótesis se confunden de forma sistemática, no presentes el banco como bien separado; añade más ítems, revisa dificultades/verosimilitudes o declara explícitamente la limitación.
 
-Consulta `matematicas.html §11.7–§11.8` para las fórmulas y el encuadre completo.
+Consulta `matematicas.html §11.7–§11.8` (https://jjdeharo.github.io/recursos-adaptativos/matematicas.html#s11) para las fórmulas y el encuadre completo.
 
 ## Verificación antes de entregar
 

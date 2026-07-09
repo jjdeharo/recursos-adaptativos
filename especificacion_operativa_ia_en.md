@@ -6,7 +6,7 @@
 
 This document enables an AI to implement Bayesian adaptive educational resources reliably.  
 It is a concise operational specification.  
-If theoretical background, examples, or mathematical justification are needed, refer to `documentacion.html` and `matematicas.html`.  
+If theoretical background, examples, or mathematical justification are needed, refer to the protocol (https://jjdeharo.github.io/recursos-adaptativos/documentacion_en.html) and the mathematical foundations (https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html). If only this file is attached and you cannot browse, proceed with what is specified here; do not invent content from those documents.  
 If there is any conflict between both documents, this one takes precedence.
 
 ## Usage Instruction
@@ -304,7 +304,7 @@ Minimum rules:
 - That expiring counter governs the "minimum sample" gates for claiming mastery, not what is shown to the learner: if the interface displays how many exercises they have solved, that number is the real total and does not expire.
 - If a category is left with no evidence inside the window, its belief has already returned to the prior: present it as **no recent data**, not as a weakness. Flagging in red what the model no longer supports accuses the learner of something they have not shown.
 - With forgetting active, present the confidence as referring to the learner's recent state.
-- If you need to model learning explicitly (for example, a higher probability of moving up a level right after an explanation), use a transition model (Bayesian Knowledge Tracing); see `matematicas.html §3.5`.
+- If you need to model learning explicitly (for example, a higher probability of moving up a level right after an explanation), use a transition model (Bayesian Knowledge Tracing); see `matematicas.html §3.5` (https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html#s3).
 
 ## Stage-Based Pathways
 
@@ -441,7 +441,7 @@ These checks increase diagnostic honesty without requiring empirical data. Apply
   - Use at least `500` simulations per hypothesis or profile by default (`1000` if the browser handles it smoothly). Report the confusion matrix, balanced accuracy, rate per hypothesis/profile, undetermined-rate, and mean session length.
   - Indicative criterion: if any relevant hypothesis falls below `0.70` correct classification under the model itself, or if two hypotheses are systematically confused, do not present the bank as well separated; add more items, review difficulties/likelihoods, or explicitly state the limitation.
 
-See `matematicas.html §11.7–§11.8` for the formulas and the full framing.
+See `matematicas.html §11.7–§11.8` (https://jjdeharo.github.io/recursos-adaptativos/matematicas_en.html#s11) for the formulas and the full framing.
 
 ## Pre-Delivery Verification
 

@@ -6,7 +6,7 @@
 
 Aquest document serveix perquè una IA implementi recursos educatius adaptatius bayesians de manera fiable.  
 És una especificació operativa breu.  
-Si cal fonament teòric, exemples o justificació matemàtica, consulta `documentacion.html` i `matematicas.html`.  
+Si cal fonament teòric, exemples o justificació matemàtica, consulta el protocol (https://jjdeharo.github.io/recursos-adaptativos/documentacion_ca.html) i els fonaments matemàtics (https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html). Si només tens adjunt aquest fitxer i no pots navegar, actua amb el que aquí s'especifica; no inventis contingut d'aquests documents.  
 Si hi hagués conflicte entre tots dos documents, preval aquest.
 
 ## Instrucció d'ús
@@ -304,7 +304,7 @@ Regles mínimes:
 - Aquest comptador amb caducitat governa les portes de «mostra mínima» per afirmar domini, no allò que es mostra a l'alumne: si la interfície ensenya quants exercicis ha resolt, aquest nombre és el total real i no caduca.
 - Si una categoria es queda sense evidència dins de la finestra, la seva creença ja ha tornat al prior: presenta-la com a **sense dades recents**, no com una debilitat. Marcar en vermell allò que el model ja no sosté és acusar l'alumne d'una cosa que no ha mostrat.
 - Amb oblit actiu, presenta la confiança com a referida a l'estat recent de l'alumne.
-- Si necessites modelar explícitament l'aprenentatge (per exemple, més probabilitat de pujar de nivell just després d'una explicació), fes servir un model de transició (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5`.
+- Si necessites modelar explícitament l'aprenentatge (per exemple, més probabilitat de pujar de nivell just després d'una explicació), fes servir un model de transició (Bayesian Knowledge Tracing); consulta `matematicas.html §3.5` (https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html#s3).
 
 ## Itineraris per etapes
 
@@ -441,7 +441,7 @@ Aquestes comprovacions augmenten l'honestedat del diagnòstic sense requerir dad
   - Fes servir per defecte almenys `500` simulacions per hipòtesi o perfil (`1000` si el navegador ho suporta amb fluïdesa). Reporta matriu de confusió, exactitud equilibrada, taxa per hipòtesi/perfil, taxa de resultats indeterminats i longitud mitjana de la sessió.
   - Criteri orientatiu: si alguna hipòtesi rellevant queda per sota de `0.70` de classificació correcta sota el propi model, o si dues hipòtesis es confonen de manera sistemàtica, no presentis el banc com a ben separat; afegeix més ítems, revisa dificultats/versemblances o declara explícitament la limitació.
 
-Consulta `matematicas.html §11.7–§11.8` per a les fórmules i l'enquadrament complet.
+Consulta `matematicas.html §11.7–§11.8` (https://jjdeharo.github.io/recursos-adaptativos/matematicas_ca.html#s11) per a les fórmules i l'enquadrament complet.
 
 ## Verificació abans de lliurar
 
