@@ -2,6 +2,16 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — Propagación al código: N1 (labcom) y N6 (bayes-nominal, bayes-acentuacion)
+
+Segunda tanda de propagación de los hallazgos al **código** de los programas de ejemplo, tras auditar los seis.
+
+- **N1 · `labcom`** (commit `fcae24e` de ese repo), único programa con olvido activo. Olvido anclado al prior; atenuación de todas las distribuciones en cada respuesta, no solo la actualizada; `lambda` calibrada por distribución (ver N1b, descubierto aquí); muestra mínima sobre ventana deslizante, con el contador visible al alumno intacto; un tipo sin evidencia reciente se muestra como «sin datos», no en rojo. Documentado en `apendice` §8 y `funcionamiento` (ES/CA/EN/EU/GA).
+- **N6 · `bayes-nominal`** (commit `f2f6633`): era un fallo **real**. Con `P(error) = 0.25` la ausencia arranca en 0.75, y una sola pregunta discriminante acertada hundía la marginal a ≈ 0.05, declarando el factor «ausente» ya en la primera o segunda pregunta (la cobertura por categoría no lo impedía, porque una categoría no discrimina necesariamente todos los factores). Añadidas `discriminaFactor` y `evidenciaFactores`; `evaluarPerfil` y `evaluarParada` exigen `2` preguntas discriminantes por factor; el informe distingue «sin evidencia suficiente» de «no resuelto con claridad». La validación Monte Carlo da la misma exactitud global (86.6 %) antes y después: con el banco actual la puerta no llega a disparar al cierre, pero la garantía deja de depender del banco.
+- **N6 · `bayes-acentuacion`** (commit `9e4f63f`): mismo riesgo latente (un acierto hunde la marginal del factor a ≈ 0.06), pero la selección ya garantizaba la cobertura mínima antes de la selección libre, así que el comportamiento no cambia. `clasificarFactor(p, n)` hace explícita la invariante, propagada a `estadoParada`, al informe y a la validación.
+- **No aplica:** N1 al resto (ninguno tiene olvido; `bayes-nominal` lo declara con `LAMBDA: 1`). T4 a ningún programa (es una instrucción a la IA que genera recursos, no a los recursos generados). T1 a `bayes-acentuacion`: su `entropiaUtil` ya anula los componentes resueltos —la redistribución hacia bloques inciertos— y trabaja en bits crudos, así que no sufre el fallo de normalización que se parcheó en la documentación.
+- **Pendiente:** T3 (defaults de la validación Monte Carlo: 500–1000 simulaciones, exactitud equilibrada, tasa de indeterminados, alerta `< 0.70`) en las utilidades de validación; N2 (reuso de ítems tras feedback) donde aplique.
+
 ## 2026-07-09 — N1b: `lambda` se calibra por distribución (hallazgo surgido al propagar N1 al código)
 
 Al aplicar N1 al código de `labcom` se descubrió que la propia regla N1 estaba subespecificada: pedía atenuar **todas** las distribuciones en cada respuesta, pero mantenía `lambda = 1 - 1/W` con `W` en *respuestas*. Con varias distribuciones cada una envejece una vez por respuesta y solo recibe evidencia cuando la pregunta le corresponde, de modo que un `lambda` común deja a la distribución `d` una memoria de `M/K_d` intentos propios. En `labcom` (6 tipos, 6 dimensiones; cada respuesta actualiza las 6 dimensiones pero solo 1 tipo), `lambda = 0.95` habría dejado a cada tipo `20/6 ≈ 3.3` intentos de memoria y **habría borrado el diagnóstico inicial** de 2 intentos por tipo.
