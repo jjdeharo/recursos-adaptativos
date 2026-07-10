@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.1**
+**Versió 2.2**
 
 ## Propòsit
 
@@ -273,7 +273,9 @@ No confonguis aquest problema amb un simple criteri de desempat:
 
 Evidència d'un ítem reutilitzat:
 
-- si l'ítem es reutilitza després que l'alumne hagi vist la seva correcció o explicació (inclòs el reintent immediat), l'encert posterior no és evidència plena de domini: pot reflectir només memòria del feedback. Tracta'l com les pistes: crèdit parcial amb `s` reduït (tant menor com més explícita fou l'explicació mostrada) o, si l'explicació va donar la resposta, exclou-lo de l'actualització bayesiana i fes-lo servir només com a pràctica;
+- si l'ítem es reutilitza després que l'alumne hagi vist la seva correcció o explicació (inclòs el reintent immediat), l'encert posterior no és evidència plena de domini: pot reflectir només memòria del feedback;
+- **en mode `Pràctica`, tracta'l sempre com les pistes: crèdit parcial, mai exclusió de l'actualització.** L'encert rep una `s` reduïda (tant menor com més explícita fou l'explicació mostrada) i la fallada compta completa (`s = 0`): fallar un ítem la correcció del qual ja es va veure és evidència clara de no domini. *Per què:* la pràctica és oberta i el banc és finit, així que tard o d'hora tot ítem disponible es repetirà; si els repetits no actualitzen, quan s'esgoten els ítems nous de la categoria menys dominada l'estimació es congela, aquella categoria continua sent la prioritària i el selector entra en un bucle de repassos sense efecte, mentre l'oblit degrada l'estat sense que cap evidència ho compensi. Excloure'ls violaria a més la regla de disseny que cada resposta modifica l'estat estimat;
+- només en mode `Diagnòstic` (on els ítems no s'han de repetir llevat d'un reintent immediat deliberat) pots excloure el reintent de l'actualització i fer-lo servir només com a pràctica: la sessió és curta i el seu tancament no depèn d'aquesta evidència;
 - la millor redundància local no és repetir el mateix ítem, sinó disposar de **variants parametritzades** del mateix tipus (mateix concepte, dificultat i format amb dades diferents): cada variant compta com a ítem nou i no arrossega la contaminació del feedback.
 
 ## Criteri d'aturada
@@ -488,7 +490,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 - Oblit ancorat al prior, amb `lambda_d` per distribució segons la seva freqüència d'actualització.
 - Mostra mínima comptada en finestra recent; el comptador visible per a l'alumne és el total real.
 - Distribució sense evidència recent → «sense dades», mai vermell.
-- Un ítem la correcció del qual ja s'ha mostrat no torna com a evidència plena: variants parametritzades o crèdit parcial reduït.
+- Un ítem la correcció del qual ja s'ha mostrat no torna com a evidència plena: variants parametritzades o crèdit parcial reduït, mai exclusió de l'actualització (amb un banc finit, l'exclusió congela l'estimació i bloqueja la selecció).
 
 **Si el mode és `Itinerari`:**
 

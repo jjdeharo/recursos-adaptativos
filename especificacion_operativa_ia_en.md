@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.1**
+**Version 2.2**
 
 ## Purpose
 
@@ -273,7 +273,9 @@ Do not confuse this problem with a simple tie-breaking rule:
 
 Evidence from a reused item:
 
-- if an item is reused after the learner has seen its correction or explanation (including the immediate retry), a subsequent correct answer is not full evidence of mastery: it may reflect only memory of the feedback. Treat it like hints: partial credit with a reduced `s` (the more explicit the explanation shown, the lower) or, if the explanation gave away the answer, exclude it from the Bayesian update and use it only as practice;
+- if an item is reused after the learner has seen its correction or explanation (including the immediate retry), a subsequent correct answer is not full evidence of mastery: it may reflect only memory of the feedback;
+- **in `Practice` mode, always treat it like hints: partial credit, never exclusion from the update.** A correct answer receives a reduced `s` (the more explicit the explanation shown, the lower) and a wrong answer counts in full (`s = 0`): failing an item whose correction was already shown is clear evidence of non-mastery. *Why:* practice is open-ended and the bank is finite, so sooner or later every available item will be repeated; if repeated items do not update, once the least-mastered category runs out of fresh items the estimate freezes, that category remains the priority, and the selector enters a loop of ineffective reviews while forgetting degrades the state with no evidence to compensate. Excluding them would also violate the design rule that every response modifies the estimated state;
+- only in `Diagnosis` mode (where items must not repeat except for a deliberate immediate retry) may you exclude the retry from the update and use it only as practice: the session is short and its closure does not depend on that evidence;
 - the best local redundancy is not repeating the same item but having **parameterised variants** of the same type (same concept, difficulty, and format with different data): each variant counts as a new item and carries no feedback contamination.
 
 ## Stopping Criterion
@@ -488,7 +490,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 - Forgetting anchored to the prior, with a per-distribution `lambda_d` according to its update frequency.
 - Minimum sample counted over a recent window; the counter visible to the learner is the real total.
 - Distribution with no recent evidence → "no data", never red.
-- An item whose correction was already shown does not return as full evidence: parameterised variants or reduced partial credit.
+- An item whose correction was already shown does not return as full evidence: parameterised variants or reduced partial credit, never exclusion from the update (with a finite bank, exclusion freezes the estimate and locks the selection).
 
 **If the mode is `Pathway`:**
 

@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.1**
+**Versión 2.2**
 
 ## Propósito
 
@@ -274,7 +274,9 @@ No confundas este problema con un simple criterio de desempate:
 
 Evidencia de un ítem reutilizado:
 
-- si el ítem se reutiliza después de que el alumno viera su corrección o explicación (incluido el reintento inmediato), el acierto posterior no es evidencia plena de dominio: puede reflejar solo memoria del feedback. Trátalo como las pistas: crédito parcial con `s` reducido (tanto menor cuanto más explícita fue la explicación mostrada) o, si la explicación dio la respuesta, exclúyelo de la actualización bayesiana y úsalo solo como práctica;
+- si el ítem se reutiliza después de que el alumno viera su corrección o explicación (incluido el reintento inmediato), el acierto posterior no es evidencia plena de dominio: puede reflejar solo memoria del feedback;
+- **en modo `Práctica`, trátalo siempre como las pistas: crédito parcial, nunca exclusión de la actualización.** El acierto recibe `s` reducido (tanto menor cuanto más explícita fue la explicación mostrada) y el fallo cuenta completo (`s = 0`): fallar un ítem cuya corrección ya se vio es evidencia clara de no dominio. *Por qué:* la práctica es abierta y el banco finito, así que antes o después todo ítem disponible se repetirá; si los repetidos no actualizan, al agotarse los ítems nuevos de la categoría menos dominada la estimación se congela, esa categoría sigue siendo la prioritaria y el selector entra en un bucle de repasos sin efecto, mientras el olvido degrada el estado sin que ninguna evidencia lo compense. Excluirlos violaría además la regla de diseño de que cada respuesta modifica el estado estimado;
+- solo en modo `Diagnóstico` (donde los ítems no deben repetirse salvo un reintento inmediato deliberado) puedes excluir el reintento de la actualización y usarlo solo como práctica: la sesión es corta y su cierre no depende de esa evidencia;
 - la mejor redundancia local no es repetir el mismo ítem, sino disponer de **variantes parametrizadas** del mismo tipo (mismo concepto, dificultad y formato con datos distintos): cada variante cuenta como ítem nuevo y no arrastra la contaminación del feedback.
 
 ## Criterio de parada
@@ -489,7 +491,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 - Olvido anclado al prior, con `lambda_d` por distribución según su frecuencia de actualización.
 - Muestra mínima contada en ventana reciente; el contador visible para el alumno es el total real.
 - Distribución sin evidencia reciente → «sin datos», nunca rojo.
-- Un ítem cuya corrección ya se mostró no vuelve como evidencia plena: variantes parametrizadas o crédito parcial reducido.
+- Un ítem cuya corrección ya se mostró no vuelve como evidencia plena: variantes parametrizadas o crédito parcial reducido, nunca exclusión de la actualización (con banco finito, la exclusión congela la estimación y bloquea la selección).
 
 **Si el modo es `Itinerario`:**
 
