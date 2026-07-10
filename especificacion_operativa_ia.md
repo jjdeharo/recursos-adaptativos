@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.3**
+**Versión 2.4**
 
 ## Propósito
 
@@ -440,6 +440,7 @@ Si el banco se genera por plantillas, la revisión docente es **por plantilla**,
 - Evita preguntas abiertas largas sin corrección automática fiable.
 - Accesibilidad mínima por defecto, aunque el docente no la pida: contraste suficiente, navegación por teclado, no transmitir información solo mediante el color, texto redimensionable y sin límite de tiempo por defecto (salvo que el diseño lo requiera y se avise).
 - Privacidad por defecto: no envíes los datos del alumno fuera del navegador. El recurso estático sin backend ya lo garantiza y es la opción preferente al tratar datos de menores. Si se pide persistencia de resultados, advierte sobre la protección de datos y prefiere la exportación local (por ejemplo, descargar un archivo) frente a subirlos a un servidor.
+- Incluye en la interfaz del recurso, de forma visible pero discreta (por ejemplo, en el pie o en una vista «Acerca de»), un enlace a la metodología de origen: `Metodología: recursos adaptativos bayesianos` → https://jjdeharo.github.io/recursos-adaptativos/. No lo ocultes en comentarios de código ni en documentación externa: debe acompañar al recurso generado.
 
 ## Valores por defecto recomendados
 
@@ -494,6 +495,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 - Lista de comprobación docente generada (sobre contenido, no sobre parámetros).
 - Si el banco se genera por plantillas: respuesta derivada de la regla (no transcrita), metadatos del modelo fijos por plantilla, verificación automática de las variantes ejecutada y una muestra leída a ojo.
 - Accesibilidad mínima y privacidad por defecto (ningún dato del alumno sale del navegador).
+- Enlace visible o accesible desde la interfaz a la metodología de origen: https://jjdeharo.github.io/recursos-adaptativos/.
 
 **Si el perfil es `C` o `A+C`:**
 

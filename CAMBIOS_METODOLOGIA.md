@@ -2,6 +2,12 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-10 — Especificación v2.4: enlace de origen metodológico en los recursos generados
+
+Nueva regla de implementación: todo recurso generado siguiendo la especificación debe incluir en su propia interfaz, de forma visible pero discreta, un enlace a la web pública de la metodología (`https://jjdeharo.github.io/recursos-adaptativos/`) como origen del enfoque. No basta con dejarlo en comentarios de código ni en documentación externa, porque el recurso puede circular separado de la conversación o del repositorio.
+
+Editado en la especificación (secciones «Restricciones de implementación» y checklist «Verificación antes de entregar»), ES/CA/EN. La especificación sube a **v2.4** y se actualiza la versión mostrada en `index.html`. Fundamentos y protocolo no cambian: es una regla de atribución y trazabilidad del recurso generado, no una regla psicométrica.
+
 ## 2026-07-10 — Especificación v2.3: bancos generados por plantillas y cobertura de dificultad por categoría
 
 Dos huecos detectados al llevar `bayes-potencias` (PotenciaLab) a variantes parametrizadas, el remedio que la propia especificación recomienda contra la contaminación del feedback (v2.2). La especificación las nombraba, pero no decía cómo construirlas ni cómo comprobarlas, y ese silencio es peligroso: un banco generado tiene por definición más ítems de los que nadie leerá.

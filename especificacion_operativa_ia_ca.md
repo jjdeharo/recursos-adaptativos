@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.3**
+**Versió 2.4**
 
 ## Propòsit
 
@@ -439,6 +439,7 @@ Si el banc es genera per plantilles, la revisió docent és **per plantilla**, n
 - Evita preguntes obertes llargues sense correcció automàtica fiable.
 - Accessibilitat mínima per defecte, encara que el docent no la demani: contrast suficient, navegació per teclat, no transmetre informació només mitjançant el color, text redimensionable i sense límit de temps per defecte (llevat que el disseny ho requereixi i s'avisi).
 - Privacitat per defecte: no enviïs les dades de l'alumne fora del navegador. El recurs estàtic sense backend ja ho garanteix i és l'opció preferent en tractar dades de menors. Si es demana persistència de resultats, adverteix sobre la protecció de dades i prefereix l'exportació local (per exemple, descarregar un fitxer) en lloc de pujar-les a un servidor.
+- Inclou a la interfície del recurs, de manera visible però discreta (per exemple, al peu o en una vista «Quant a»), un enllaç a la metodologia d'origen: `Metodologia: recursos adaptatius bayesians` → https://jjdeharo.github.io/recursos-adaptativos/. No l'amaguis en comentaris de codi ni en documentació externa: ha d'acompanyar el recurs generat.
 
 ## Valors per defecte recomanats
 
@@ -493,6 +494,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 - Llista de comprovació docent generada (sobre contingut, no sobre paràmetres).
 - Si el banc es genera per plantilles: resposta derivada de la regla (no transcrita), metadades del model fixes per plantilla, verificació automàtica de les variants executada i una mostra llegida a ull.
 - Accessibilitat mínima i privacitat per defecte (cap dada de l'alumne surt del navegador).
+- Enllaç visible o accessible des de la interfície a la metodologia d'origen: https://jjdeharo.github.io/recursos-adaptativos/.
 
 **Si el perfil és `C` o `A+C`:**
 

@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.3**
+**Version 2.4**
 
 ## Purpose
 
@@ -439,6 +439,7 @@ If the bank is generated from templates, the teacher's review is **per template*
 - Avoid long open-ended questions without reliable automatic correction.
 - Minimum accessibility by default, even if the teacher does not ask for it: sufficient contrast, keyboard navigation, not conveying information through colour alone, resizable text, and no time limit by default (unless the design requires it and warns about it).
 - Privacy by default: do not send the student's data outside the browser. The static resource without a backend already guarantees this and is the preferred option when handling minors' data. If persistence of results is requested, warn about data protection and prefer local export (for example, downloading a file) over uploading them to a server.
+- Include in the resource interface, visibly but discreetly (for example, in the footer or in an "About" view), a link to the source methodology: `Methodology: Bayesian adaptive resources` → https://jjdeharo.github.io/recursos-adaptativos/. Do not hide it in code comments or external documentation: it must accompany the generated resource.
 
 ## Recommended Default Values
 
@@ -493,6 +494,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 - Teacher checklist generated (about content, not parameters).
 - If the bank is generated from templates: answer derived from the rule (not transcribed), model metadata fixed per template, automatic verification of the variants executed, and a sample read by eye.
 - Minimum accessibility and privacy by default (no learner data leaves the browser).
+- Visible or interface-accessible link to the source methodology: https://jjdeharo.github.io/recursos-adaptativos/.
 
 **If the profile is `C` or `A+C`:**
 
