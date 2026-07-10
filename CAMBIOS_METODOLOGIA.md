@@ -2,6 +2,17 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-10 — Fundamentos v2.1: §10.6, factorización del estado y sus límites (subsección nueva)
+
+El estado multidimensional (varias distribuciones paralelas, §2.4 y §10.1) es una aproximación factorizada de tipo campo medio, y los fundamentos lo usaban sin declararlo: §10.2 afirmaba de pasada que «la suma es coherente con la entropía conjunta factorizada» y daba sus dos cautelas sin justificación, y §11.2 solo cubre la dependencia entre respuestas, no entre dimensiones. La nueva §10.6 hace explícito el supuesto y sus consecuencias:
+
+- **Qué es exacto**: la entropía de la creencia mantenida es la suma de marginales, así que `IG_b = Σ IG_d` mide exactamente la reducción de entropía de la representación elegida.
+- **Qué no**: por subaditividad y regla de la cadena, la suma factorizada ignora la redundancia y la sinergia de la evidencia compartida. Tres consecuencias: la IG cruda total es indicador de agotamiento del banco, no información conjunta; `U(q)` es una función de prioridad pedagógica, no bits; las confianzas marginales no componen una probabilidad conjunta (por eso el reporte va por marginales, §10.3).
+- **Solape en el modelo combinado** nivel+errores: la atribución disjunta de evidencia (§2.4) elimina la duplicación directa pero no la dependencia entre canales (elegir un distractor diagnóstico implica el fallo global).
+- **Remedios**: el exacto ya existía (distribución sobre perfiles completos, §10.1); el práctico son las salvaguardas anteriores. Comportamiento esperable tipo *naive Bayes*: decisiones adecuadas con correlaciones moderadas, marginales potencialmente sobreconfiadas; lo cubren el *person-fit* (§11.7) y la Monte Carlo desde perfiles completos (§11.8).
+
+Remisiones añadidas: §10.2 de fundamentos («véase §10.6»), tercera cautela de la utilidad combinada en la especificación («Selección adaptativa», con URL completa) y frase en el protocolo §18. Editado en ES/CA/EN. Fundamentos sube a **v2.1** (cabecera y cita APA en las tres lenguas). No se propaga al código: no cambia ninguna regla operativa, solo declara el estatus de una aproximación ya en uso. De paso, corregida la versión de la especificación mostrada en `index.html` (decía 2.0; la real es 2.1 desde la remodelación estructural).
+
 ## 2026-07-09 — Crédito parcial: la ganancia se calcula con la misma verosimilitud que la actualización (T5)
 
 T5 señalaba que la selección de la siguiente actividad seguía promediando sobre acierto/fallo plenos aunque la actualización usara crédito parcial, y proponía promediar sobre la distribución de `s` (o sobre cuatro escenarios discretos). **El diagnóstico era correcto; el remedio, dañino.** Medido antes de adoptarlo sobre un recurso real (`labcom`: 7 subcriterios ponderados, 3 hipótesis, banco de 39 ítems por tipo, 4 preguntas por sesión, 3 semillas):
