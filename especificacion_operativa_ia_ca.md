@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.2**
+**Versió 2.3**
 
 ## Propòsit
 
@@ -219,6 +219,16 @@ Cada pregunta o interacció autocorregible ha de tenir, quan escaigui:
 
 Si el recurs és procedural o tutorial, les interaccions poden no ser preguntes clàssiques, però han de continuar sent autocorregibles o avaluables de manera explícita.
 
+### Bancs generats: variants parametritzades
+
+Si el banc genera els ítems a partir de plantilles (mateix concepte, dificultat i format amb dades diferents), aplica aquestes regles. Sense elles, un banc generat no és més fiable que un d'escrit a mà: és menys fiable, perquè ningú no ha llegit la majoria dels seus ítems.
+
+- **Deriva la resposta correcta, no la transcriguis.** La plantilla ha de calcular la solució aplicant la mateixa regla que l'ítem ensenya sobre els paràmetres sortejats (per a `b^m · b^n`, calcular `b^(m+n)`). Així només hi ha una regla per revisar per plantilla, en comptes d'una resposta per variant que pugui estar mal copiada, i la correcció de totes les variants se segueix de la correcció d'aquella regla.
+- **Mantén fixos per plantilla els metadades que alimenten el model**: dificultat `b_q`, nombre d'opcions `m_q`, categoria, factor d'error i posició de l'opció distractora. No els sortegis. Així totes les variants d'una plantilla són equivalents sota el model, i la validació Monte Carlo del banc (que s'executa sobre les plantilles) continua sent aplicable als ítems que veu l'alumne.
+- **Verifica cada variant de manera automàtica**, abans de lliurar i sobre moltes variants per plantilla. Com a mínim: (1) la resposta marcada com a correcta reprodueix el valor de l'expressió de l'enunciat, avaluada numèricament en valors de prova **lluny de `0` i d'`1`**, on moltes igualtats falses es compleixen per casualitat; (2) les opcions són diferents entre si, i cap opció incorrecta no té el mateix valor que la correcta, perquè això deixa la pregunta sense resposta única; (3) enunciat, pista, explicació i opcions es representen sense error. Quan una variant incompleixi alguna condició, torna a sortejar els paràmetres en lloc de lliurar-la.
+- **La verificació numèrica prova la matemàtica, no la redacció.** Un enunciat pot ser cert i tot i així haver perdut la pregunta: si la plantilla simplifica l'expressió abans de mostrar-la, pot acabar ensenyant la resposta (`a^0` presentat ja com a `1`). Cap comprovació numèrica no detecta això. Llegeix una mostra de variants de cada plantilla abans de donar el banc per bo.
+- Comprova que cada plantilla admeti **prou variants** per a la durada prevista d'una sessió. Una plantilla amb dues o tres variants torna a produir repeticions i, amb elles, la contaminació del feedback que les variants venien a evitar.
+
 ## Selecció adaptativa
 
 Per a cada candidata disponible:
@@ -243,6 +253,8 @@ En recursos de pràctica adaptativa o reforç amb diverses categories, tipus de 
 
 1. **Fase diagnòstica inicial.** Fins que cada categoria rellevant tingui una mostra mínima d'intents, prioritza les categories amb menys evidència. Dins d'elles, utilitza el guany esperat d'informació per triar la pregunta més diagnòstica. Un valor per defecte raonable és exigir almenys `2` intents per categoria abans de sortir d'aquesta fase. Tingues present que `2` és el mínim defensable, no un valor còmode: amb oblit actiu la marginal per categoria és volàtil, així que apuja la mostra mínima si el banc ho permet. Si hi ha moltes categories, aquesta fase pot consumir la sessió (amb `10` categories i `2` intents ja són `20` preguntes): agrupa categories afins en blocs o redueix la mostra mínima perquè el diagnòstic inicial no superi el màxim pràctic.
 2. **Fase de reforç.** Quan totes les categories rellevants tinguin mostra mínima, prioritza la categoria amb menys domini estimat. Dins d'aquesta categoria, no triïs automàticament la pregunta més difícil: selecciona una pregunta informativa i propera al nivell estimat de l'alumne. Una regla raonable és `utilitat = α * IG_norm + (1 - α) * ajust`, amb les dues escales definides a `[0, 1]`: `IG_norm = IG(q) / max IG` entre les candidates del moment, i `ajust = max(0, 1 - |b_q - E[theta]| / 2)`, que val `1` quan la dificultat coincideix amb el nivell estimat (`E[theta] = Σ p_i * theta_i`) i `0` quan s'allunya un interval complet de nivell. Sense definir les dues escales en el mateix rang, el pes `α` no significa res.
+
+Perquè aquest `ajust` signifiqui alguna cosa, **cada categoria ha de cobrir el rang de dificultats per si sola**, no només el banc en conjunt. Si una categoria no té cap ítem a prop de l'extrem superior del rang, `ajust` val `0` en totes les seves candidates per a un alumne situat en el nivell més alt, la utilitat es redueix al guany d'informació i el terme d'adequació deixa d'existir justament per als alumnes que havia de protegir; el mateix passa a l'extrem inferior amb les categories sense ítems fàcils. Tingues present que, amb les dificultats confinades a la meitat central de l'escala, el millor `ajust` assolible en un nivell extrem ja és només `1 - theta_max / 4` (amb `n = 4`, `0.25`): això és l'esperable; un `0` no ho és. Abans de lliurar, tabula la cobertura de categories per dificultat i comprova que cap casella extrema no queda buida.
 
 No facis servir l'entropia de Shannon com a únic criteri permanent quan la finalitat principal sigui practicar o reforçar. Shannon indica on hi ha més incertesa diagnòstica; el reforç ha d'atendre també, i preferentment, allò que l'alumne domina menys.
 
@@ -416,6 +428,8 @@ La validació sota el model no substitueix la revisió del contingut, que només
 
 Presenta-la a la conversa en lliurar el recurs o a la vista docent, mai a la de l'alumne. No demanis al docent que revisi paràmetres, priors ni probabilitats: si assenyala un problema amb les seves paraules, ajusta tu el banc o el model.
 
+Si el banc es genera per plantilles, la revisió docent és **per plantilla**, no per ítem: n'hi ha prou de revisar una vegada la regla i una mostra de les seves variants. Digues-ho explícitament en lliurar, perquè el docent no cregui que està validant un banc tancat.
+
 ## Restriccions d'implementació
 
 - La interfície ha de ser comprensible per a l'alumnat i el professorat.
@@ -457,6 +471,7 @@ Aquestes comprovacions augmenten l'honestedat del diagnòstic sense requerir dad
 
 - **Ajust del patró individual (person-fit).** En tancar una sessió, avalua si el patró de respostes és coherent amb el nivell estimat. Calcula l'índex estandarditzat `l_z` a partir de les probabilitats d'encert que el model assigna a les preguntes respostes sota la hipòtesi més probable. Si `l_z` és molt negatiu (orientativament `< -2`), marca el diagnòstic com a poc fiable encara que el posterior sigui alt: sol indicar respostes incoherents amb la dificultat, descuits o atzar. És un senyal de cautela, no una prova formal; amb poques preguntes és només orientatiu.
 - **Detecció d'atzar o ansietat durant la sessió (no només al tancament).** No esperis al tancament per calcular l'ajust: si durant la sessió el person-fit o una ratxa inversemblant (fallar preguntes fàcils i encertar-ne de difícils, o respondre massa de pressa) suggereixen resposta a l'atzar o ansietat, el recurs hauria de poder **pausar i reconduir** («sembla que vas molt de pressa, seguim amb calma?») en lloc de continuar consumint banc. Fes-ho amb tacte, sense acusar, i reprèn amb normalitat.
+- **Verificació del banc generat.** Si els ítems es produeixen per plantilles, executa abans de lliurar la comprovació descrita a «Bancs generats» sobre uns centenars de variants per plantilla, i tracta-la com a condició de lliurament, no com a prova opcional: mesura la correcció del generador, no el domini de l'alumne. Reporta quantes variants i quantes plantilles s'han comprovat. Si l'entorn no permet executar codi, deixa la utilitat escrita i marca el banc com a «variants pendents de verificar»; no afirmis que estan comprovades.
 - **Separabilitat del disseny (Monte Carlo).** Com a propietat del test (no de l'alumne), estima amb quina fiabilitat el banc distingeix els nivells: genera respondents sintètics situats en el `theta` de cada hipòtesi, fes-los el test reutilitzant la mateixa selecció adaptativa i el mateix criteri d'aturada, i construeix la matriu de confusió (nivell real enfront de diagnosticat). Presenta-la com a fiabilitat sota el model, mai com a validesa empírica: els respondents surten del propi model, així que mesura si el disseny discrimina els nivells, no si els paràmetres reflecteixen la realitat. **Aquesta validació és una eina del creador del recurs, no de l'alumnat: no s'ha de mostrar en la interfície de l'alumne.**
   - Si l'entorn de la IA permet executar codi (CLI, entorn local, notebook), genera i executa la simulació en construir el recurs.
   - Si la IA treballa en xat sense execució, no afirmis que la validació està feta: implementa una utilitat de validació en un fitxer separat o en una vista docent/autora oculta a l'alumnat, amb un botó per executar-la al navegador, i marca el disseny com a «validació pendent d'executar».
@@ -476,6 +491,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 - Escala `theta` fixa segons `n` (si el perfil usa `theta`), amb les dificultats dins de la meitat central.
 - El resultat no és només una nota: la recomanació i el pas següent pesen visualment més que l'etiqueta, i els errors es comuniquen com a hipòtesis a comprovar.
 - Llista de comprovació docent generada (sobre contingut, no sobre paràmetres).
+- Si el banc es genera per plantilles: resposta derivada de la regla (no transcrita), metadades del model fixes per plantilla, verificació automàtica de les variants executada i una mostra llegida a ull.
 - Accessibilitat mínima i privacitat per defecte (cap dada de l'alumne surt del navegador).
 
 **Si el perfil és `C` o `A+C`:**
@@ -491,6 +507,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 - Mostra mínima comptada en finestra recent; el comptador visible per a l'alumne és el total real.
 - Distribució sense evidència recent → «sense dades», mai vermell.
 - Un ítem la correcció del qual ja s'ha mostrat no torna com a evidència plena: variants parametritzades o crèdit parcial reduït, mai exclusió de l'actualització (amb un banc finit, l'exclusió congela l'estimació i bloqueja la selecció).
+- Cada categoria cobreix el rang de dificultats per si sola: cap no deixa `ajust = 0` per a un nivell sencer d'alumnat.
 
 **Si el mode és `Itinerari`:**
 

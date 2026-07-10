@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.2**
+**Versión 2.3**
 
 ## Propósito
 
@@ -220,6 +220,16 @@ Cada pregunta o interacción autocorregible debe tener, cuando proceda:
 
 Si el recurso es procedural o tutorial, las interacciones pueden no ser preguntas clásicas, pero deben seguir siendo autocorregibles o evaluables de forma explícita.
 
+### Bancos generados: variantes parametrizadas
+
+Si el banco genera los ítems a partir de plantillas (mismo concepto, dificultad y formato con datos distintos), aplica estas reglas. Sin ellas un banco generado no es más fiable que uno escrito a mano: es menos fiable, porque nadie ha leído la mayoría de sus ítems.
+
+- **Deriva la respuesta correcta, no la transcribas.** La plantilla debe calcular la solución aplicando la propia regla que el ítem enseña sobre los parámetros sorteados (para `b^m · b^n`, calcular `b^(m+n)`). Así solo hay una regla que revisar por plantilla, en lugar de una respuesta por variante que pueda estar mal copiada, y la corrección de todas las variantes se sigue de la corrección de esa regla.
+- **Mantén fijos por plantilla los metadatos que alimentan el modelo**: dificultad `b_q`, número de opciones `m_q`, categoría, factor de error y posición de la opción distractora. No los sortees. Así todas las variantes de una plantilla son equivalentes bajo el modelo, y la validación Monte Carlo del banco (que se ejecuta sobre las plantillas) sigue siendo aplicable a los ítems que ve el alumno.
+- **Verifica cada variante de forma automática**, antes de entregar y sobre muchas variantes por plantilla. Como mínimo: (1) la respuesta marcada como correcta reproduce el valor de la expresión del enunciado, evaluada numéricamente en valores de prueba **lejos de `0` y de `1`**, donde muchas igualdades falsas se cumplen por casualidad; (2) las opciones son distintas entre sí, y ninguna opción incorrecta tiene el mismo valor que la correcta, porque eso deja la pregunta sin respuesta única; (3) enunciado, pista, explicación y opciones se representan sin error. Cuando una variante incumpla alguna condición, vuelve a sortear los parámetros en lugar de entregarla.
+- **La verificación numérica prueba la matemática, no la redacción.** Un enunciado puede ser cierto y aun así haber perdido la pregunta: si la plantilla simplifica la expresión antes de mostrarla, puede acabar enseñando la respuesta (`a^0` presentado ya como `1`). Ninguna comprobación numérica detecta eso. Lee una muestra de variantes de cada plantilla antes de dar el banco por bueno.
+- Comprueba que cada plantilla admita **variantes suficientes** para la longitud prevista de una sesión. Una plantilla con dos o tres variantes vuelve a producir repeticiones y con ellas la contaminación del feedback que las variantes venían a evitar.
+
 ## Selección adaptativa
 
 Para cada candidata disponible:
@@ -244,6 +254,8 @@ En recursos de práctica adaptativa o refuerzo con varias categorías, tipos de 
 
 1. **Fase diagnóstica inicial.** Hasta que cada categoría relevante tenga una muestra mínima de intentos, prioriza las categorías con menos evidencia. Dentro de ellas, usa la ganancia esperada de información para elegir la pregunta más diagnóstica. Un valor por defecto razonable es exigir al menos `2` intentos por categoría antes de salir de esta fase. Ten presente que `2` es el mínimo defendible, no un valor cómodo: con olvido activo la marginal por categoría es volátil, así que sube la muestra mínima si el banco lo permite. Si hay muchas categorías, esta fase puede consumir la sesión (con `10` categorías y `2` intentos son ya `20` preguntas): agrupa categorías afines en bloques o reduce la muestra mínima para que el diagnóstico inicial no supere el máximo práctico.
 2. **Fase de refuerzo.** Cuando todas las categorías relevantes tengan muestra mínima, prioriza la categoría con menor dominio estimado. Dentro de esa categoría, no elijas automáticamente la pregunta más difícil: selecciona una pregunta informativa y cercana al nivel estimado del alumno. Una regla razonable es `utilidad = α * IG_norm + (1 - α) * ajuste`, con las dos escalas definidas en `[0, 1]`: `IG_norm = IG(q) / max IG` entre las candidatas del momento, y `ajuste = max(0, 1 - |b_q - E[theta]| / 2)`, que vale `1` cuando la dificultad coincide con el nivel estimado (`E[theta] = Σ p_i * theta_i`) y `0` cuando se aleja un intervalo completo de nivel. Sin definir ambas escalas en el mismo rango, el peso `α` no significa nada.
+
+Para que ese `ajuste` signifique algo, **cada categoría debe cubrir el rango de dificultades por sí sola**, no solo el banco en su conjunto. Si una categoría no tiene ningún ítem cerca del extremo superior del rango, `ajuste` vale `0` en todas sus candidatas para un alumno situado en el nivel más alto, la utilidad se reduce a la ganancia de información y el término de adecuación deja de existir justo para los alumnos a los que debía proteger; lo mismo ocurre en el extremo inferior con las categorías sin ítems fáciles. Ten presente que, con las dificultades confinadas a la mitad central de la escala, el mejor `ajuste` alcanzable en un nivel extremo ya es solo `1 - theta_max / 4` (con `n = 4`, `0.25`): eso es lo esperable; un `0` no lo es. Antes de entregar, tabula la cobertura de categorías por dificultad y comprueba que ninguna casilla extrema queda vacía.
 
 No uses la entropía de Shannon como único criterio permanente cuando la finalidad principal sea practicar o reforzar. Shannon indica dónde hay más incertidumbre diagnóstica; el refuerzo debe atender también, y preferentemente, a lo que el alumno domina menos.
 
@@ -417,6 +429,8 @@ La validación bajo el modelo no sustituye la revisión del contenido, que solo 
 
 Preséntala en la conversación al entregar el recurso o en la vista docente, nunca en la del alumno. No pidas al docente que revise parámetros, priors ni probabilidades: si señala un problema con sus palabras, ajusta tú el banco o el modelo.
 
+Si el banco se genera por plantillas, la revisión docente es **por plantilla**, no por ítem: basta revisar una vez la regla y una muestra de sus variantes. Dilo explícitamente al entregar, para que el docente no crea que está validando un banco cerrado.
+
 ## Restricciones de implementación
 
 - La interfaz debe ser comprensible para alumnado y profesorado.
@@ -458,6 +472,7 @@ Estas comprobaciones aumentan la honestidad del diagnóstico sin requerir datos 
 
 - **Ajuste del patrón individual (person-fit).** Al cerrar una sesión, evalúa si el patrón de respuestas es coherente con el nivel estimado. Calcula el índice estandarizado `l_z` a partir de las probabilidades de acierto que el modelo asigna a las preguntas respondidas bajo la hipótesis más probable. Si `l_z` es muy negativo (orientativamente `< -2`), marca el diagnóstico como poco fiable aunque el posterior sea alto: suele indicar respuestas incoherentes con la dificultad, descuidos o azar. Es señal de cautela, no prueba formal; con pocas preguntas es solo orientativo.
 - **Detección de azar o ansiedad durante la sesión (no solo al cierre).** No esperes al cierre para calcular el ajuste: si durante la sesión el person-fit o una racha inverosímil (fallar preguntas fáciles y acertar difíciles, o responder demasiado rápido) sugieren respuesta al azar o ansiedad, el recurso debería poder **pausar y reconducir** («parece que vas muy rápido, ¿seguimos con calma?») en lugar de seguir consumiendo banco. Hazlo con tacto, sin acusar, y reanuda con normalidad.
+- **Verificación del banco generado.** Si los ítems se producen por plantillas, ejecuta antes de entregar la comprobación descrita en «Bancos generados» sobre unos cientos de variantes por plantilla, y trátala como condición de entrega, no como prueba opcional: mide la corrección del generador, no el dominio del alumno. Reporta cuántas variantes y cuántas plantillas se han comprobado. Si el entorno no permite ejecutar código, deja la utilidad escrita y marca el banco como «variantes pendientes de verificar»; no afirmes que están comprobadas.
 - **Separabilidad del diseño (Monte Carlo).** Como propiedad del test (no del alumno), estima con qué fiabilidad el banco distingue los niveles: genera respondentes sintéticos situados en el `theta` de cada hipótesis, hazles el test reutilizando la misma selección adaptativa y el mismo criterio de parada, y construye la matriz de confusión (nivel real frente a diagnosticado). Preséntala como fiabilidad bajo el modelo, nunca como validez empírica: los respondentes salen del propio modelo, así que mide si el diseño discrimina los niveles, no si los parámetros reflejan la realidad. **Esta validación es una herramienta del creador del recurso, no del alumnado: no debe mostrarse en la interfaz del alumno.**
   - Si el entorno de la IA permite ejecutar código (CLI, entorno local, notebook), genera y ejecuta la simulación al construir el recurso.
   - Si la IA trabaja en chat sin ejecución, no afirmes que la validación está hecha: implementa una utilidad de validación en un archivo separado o en una vista docente/autora oculta al alumnado, con botón para ejecutarla en el navegador, y marca el diseño como «validación pendiente de ejecutar».
@@ -477,6 +492,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 - Escala `theta` fija según `n` (si el perfil usa `theta`), con las dificultades dentro de la mitad central.
 - El resultado no es solo una nota: la recomendación y el siguiente paso pesan visualmente más que la etiqueta, y los errores se comunican como hipótesis a comprobar.
 - Lista de comprobación docente generada (sobre contenido, no sobre parámetros).
+- Si el banco se genera por plantillas: respuesta derivada de la regla (no transcrita), metadatos del modelo fijos por plantilla, verificación automática de las variantes ejecutada y una muestra leída a ojo.
 - Accesibilidad mínima y privacidad por defecto (ningún dato del alumno sale del navegador).
 
 **Si el perfil es `C` o `A+C`:**
@@ -492,6 +508,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 - Muestra mínima contada en ventana reciente; el contador visible para el alumno es el total real.
 - Distribución sin evidencia reciente → «sin datos», nunca rojo.
 - Un ítem cuya corrección ya se mostró no vuelve como evidencia plena: variantes parametrizadas o crédito parcial reducido, nunca exclusión de la actualización (con banco finito, la exclusión congela la estimación y bloquea la selección).
+- Cada categoría cubre el rango de dificultades por sí sola: ninguna deja `ajuste = 0` para un nivel entero de alumnado.
 
 **Si el modo es `Itinerario`:**
 

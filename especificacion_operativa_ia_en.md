@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.2**
+**Version 2.3**
 
 ## Purpose
 
@@ -219,6 +219,16 @@ Each question or self-correctable interaction must have, where applicable:
 
 If the resource is procedural or tutorial in nature, interactions may not be classical questions, but they must still be self-correctable or explicitly assessable.
 
+### Generated banks: parameterised variants
+
+If the bank generates its items from templates (same concept, difficulty, and format with different data), apply these rules. Without them a generated bank is not more reliable than a hand-written one: it is less reliable, because nobody has read most of its items.
+
+- **Derive the correct answer; do not transcribe it.** The template must compute the solution by applying the very rule the item teaches to the drawn parameters (for `b^m · b^n`, compute `b^(m+n)`). That way there is a single rule to review per template instead of one answer per variant that may have been copied wrong, and the correctness of every variant follows from the correctness of that rule.
+- **Keep the metadata that feeds the model fixed per template**: difficulty `b_q`, number of options `m_q`, category, error factor, and the position of the distractor option. Do not randomise them. Then all variants of a template are equivalent under the model, and the bank's Monte Carlo validation (run over the templates) still applies to the items the learner sees.
+- **Verify every variant automatically**, before delivery and over many variants per template. At minimum: (1) the answer marked as correct reproduces the value of the expression in the prompt, evaluated numerically at test values **away from `0` and `1`**, where many false identities hold by coincidence; (2) the options are distinct from one another, and no incorrect option has the same value as the correct one, because that leaves the question without a unique answer; (3) prompt, hint, explanation, and options render without error. When a variant fails a condition, draw the parameters again rather than shipping it.
+- **Numerical verification tests the mathematics, not the wording.** A prompt can be true and still have given the question away: if the template simplifies the expression before displaying it, it may end up showing the answer (`a^0` presented already as `1`). No numerical check catches that. Read a sample of variants from each template before accepting the bank.
+- Check that each template admits **enough variants** for the expected session length. A template with two or three variants produces repetitions again, and with them the feedback contamination that variants were meant to avoid.
+
 ## Adaptive Selection
 
 For each available candidate:
@@ -243,6 +253,8 @@ In adaptive practice or reinforcement resources with multiple categories, proble
 
 1. **Initial diagnostic phase.** Until each relevant category has a minimum sample of attempts, prioritise categories with less evidence. Within them, use expected information gain to choose the most diagnostic question. A reasonable default is to require at least `2` attempts per category before leaving this phase. Bear in mind that `2` is the defensible minimum, not a comfortable value: with active forgetting the per-category marginal is volatile, so raise the minimum sample if the bank allows. If there are many categories, this phase can consume the session (with `10` categories and `2` attempts that is already `20` questions): group related categories into blocks or reduce the minimum sample so that the initial diagnosis does not exceed the practical maximum.
 2. **Reinforcement phase.** When all relevant categories have a minimum sample, prioritise the category with the lowest estimated mastery. Within that category, do not automatically choose the most difficult question: select an informative question close to the learner's estimated level. A reasonable rule is `utility = α * IG_norm + (1 - α) * fit`, with both scales defined in `[0, 1]`: `IG_norm = IG(q) / max IG` among the current candidates, and `fit = max(0, 1 - |b_q - E[theta]| / 2)`, which equals `1` when the difficulty matches the estimated level (`E[theta] = Σ p_i * theta_i`) and `0` when it is a full level interval away. Without both scales defined on the same range, the weight `α` means nothing.
+
+For that `fit` to mean anything, **each category must cover the difficulty range on its own**, not merely the bank as a whole. If a category has no item near the top of the range, `fit` is `0` for every one of its candidates for a learner at the highest level, the utility collapses to information gain, and the adequacy term ceases to exist precisely for the learners it was meant to protect; the same happens at the bottom for categories with no easy items. Bear in mind that, with difficulties confined to the middle half of the scale, the best attainable `fit` at an extreme level is already only `1 - theta_max / 4` (with `n = 4`, `0.25`): that is expected; a `0` is not. Before delivery, tabulate category-by-difficulty coverage and check that no extreme cell is empty.
 
 Do not use Shannon entropy as the sole permanent criterion when the main purpose is to practise or reinforce. Shannon indicates where there is the most diagnostic uncertainty; reinforcement must also attend — and preferably give priority — to what the learner has least mastered.
 
@@ -416,6 +428,8 @@ Validation under the model does not replace content review, which only the teach
 
 Present it in the conversation when delivering the resource or in the teacher view, never in the student's. Do not ask the teacher to review parameters, priors, or probabilities: if they point out a problem in their own words, you adjust the bank or the model.
 
+If the bank is generated from templates, the teacher's review is **per template**, not per item: it is enough to review the rule once and a sample of its variants. Say so explicitly on delivery, so the teacher does not believe they are validating a closed bank.
+
 ## Implementation Constraints
 
 - The interface must be comprehensible to both learners and teachers.
@@ -457,6 +471,7 @@ These checks increase diagnostic honesty without requiring empirical data. Apply
 
 - **Individual pattern fit (person-fit).** When closing a session, assess whether the response pattern is coherent with the estimated level. Compute the standardized index `l_z` from the probabilities of a correct answer that the model assigns to the answered questions under the most probable hypothesis. If `l_z` is strongly negative (as a rough guide, `< -2`), flag the diagnosis as unreliable even if the posterior is high: it usually indicates responses inconsistent with difficulty, slips, or guessing. It is a caution signal, not a formal test; with few questions it is only indicative.
 - **Detecting random answering or anxiety during the session (not only at close).** Do not wait until the close to compute the fit: if during the session the person-fit or an implausible streak (failing easy questions and getting hard ones right, or answering too fast) suggests random answering or anxiety, the resource should be able to **pause and redirect** ("you seem to be going very fast, shall we continue calmly?") instead of continuing to consume the bank. Do it tactfully, without accusing, and resume normally.
+- **Verification of the generated bank.** If items are produced from templates, run the check described in «Generated banks» over a few hundred variants per template before delivery, and treat it as a delivery condition, not an optional test: it measures the correctness of the generator, not the learner's mastery. Report how many variants and how many templates were checked. If the environment cannot execute code, leave the utility written and mark the bank as «variants pending verification»; do not claim they have been checked.
 - **Design separability (Monte Carlo).** As a property of the test (not of the student), estimate how reliably the bank distinguishes the levels: generate synthetic respondents located at the `theta` of each hypothesis, run the test on them reusing the same adaptive selection and the same stopping criterion, and build the confusion matrix (true level versus diagnosed). Present it as reliability under the model, never as empirical validity: the respondents come from the model itself, so it measures whether the design discriminates the levels, not whether the parameters reflect reality. **This validation is a tool for the resource's author, not for students: it must not be shown in the student interface.**
   - If the AI environment can execute code (CLI, local environment, notebook), generate and run the simulation while building the resource.
   - If the AI is working in chat without execution, do not claim that validation has been performed: implement a validation utility in a separate file or in a teacher/author view hidden from students, with a button to run it in the browser, and mark the design as "validation pending execution".
@@ -476,6 +491,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 - Fixed `theta` scale according to `n` (if the profile uses `theta`), with difficulties inside the central half.
 - The result is not just a score: the recommendation and next step carry more visual weight than the label, and errors are communicated as hypotheses to check.
 - Teacher checklist generated (about content, not parameters).
+- If the bank is generated from templates: answer derived from the rule (not transcribed), model metadata fixed per template, automatic verification of the variants executed, and a sample read by eye.
 - Minimum accessibility and privacy by default (no learner data leaves the browser).
 
 **If the profile is `C` or `A+C`:**
@@ -491,6 +507,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 - Minimum sample counted over a recent window; the counter visible to the learner is the real total.
 - Distribution with no recent evidence → "no data", never red.
 - An item whose correction was already shown does not return as full evidence: parameterised variants or reduced partial credit, never exclusion from the update (with a finite bank, exclusion freezes the estimate and locks the selection).
+- Each category covers the difficulty range on its own: none leaves `fit = 0` for a whole level of learners.
 
 **If the mode is `Pathway`:**
 
