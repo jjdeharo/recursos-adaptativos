@@ -1,10 +1,26 @@
 # Informe de revisión metodológica, conceptual y pedagógica
 
+> ## Estado del informe (actualizado 2026-07-09)
+>
+> **Este documento es un histórico acumulado, no una lista de fallos vigentes.** Casi todo lo que describe ya está corregido en la metodología y en el código. Antes de citar un hallazgo como problema abierto, compruébese aquí:
+>
+> | Ronda | Contenido | Estado |
+> |-------|-----------|--------|
+> | **Primera** (2026-07-08) | Hallazgos 1.1–1.4, 2.1–2.6, 3.2 | **Históricos: todos aplicados** a los nueve documentos y propagados al código de los seis programas. |
+> | **Segunda** (2026-07-09) | Hallazgos N1–N9 (+ N1b, surgido al propagar N1 al código) | **Históricos: todos aplicados** y propagados. |
+> | **Tercera** (2026-07-09, autor: Codex) | Puntos T1–T9, propuestos para estudio | **Cerrada.** Aplicados: T1 (parcheado), T2, T3, T4, T5 (rectificando su enunciado), T7, T8, T9. Desestimado: T6. |
+>
+> **No queda ningún punto abierto.** Todo está aplicado, o desestimado con razones medidas (T6), o aplicado tras rectificar lo que el propio informe proponía (T5: el remedio que pedía degradaba el diagnóstico). Cada hallazgo lleva su estado en la sección correspondiente y en la tabla resumen de su ronda; el registro cronológico de los cambios está en `CAMBIOS_METODOLOGIA.md`.
+>
+> Queda además fuera del alcance por decisión del autor: la auditoría de accesibilidad profunda (punto 2 del hallazgo 3.2).
+
 **Documentos revisados:** `especificacion_operativa_ia.md` (v2.0), `documentacion.html` (v2.0), `matematicas.html` (v2.0), `guia_docente.html` (v1.1), `README.md`, `CAMBIOS_METODOLOGIA.md`.
 **Fecha:** 2026-07-08.
 **Método:** lectura completa de los cuatro documentos, verificación numérica independiente del ejemplo de la sección 9 de los fundamentos matemáticos, y comprobación por cálculo de las afirmaciones cuantitativas sobre escala, discriminación efectiva y criterios de parada.
 
 ---
+
+# Primera ronda (2026-07-08) — histórica, aplicada
 
 ## Valoración general
 
@@ -133,6 +149,8 @@ Ninguna de las dos ausencias es un error; ambas son huecos que debilitan la revi
 
 ## 4. Resumen priorizado
 
+**Todos los hallazgos de esta tabla están aplicados** (documentos y código); se conservan como histórico.
+
 | # | Hallazgo | Tipo | Gravedad |
 |---|----------|------|----------|
 | 1.1 | Umbral fijo 60 % de aciertos por etapa incompatible con selección por máxima IG | Metodológico | Alta |
@@ -151,7 +169,7 @@ Lo verificado y correcto (ejemplo numérico completo, tablas de `H_stop`, la imp
 
 ---
 
-# Segunda ronda (2026-07-09)
+# Segunda ronda (2026-07-09) — histórica, aplicada
 
 **Método:** relectura completa de los cuatro documentos ya en v2.0 (con los 11 hallazgos de la primera ronda aplicados), buscando fallos nuevos, con verificación numérica de los hallazgos N1–N3.
 
@@ -232,7 +250,7 @@ La aproximación normal de `l_z` es débil con los 4-8 ítems de una etapa. **Co
 # Tercera ronda (2026-07-09) — Puntos para estudiar y rectificar si procede
 
 **Autor de esta tercera revisión:** Codex.  
-**Estado:** T1, T2 y T3 aplicados a especificación, protocolo y fundamentos (ES/CA/EN) el 2026-07-09. Tras la evaluación independiente de la ronda (Claude, 2026-07-09): T1 parcheado (defaults de `w_b`, definición de «bloque decidido», parada sobre IG cruda), T4 y T8 aplicados. Pendientes de estudio: T5, T6, T7, T9.
+**Estado:** T1, T2 y T3 aplicados a especificación, protocolo y fundamentos (ES/CA/EN) el 2026-07-09. Tras la evaluación independiente de la ronda (Claude, 2026-07-09): T1 parcheado (defaults de `w_b`, definición de «bloque decidido», parada sobre IG cruda), T4 y T8 aplicados. Después: T7 y T9 aplicados, **T6 desestimado** y **T5 aplicado rectificando su enunciado** (ver sus secciones). **Ronda cerrada.**
 
 ## Criterio rector
 
@@ -324,13 +342,50 @@ No debe pedirse al docente que modele la distribución de puntuaciones parciales
 - si no se conoce la distribución de `s`, usar escenarios discretos plausibles (`0`, parcial bajo, parcial alto, `1`) en lugar de solo acierto/fallo;
 - reservar la aproximación binaria para ítems realmente binarios o cuando el crédito parcial sea marginal.
 
-## T6. El techo de dominio como recorte duro puede introducir una discontinuidad artificial — Baja-media
+**Corrección aplicada (2026-07-09), rectificando el enunciado.** El diagnóstico de T5 es correcto —la selección y la actualización no hablaban del mismo espacio de resultados— pero **el remedio propuesto en el segundo punto es dañino y se ha descartado tras medirlo**. La primera viñeta, en cambio, resultó ser la corrección de verdad, y su alcance es mayor de lo que T5 supone: no es un ajuste de la selección, es un cambio de la actualización.
 
-El techo `P(acierto) <= 0.95` corrige un problema real: evita saltos casi deterministas por fallos en ítems fáciles. Pero al formularlo como recorte duro, la curva queda aplanada por arriba y puede perder discriminación entre niveles altos en ítems fáciles.
+**Lo que se midió.** Recurso real (`labcom`: 7 subcriterios ponderados con suelos de azar `1/2` y `1/6`, 3 hipótesis en `θ ∈ {−2,0,2}`, banco de 39 ítems por tipo con `b ∈ {−1,0,+1}`, `a_ef=1.25`, techo 0.95). Sesiones de 4 preguntas, 1200 respondentes por hipótesis, 3 semillas. Exactitud equilibrada y probabilidad media asignada a la hipótesis verdadera:
 
-Riesgo: dos niveles altos pueden recibir exactamente la misma verosimilitud en ítems con probabilidad recortada, reduciendo información útil y creando una discontinuidad no psicométrica.
+| Selección | Actualización | Exactitud | `P(θ real)` |
+|---|---|---|---|
+| dos extremos `s ∈ {0,1}` (regla vigente) | geométrica | 98.5 % | 0.75 |
+| distribución exacta de `s` | geométrica | 95.9 % | 0.71 |
+| **cuatro escenarios de `s` (lo que pide T5)** | geométrica | **93.7 %** | 0.68 |
+| por componentes | por componentes | **99.3 %** | **0.99** |
 
-Conviene estudiar si es mejor formularlo como modelo con parámetro de descuido (*slip*) o 4PL con asíntota superior, ajustando entonces la discriminación efectiva para no romper la comparabilidad. No es urgente, porque el recorte resuelve el fallo principal, pero la formulación actual es más pragmática que elegante.
+**Por qué el remedio de T5 empeora las cosas.** La verosimilitud geométrica se maximiza en `p_i = s`: manda toda puntuación intermedia hacia las hipótesis intermedias. Un ítem de dificultad media produce puntuaciones intermedias con *cualquier* alumno, así que concentra el posterior geométrico en la hipótesis del medio con independencia del estado real. Promediar la ganancia sobre la distribución verdadera de `s` mientras se actualiza con la geométrica hace que el selector detecte esa concentración, la lea como información y prefiera justo los ítems que no discriminan. La huella es visible: el uso de ítems de dificultad media sube del `9 %` al `27 %`. La expresión `IG = H(p) − Σ_s P(s)·H(p'|s)` solo es una información mutua si `p'` es el posterior bajo el modelo que **genera** `s`; con un posterior geométrico deja de serlo y pasa a medir la concentración de una creencia mal especificada.
+
+**La regla que se adopta** es de coherencia: *la ganancia se calcula con la misma verosimilitud con la que se actualiza*. De ahí:
+
+1. Si los componentes se observan por separado, no se resumen en `s`: se multiplican sus verosimilitudes (lo que la especificación **ya prefería**) y la ganancia se promedia sobre sus combinaciones. Selección y actualización comparten modelo.
+2. Si solo se dispone de la `s` agregada, se actualiza con la geométrica y la ganancia se promedia sobre los dos extremos: es exactamente la fórmula binaria de fundamentos §6.2, y es la coherente con esa verosimilitud.
+3. No se cruzan los dos niveles.
+
+**Efecto colateral encontrado.** El resumen geométrico no era «conservador», era **infra-confiado**: asignaba `0.75` de probabilidad a la hipótesis verdadera mientras acertaba el `98 %` de las veces, es decir, descartaba evidencia que ya tenía. El modelo por componentes la recupera (`0.99`, en línea con su exactitud).
+
+**Riesgo de sobreconteo (hallazgo 2.4) descartado empíricamente.** El producto de verosimilitudes supone independencia condicional. Se simuló un mundo con dependencia fuerte (si el alumno no identifica el tipo, la fórmula y los parámetros caen a nivel de azar): el modelo por componentes sigue ganando (`97.3 %` frente a `94.4 %`) y su sobreconfianza medida es de `−0.3` puntos porcentuales. El aviso de 2.4 sigue vigente para el atajo del exponente `J`, que multiplica la evidencia de *un* ítem por `J`; no para el producto de componentes efectivamente observados por separado.
+
+**Dónde se aplicó.** Especificación «Respuestas con crédito parcial», protocolo §5.8 y fundamentos §6.6 (nueva subsección), en ES/CA/EN. En el código: `labcom` es el único programa con crédito parcial por componentes; se cambió `updateBayesType` al producto de verosimilitudes, `bayesIG` al promedio sobre las `2^7` combinaciones, y la validación Monte Carlo, que simulaba una respuesta binaria por ítem y por tanto no reproducía el modelo del recurso. Documentación de `labcom` actualizada en sus cinco lenguas.
+
+## T6. El techo de dominio como recorte duro puede introducir una discontinuidad artificial — Baja-media — **DESESTIMADO (2026-07-09)**
+
+*Enunciado original:* el techo `P(acierto) <= 0.95`, formulado como recorte duro, aplana la curva por arriba y puede perder discriminación entre niveles altos en ítems fáciles; dos niveles altos pueden recibir la misma verosimilitud, «reduciendo información útil y creando una discontinuidad no psicométrica». Se proponía sustituirlo por un 4PL con asíntota superior.
+
+**Se desestima.** Tres razones, la tercera cuantificada.
+
+**1. No hay discontinuidad.** `P(θ) = min(c + (1−c)·σ(a(θ−b)), 0.95)` es continua en todo su dominio: lo que tiene en el punto de corte es un codo, un salto de la *derivada*, no de la función. Ninguna verosimilitud da un salto. La objeción nombra un defecto que el recorte no tiene.
+
+**2. La discriminación ya se deriva del techo, no a pesar de él.** La regla del método es `a = a_ef/(d − c_q)` con `d = 0.95` el propio techo: la pendiente se calibra *contando con* la asíntota. El techo no es un parche aplicado después de ajustar la curva. Un 4PL con asíntota superior obligaría a rederivar esa relación y a recalcular los números documentados en los seis programas hermanos.
+
+**3. La información que el techo elimina es precisamente la que no debía existir.** Verificado numéricamente (`n = 3` niveles en `θ = −1, 0, +1`, `a_ef = 1.25`, banco de 18 ítems combinando formato y dificultad):
+
+- La pérdida de ganancia de información por el recorte **nunca supera 0.0497 bits**, sobre un máximo alcanzable de `log₂ 3 = 1.585`. En porcentaje la pérdida sí llega a ser grande (86 % en un V/F con `b = −1.5`), pero se concentra **exactamente en los ítems que ya eran los menos informativos del banco**: los que pierden mucho porcentaje partían de 0.04–0.11 bits, frente a los 0.17 del mejor ítem. El recorte degrada lo que el selector ya descartaba.
+- Con prior uniforme, el ítem elegido es el mismo con techo y sin él (`abierta`, `b = 0.0`).
+- Con un alumno de nivel alto (posterior 0.02 / 0.33 / 0.65) el techo **sí cambia la elección**: sin techo el selector pide un ítem de `b = 0.0`; con techo pide uno de `b = +0.5`. **Ese cambio es la conducta correcta**, no un defecto. La supuesta «información útil» del ítem fácil provenía solo de que el modelo sin techo asume `P(acierto) = 0.97` para un alumno fuerte, es decir, trata un despiste en un ítem fácil como prueba casi concluyente de no-dominio. Eliminar esa inferencia es la razón por la que existe el techo (hallazgo 1.3).
+
+Queda un efecto real y aceptado: si un ítem recortado llega a administrarse igualmente (banco pequeño, etapa forzada), no distingue entre los dos niveles altos. Contribuir cero es la contribución correcta cuando el modelo no puede separarlos sin asumir una certeza implausible.
+
+Coste alto (rederivar la discriminación, recalcular la documentación numérica de seis repos) frente a un beneficio acotado por ~0.05 bits en ítems que el selector evita. **No se hará.** Si en el futuro se adoptara un banco con muchos ítems fáciles obligatorios, convendría reabrirlo.
 
 ## T7. Prior de errores: falta traducción automática desde lenguaje natural del docente — Baja-media
 
@@ -343,6 +398,14 @@ No debe pedirse al docente una prevalencia numérica. La IA puede inferir ajuste
 - “casos aislados”, “pocos” → prior más bajo, por ejemplo `0.1`–`0.2`.
 
 La especificación debería definir esta traducción como heurística automática y permitir que el recurso explique: “parto de que este error puede ser frecuente porque así se ha descrito”.
+
+**Corrección aplicada (2026-07-09):** heurística añadida a la especificación («Verosimilitudes» + «Valores por defecto») y al protocolo §5.1, en ES/CA/EN. Tabla `muchos → 0.40` / `algunos o nada dicho → 0.20–0.30` / `pocos → 0.10–0.15`, con tres cotas verificadas numéricamente:
+
+- **Nunca `≥ 0.5` ni `< 0.10`.** Por encima de `0.5` el prior afirma que el error es más probable que su ausencia (el sesgo que el prior informativo corrige). Por debajo de `0.10` se necesitan `3` fallos discriminantes para confirmar un error real, que un banco pequeño puede no dar.
+- **La muestra mínima no se relaja.** Es lo único que protege en el extremo alto: desde `0.40`, un solo fallo discriminante (`LR ≈ 4`) sube la marginal a `0.727` y cruzaría el umbral de «presente». Sin la muestra mínima, la palabra del docente diagnosticaría al alumno.
+- **El prior es el ancla del olvido (N1).** Un factor descrito como frecuente vuelve a `0.40` sin evidencia reciente, no a `0.25`. Es la conducta coherente, y se documenta para que no se lea como una regresión de N1.
+
+El ajuste desplaza la decisión **un ítem** (`2` fallos discriminantes desde el defecto, `1` desde `0.40`, `3` desde `0.10`) y en ningún punto del rango permitido el prior por sí solo declara un error «presente». No se toca fundamentos: es una heurística operativa, sin derivación matemática nueva.
 
 ## T8. Ambigüedad terminológica: `theta` como referencia común en dimensiones nominales — Baja
 
@@ -370,6 +433,8 @@ Sugerencia documental: añadir al inicio un índice de estado o una nota visible
 
 Esto evitaría duplicar en futuros informes problemas que ya fueron corregidos.
 
+**Corrección aplicada (2026-07-09):** añadido al inicio del informe el bloque «Estado del informe», con tabla por rondas y mención explícita de que solo T5 y T7 siguen abiertos; las cabeceras de la primera y la segunda ronda las marcan como históricas y aplicadas; cada punto de la tercera ronda lleva su estado en su propia sección.
+
 ## Resumen priorizado de la tercera ronda
 
 | # | Punto a estudiar | Gravedad | Estado |
@@ -378,8 +443,8 @@ Esto evitaría duplicar en futuros informes problemas que ya fueron corregidos.
 | T3 | Validación Monte Carlo generada siempre que proceda, ejecutada si el entorno lo permite | Media-alta | Aplicado |
 | T2 | Criterio IA para elegir factores independientes vs perfiles completos | Media | Aplicado |
 | T4 | Revisión docente de contenido, no metodológica | Media | Aplicado |
-| T5 | Selección demasiado binaria en tareas con crédito parcial | Media | Para estudiar |
-| T6 | Techo de dominio como recorte duro en vez de modelo de slip/asíntota | Baja-media | Para estudiar |
-| T7 | Priors de errores ajustables desde lenguaje natural del docente | Baja-media | Para estudiar |
+| T5 | Selección demasiado binaria en tareas con crédito parcial | Media | Aplicado **rectificando el enunciado** (el remedio propuesto degradaba el diagnóstico; el fallo estaba en la actualización, no en la selección) |
+| T6 | Techo de dominio como recorte duro en vez de modelo de slip/asíntota | Baja-media | **Desestimado** (no hay discontinuidad; pérdida ≤ 0.05 bits en ítems que el selector evita) |
+| T7 | Priors de errores ajustables desde lenguaje natural del docente | Baja-media | Aplicado |
 | T8 | Uso ambiguo de `theta` en dimensiones nominales | Baja | Aplicado |
-| T9 | Separar mejor histórico corregido y estado vigente del informe | Baja | Para estudiar |
+| T9 | Separar mejor histórico corregido y estado vigente del informe | Baja | Aplicado |

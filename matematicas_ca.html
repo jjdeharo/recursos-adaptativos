@@ -502,6 +502,33 @@
 </ul>
 <p>Tots dos criteris convergeixen en el cas límit d'una distribució molt concentrada: quan la creença és gairebé puntual, maximitzar el guany d'informació i maximitzar la FII en \(\hat\theta\) seleccionen pràcticament el mateix ítem. La diferència importa sobretot en les primeres preguntes, quan la incertesa és alta.</p>
 <p>L'ús de la informació mútua i la divergència KL (§6.3) per seleccionar ítems està ben establert en la recerca psicomètrica bayesiana, però la seva aplicació en <strong>eines educatives reals</strong> és poc habitual: el que és comú a l'aula és la FII o regles més simples (següent ítem del nivell estimat, selecció per dificultat). La combinació que fa servir aquest sistema —distribució d'hipòtesis, actualització bayesiana i selecció per reducció d'entropia de Shannon, integrada en una eina per a docents— és, en aquest sentit, infreqüent en l'àmbit educatiu.</p>
+
+<h3 id="s6-6">6.6. Guany d'informació amb crèdit parcial</h3>
+<p>El desenvolupament de §6.2 fa la mitjana de l'entropia posterior sobre <strong>dos</strong> resultats, encert i error. Quan l'ítem es puntua amb crèdit parcial (§4.8), la pregunta natural és si aquesta mitjana s'hauria d'estendre a totes les puntuacions \(s\) que l'ítem pot produir:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \sum_{s \in \mathcal{S}_q} P(s \mid q)\; H\!\left(\mathbf{p}' \mid s, q\right)\]</div>
+<p>La resposta és que <strong>depèn de amb quina versemblança s'actualitzi</strong>, i que l'elecció òbvia és l'equivocada. La regla correcta és de coherència: <em>el guany s'ha de calcular amb la mateixa versemblança que després es fa servir per actualitzar</em>. L'expressió de dalt només és un guany d'informació legítim —una informació mútua— si \(\mathbf{p}'\) és el posterior bayesià sota el model que realment genera \(s\). Si \(\mathbf{p}'\) es calcula amb la versemblança geomètrica, que és un <em>resum</em> i no el model generador, l'expressió deixa de ser una informació mútua i passa a mesurar una altra cosa: quant es concentrarà una creença mal especificada.</p>
+
+<p><strong>Per què aquesta distinció importa a la pràctica.</strong> La versemblança geomètrica es maximitza en \(p_i = s\) (§4.8): envia tota puntuació intermèdia cap a les hipòtesis intermèdies. Un ítem de dificultat mitjana produeix puntuacions intermèdies amb <em>qualsevol</em> alumne —el que domina falla algun subcriteri, el que no domina n'encerta algun per atzar—, de manera que concentra el posterior geomètric en la hipòtesi del mig amb independència de l'estat real. Una mitjana d'\(IG\) presa sobre la distribució vertadera de \(s\), però amb posteriors geomètrics, detecta aquesta concentració i la premia. El selector acaba preferint justament els ítems que no discriminen.</p>
+
+<p>Mesurat sobre un recurs real construït amb aquest mètode (\(J = 7\) subcriteris ponderats, tres hipòtesis en \(\theta \in \{-2, 0, 2\}\), banc de 39 ítems per tipus amb \(b \in \{-1, 0, +1\}\), \(a_{\text{ef}} = 1.25\), sostre 0.95, sessions de 4 preguntes, 3 llavors, 1200 respondents per hipòtesi):</p>
+<table>
+<thead><tr><th>Selecció</th><th>Actualització</th><th>Exactitud</th><th>\(P(\theta\) real\()\)</th></tr></thead>
+<tbody>
+<tr><td>dos extrems \(s\in\{0,1\}\)</td><td>geomètrica</td><td>98.5 %</td><td>0.75</td></tr>
+<tr><td>distribució exacta de \(s\)</td><td>geomètrica</td><td>95.9 %</td><td>0.71</td></tr>
+<tr><td>quatre escenaris de \(s\)</td><td>geomètrica</td><td>93.7 %</td><td>0.68</td></tr>
+<tr><td>per components</td><td>per components</td><td><strong>99.3 %</strong></td><td><strong>0.99</strong></td></tr>
+</tbody>
+</table>
+<p>Refinar la selecció mantenint l'actualització geomètrica <strong>empitjora</strong> el diagnòstic, i l'empitjora més com més «fina» és la mitjana. L'empremta del mecanisme és visible al banc: la proporció d'ítems de dificultat mitjana seleccionats puja del 9 % al 27 %.</p>
+
+<p><strong>La correcció és a l'actualització, no a la selecció.</strong> Si es coneixen els components de la resposta, no cal resumir-los en una \(s\): n'hi ha prou de multiplicar-ne les versemblances, que és el que §4.8 ja prefereix. Amb \(J\) subcriteris de pesos \(w_j\) i sòls d'atzar \(c_j\), condicionalment independents donat \(H_i\), cada subcriteri s'encerta amb probabilitat \(P_j(\theta_i) = c_j + (1-c_j)\,\sigma\!\left(a_j(\theta_i - b_q)\right)\) i la versemblança de l'ítem és</p>
+<div class="math-block">\[L(H_i) = \prod_{j=1}^{J} P_j(\theta_i)^{x_j}\,\bigl(1 - P_j(\theta_i)\bigr)^{1 - x_j}, \qquad x_j \in \{0, 1\}\]</div>
+<p>i el guany es fa la mitjana sobre les \(2^J\) combinacions de \(\mathbf{x}\) (o sobre la convolució de les sumes parcials si \(J\) és gran). Selecció i actualització comparteixen aleshores el mateix model, i el guany torna a ser una informació mútua. Aquesta variant no només encerta més: corregeix una <strong>infraconfiança crònica</strong> del resum geomètric, que assigna \(0.75\) de probabilitat a la hipòtesi vertadera mentre encerta el 98 % de les vegades —és a dir, descarta evidència que sí que tenia—. Amb el model per components, aquesta probabilitat puja a \(0.99\), en línia amb la seva exactitud.</p>
+
+<p><strong>Robustesa davant la dependència entre components.</strong> El producte de versemblances suposa independència condicional, i §4.8 adverteix (troballa 2.4) que aquesta suposició sobrecompta l'evidència quan els components estan correlacionats. Es va comprovar simulant un món amb dependència forta —si l'alumne no identifica el tipus de problema, la fórmula i els paràmetres cauen a nivell d'atzar—: el model per components continua guanyant (97.3 % enfront de 94.4 %) i la seva sobreconfiança mesurada és de \(-0.3\) punts percentuals, és a dir, no arriba a sobrecomptar. El risc de la troballa 2.4 continua sent real per a la drecera de l'exponent \(J\), que multiplica l'evidència d'<em>un</em> ítem per \(J\); no ho és per al producte de versemblances de components efectivament observats per separat.</p>
+
+<p><strong>Resum operatiu.</strong> Si els components s'observen per separat, actualitza'ls per separat i fes la mitjana del guany sobre les seves combinacions. Si només es disposa de la \(s\) agregada, fes servir la versemblança geomètrica per actualitzar i fes la mitjana del guany sobre els dos extrems \(s \in \{0, 1\}\): això és exactament la fórmula de §6.2, i és l'elecció coherent amb aquesta versemblança. El que no s'ha de fer és creuar els dos nivells.</p>
 </section>
 <section id="s7">
 <h2>7. Criteri de parada</h2>

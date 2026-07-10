@@ -138,6 +138,20 @@ This must be done after each relevant interaction.
 - If they are **mutually exclusive alternatives** (for example, strategy A / strategy B / correct mastery), do not use logistic IRT. Generate for each question a vector of `n` likelihoods `P(correct | H_i, q)`, one per hypothesis.
 - If the errors or needs **can coexist**, do not force them into a single nominal distribution. Model one dimension per factor (`longer-decimal`, `zero-ignoring`, etc.) or, equivalently, a distribution over **full profiles** (`2^k` combinations for `k` factors).
 - **Prior over error factors: not uniform.** Assign each factor a low prior probability of being present (default `P(error) ≈ 0.2`–`0.3`), never the uniform `0.5`. The resource applies this value automatically; the teacher may adjust their group's prevalence if they wish, but is not required to. *Why:* conceptual errors are usually a minority; the uniform is not neutral (it assumes each student has each error with probability `0.5`) and produces false positives in the first few questions.
+- **Adjust that prior from what the teacher has already told you, without asking them for numbers.** If, while describing the resource, the teacher qualifies how frequent an error is, translate it yourself into a prior; do not ask them for a numeric prevalence, and do not show the chosen value in the student's interface.
+
+  | How the teacher describes it | Initial `P(error)` |
+  |---|---|
+  | "many", "most of them", "it happens to them all the time", "very common" | `0.40` |
+  | "some", "sometimes", "quite a few", or says nothing | `0.20`–`0.30` (default) |
+  | "few", "isolated cases", "the odd one", "rare" | `0.10`–`0.15` |
+
+  Rules that bound the heuristic:
+  - **Never `≥ 0.5`, never `< 0.10`.** Above `0.5` the prior asserts that the error is more likely than its absence, which is the very bias this section corrects. Below `0.10` it would take `3` discriminating failures to confirm a real error, and with a small bank it may never be confirmed.
+  - **The minimum sample is never relaxed, and at `0.40` it is the only safeguard.** From `0.40`, a single discriminating failure (`LR ≈ 4`) brings the marginal to `0.727` and crosses the "present" threshold: without requiring the minimum sample of evidence, the teacher's word alone would diagnose the student. Keep the `2` attempts per factor.
+  - **The prior is also the anchor of forgetting.** A factor with `P(error) = 0.40` that runs out of recent evidence does not return to `0.25`, it returns to `0.40`, and will reappear as "undetermined". This is coherent: the teacher said that error is frequent in their group.
+
+  *Why:* the adjustment is deliberately gentle. It moves the decision by **one item**, it does not predetermine it: confirming an error takes `2` discriminating failures from the default prior, `1` from `0.40` and `3` from `0.10`. The prior on its own cannot declare an error **present** anywhere in the permitted range. What it corrects is the false negative symmetric to the one that motivated the informative prior: when the teacher already knows an error is common in their group, starting from `0.25` spends questions rediscovering it.
 - In that multifactorial case, each question should define how each profile responds. The minimum is a probability of success by profile; better still is an option-level distribution `P(R = r | profile, q)` so that the chosen distractor carries evidence, not only correct/incorrect.
 - If you start from simple factors, assign each value by asking: "if the student had this error, with what probability would they answer this question correctly?". Low if the question attacks the concept that error distorts; high if the error does not interfere.
 - Bound each value: not below the guessing floor `1/m` (m options), except for the case in the next point; the mastery hypothesis or mastery profile around `0.9`–`0.95`, never `1`.
@@ -162,7 +176,12 @@ This must be done after each relevant interaction.
 - If you have separate evidence by component, prefer multiplying the component likelihoods instead of reducing everything to a single `s`.
 - Define how `s` is calculated in an explicit, self-correctable way: weighted sum of sub-criteria, fraction of correct steps, proximity to the numerical solution, etc. Weights must sum to `1`.
 - Do not treat a response that admits degrees as binary: diagnostic information is lost.
-- To select the next question, compute information gain over the outcomes the item actually models. For binary or partial-credit items, the approximation with full success and full failure remains acceptable; if you model distractors or full profiles, average over all relevant response outcomes.
+- **Compute the information gain with the same likelihood you will update with.** This is the rule; everything else follows from it.
+- Operational rule, in order of preference:
+  1. **If you know the response components, do not summarise them into `s`.** Update by multiplying each component's likelihood (as stated above) and compute the gain by averaging over the combinations of component outcomes. This is the best case: selection and update share a model.
+  2. **If only the aggregate `s` is available**, update with the geometric likelihood and compute the gain by averaging over the **two extremes** (`s = 0` and `s = 1`) with `P(success | H_i, q)`. That is exactly the gain of the binary model the geometric likelihood extends, and it is the coherent choice.
+  3. **Do not average the gain over the real distribution of `s` while updating with the geometric likelihood.** It looks more refined and it is worse: see why.
+- *Why:* the geometric likelihood drives every intermediate score toward the intermediate hypotheses (by design: it is maximised at `p_i = s`). A medium-difficulty item produces intermediate scores for **any** student, so it concentrates the posterior on the middle hypothesis regardless of the true state. If you compute the gain over the true distribution of `s` but update with the geometric likelihood, the selector detects that concentration, reads it as information, and prefers precisely those items: confidence rises and accuracy falls. Measured on a real partial-credit resource (7 weighted subcriteria, 3 hypotheses, a bank of 39 items per type, 4 questions per session, 3 seeds): the current rule is right **98.5 %** of the time; averaging over the exact distribution of `s` while keeping the geometric likelihood drops to **95.9 %**, and doing so over four discrete scenarios (`0`, low partial, high partial, `1`) drops to **93.7 %**. The use of medium-difficulty items rises from `9 %` to `27 %`. By contrast, moving to the component model of point 1 **raises** it to `99.3 %` and incidentally corrects a chronic under-confidence of the geometric likelihood (it assigns `0.75` probability to the true hypothesis while being right `98 %` of the time; by components, `0.99`). Also checked with strongly dependent components: the component model still wins (`97.3 %` against `94.4 %`) and does not overcount evidence.
 
 ## Chance Floor in Composite Items
 
@@ -458,7 +477,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 
 **If the profile is `C` or `A+C`:**
 
-- Error prior `0.2`–`0.3`, not uniform.
+- Error prior `0.2`–`0.3`, not uniform; `0.40` if the teacher describes the error as frequent, `0.10`–`0.15` if they describe it as rare (never `≥ 0.5` nor `< 0.10`).
 - No factor declared present or absent without its minimum sample of evidence; the report distinguishes "confirmed absent" from "insufficient evidence".
 - Stopping evaluated per factor; undecided ones are reported as undetermined, not forced.
 - In `A+C`: selection by pedagogical blocks with purpose-based weights; the minimum-gain stop is evaluated on raw IG, not on the normalised utility.

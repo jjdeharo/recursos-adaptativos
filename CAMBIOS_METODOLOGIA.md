@@ -2,6 +2,46 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-09 — Crédito parcial: la ganancia se calcula con la misma verosimilitud que la actualización (T5)
+
+T5 señalaba que la selección de la siguiente actividad seguía promediando sobre acierto/fallo plenos aunque la actualización usara crédito parcial, y proponía promediar sobre la distribución de `s` (o sobre cuatro escenarios discretos). **El diagnóstico era correcto; el remedio, dañino.** Medido antes de adoptarlo sobre un recurso real (`labcom`: 7 subcriterios ponderados, 3 hipótesis, banco de 39 ítems por tipo, 4 preguntas por sesión, 3 semillas):
+
+| Selección | Actualización | Exactitud | `P(θ real)` |
+|---|---|---|---|
+| dos extremos `s ∈ {0,1}` (regla vigente) | geométrica | 98.5 % | 0.75 |
+| distribución exacta de `s` | geométrica | 95.9 % | 0.71 |
+| cuatro escenarios (lo que pedía T5) | geométrica | 93.7 % | 0.68 |
+| por componentes | por componentes | **99.3 %** | **0.99** |
+
+La verosimilitud geométrica se maximiza en `p_i = s`: manda toda puntuación intermedia hacia las hipótesis intermedias. Un ítem de dificultad media produce puntuaciones intermedias con cualquier alumno, así que concentra el posterior en la hipótesis del medio sea cual sea el estado real. Un selector que promedie sobre las puntuaciones reales pero actualice con la geométrica detecta esa concentración, la lee como información y prefiere justo los ítems que no discriminan (el uso de ítems de dificultad media sube del 9 % al 27 %).
+
+**Regla adoptada: coherencia.** La ganancia se calcula con la misma verosimilitud con la que se actualiza. (1) Si los componentes se observan por separado, no se resumen en `s`: se multiplican sus verosimilitudes —lo que la especificación ya prefería— y la ganancia se promedia sobre sus combinaciones. (2) Si solo hay `s` agregada, se actualiza con la geométrica y la ganancia se promedia sobre los dos extremos, que es la fórmula binaria de fundamentos §6.2. (3) No se cruzan los dos niveles.
+
+Dos hallazgos colaterales: el resumen geométrico no era conservador sino **infra-confiado** (asignaba `0.75` al nivel verdadero acertando el 98 % de las veces, o sea, descartaba evidencia que tenía); y el riesgo de sobreconteo del hallazgo 2.4 **no se materializa** en el producto de componentes, comprobado en un mundo con dependencia fuerte (97.3 % frente a 94.4 %, sobreconfianza de −0.3 pp). El aviso de 2.4 sigue vigente solo para el atajo del exponente `J`.
+
+Editado en especificación «Respuestas con crédito parcial», protocolo §5.8 y fundamentos §6.6 (subsección nueva), ES/CA/EN. Propagado a `labcom`, único programa con crédito parcial por componentes: `updateBayesType` pasa al producto de verosimilitudes, `bayesIG` promedia sobre las `2^7` combinaciones (memoizada por dificultad), y la validación Monte Carlo —que simulaba una respuesta binaria por ítem y no reproducía el modelo del recurso— se corrigió. Documentación de `labcom` actualizada en sus cinco lenguas. Ningún otro programa hermano usa crédito parcial.
+
+## 2026-07-09 — Prior de errores ajustable desde el lenguaje del docente (T7)
+
+El prior informativo `P(error) ≈ 0.2`–`0.3` corrige el falso positivo del uniforme, pero introduce el falso negativo simétrico: cuando el docente ya sabe que un error abunda en su grupo, partir de `0.25` gasta preguntas en redescubrirlo. La IA ya dispone de esa información —el docente la da en prosa al pedir el recurso—, así que ahora debe usarla sin pedirle ninguna cifra: «muchos», «la mayoría», «muy frecuente» → `0.40`; «algunos», «a veces» o nada dicho → `0.20`–`0.30` (defecto); «pocos», «casos aislados» → `0.10`–`0.15`. Editado en especificación («Verosimilitudes» y «Valores por defecto») y protocolo §5.1, ES/CA/EN. Fundamentos no cambia: es una heurística operativa, no una derivación nueva.
+
+Tres cotas, verificadas numéricamente antes de redactarlas:
+
+- **Nunca `≥ 0.5` ni `< 0.10`.** Por encima de `0.5` el prior afirmaría que el error es más probable que su ausencia, que es exactamente el sesgo que el prior informativo corrige. Por debajo de `0.10` harían falta `3` fallos discriminantes para confirmar un error real, y un banco pequeño puede no darlos nunca.
+- **La muestra mínima de evidencia no se relaja, y en el extremo alto es lo único que protege.** Desde `0.40`, un solo fallo discriminante (`LR ≈ 4`) lleva la marginal a `0.727` y cruzaría el umbral de «presente»: sin los `2` intentos por factor, la palabra del docente bastaría para diagnosticar al alumno.
+- **El prior es también el ancla del olvido.** Un factor descrito como frecuente que se quede sin evidencia reciente vuelve a `0.40`, no a `0.25`. Es coherente con lo que el docente afirmó, y se documenta para que no se lea como una regresión de N1.
+
+El ajuste es deliberadamente suave: desplaza la decisión **un ítem** (`2` fallos discriminantes desde el defecto, `1` desde `0.40`, `3` desde `0.10`), y en ningún punto del rango permitido el prior por sí solo puede declarar un error «presente».
+
+T7 **no se propaga al código** de los programas de ejemplo, por la misma razón que T4: es una instrucción a la IA que genera el recurso, no al recurso generado. Auditados los seis, ninguno recibe prosa del docente en tiempo de ejecución; sus priors quedan fijados al generarse (`bayes-nominal`: `PRIOR_ERROR: 0.25`).
+
+## 2026-07-09 — Informe de revisión: índice de estado (T9) y desestimación de T6
+
+Dos cierres sobre `INFORME_REVISION.md`, sin cambios en la metodología.
+
+- **T9 aplicado.** El informe acumulaba tres rondas y se leía como si todo siguiera abierto, cuando casi todo está corregido. Añadido al inicio un bloque «Estado del informe» con tabla por rondas; las cabeceras de la primera y la segunda ronda las marcan como históricas y aplicadas. Queda dicho de forma explícita que **los únicos puntos abiertos son T5 y T7**.
+- **T6 desestimado, con verificación numérica.** El punto pedía sustituir el techo de dominio `P(acierto) ≤ 0.95` por un 4PL con asíntota superior, alegando una «discontinuidad no psicométrica». No la hay: `min(P, 0.95)` es continua, y solo su derivada tiene un codo. Además la discriminación ya se deriva del techo (`a = a_ef/(d − c_q)` con `d = 0.95`), así que el 4PL obligaría a rederivarla y a recalcular la documentación numérica de los seis programas. Y sobre todo, la información que el recorte elimina es la que no debía existir: medida sobre un banco de 18 ítems (formato × dificultad, `n = 3`, `a_ef = 1.25`), la pérdida de ganancia de información **nunca supera 0.0497 bits** de los 1.585 alcanzables, y se concentra en los ítems que ya eran los menos informativos. Con un alumno de nivel alto el techo sí cambia la elección del selector (de `b = 0.0` a `b = +0.5`), y la cambia **bien**: la supuesta información del ítem fácil venía de asumir `P(acierto) = 0.97`, es decir, de leer un despiste como prueba de no-dominio — justo lo que el techo se introdujo para impedir (hallazgo 1.3).
+
 ## 2026-07-09 — Especificación operativa: URLs completas a protocolo y fundamentos
 
 Las tres remisiones a `documentacion.html` y `matematicas.html` (propósito, transición BKT en §refuerzo continuo, validación Monte Carlo) usaban solo el nombre de archivo. Es papel mojado en el flujo real de uso: la guía docente y el propio README instruyen a adjuntar únicamente la especificación, así que una IA sin ese nombre de archivo en su contexto no puede resolverlo. Añadida la URL completa de GitHub Pages junto a cada mención (con ancla `#s3` o `#s11` donde procede), y una frase en «Propósito» que autoriza a actuar solo con la especificación si la IA no puede navegar, en vez de inventar contenido de los documentos remitidos. Editado en ES/CA/EN (cada versión enlaza a su propio idioma).

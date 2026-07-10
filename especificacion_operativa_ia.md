@@ -139,6 +139,20 @@ Esto debe hacerse después de cada interacción relevante.
 - Si son **alternativas excluyentes** (por ejemplo, estrategia A / estrategia B / dominio correcto), no uses IRT logística. Genera para cada pregunta un vector de `n` verosimilitudes `P(acierto | H_i, q)`, una por hipótesis.
 - Si los errores o necesidades **pueden coexistir**, no los metas en una sola distribución nominal. Modela una dimensión por factor (`error largo`, `error cero`, etc.) o, de forma equivalente, una distribución sobre **perfiles completos** (`2^k` combinaciones posibles de `k` factores).
 - **Prior de los factores de error: no uniforme.** Asigna a cada factor una probabilidad a priori baja de estar presente (por defecto `P(error) ≈ 0.2`–`0.3`), nunca el uniforme `0.5`. El recurso aplica este valor de forma automática; el docente puede ajustar la prevalencia de su grupo si lo desea, pero no está obligado. *Por qué:* los errores conceptuales suelen ser minoritarios; el uniforme no es neutral (afirma que cada alumno tiene cada error con probabilidad `0.5`) y produce falsos positivos en las primeras preguntas.
+- **Ajusta ese prior con lo que el docente ya te ha dicho, sin preguntarle números.** Si al describir el recurso el docente califica la frecuencia de un error, tradúcelo tú a un prior; no le pidas una prevalencia numérica ni le muestres el valor elegido en la interfaz del alumno.
+
+  | Cómo lo describe el docente | `P(error)` inicial |
+  |---|---|
+  | «muchos», «la mayoría», «les pasa siempre», «muy frecuente» | `0.40` |
+  | «algunos», «a veces», «bastantes», o no dice nada | `0.20`–`0.30` (defecto) |
+  | «pocos», «casos aislados», «alguno suelto», «raro» | `0.10`–`0.15` |
+
+  Reglas que acotan la heurística:
+  - **Nunca `≥ 0.5`, nunca `< 0.10`.** Por encima de `0.5` el prior afirma que el error es más probable que su ausencia, que es el sesgo que este apartado corrige. Por debajo de `0.10` harían falta `3` fallos discriminantes para confirmar un error real, y en un banco pequeño puede no confirmarse nunca.
+  - **La muestra mínima no se relaja jamás, y con `0.40` es lo único que protege.** Desde `0.40`, un solo fallo discriminante (`LR ≈ 4`) lleva la marginal a `0.727` y cruza el umbral de «presente»: sin exigir la muestra mínima de evidencia, la palabra del docente bastaría para diagnosticar al alumno. Mantén los `2` intentos por factor.
+  - **El prior es también el ancla del olvido.** Un factor con `P(error) = 0.40` que se quede sin evidencia reciente no vuelve a `0.25`, vuelve a `0.40`, y reaparecerá como «indeterminado». Es coherente: el docente dijo que ese error es frecuente en su grupo.
+
+  *Por qué:* el ajuste es deliberadamente suave. Mueve la decisión **un ítem**, no la predetermina: confirmar un error exige `2` fallos discriminantes desde el prior por defecto, `1` desde `0.40` y `3` desde `0.10`. El prior por sí solo no puede declarar un error **presente** en ningún punto del rango permitido. El caso que corrige es el falso negativo simétrico al que motivó el prior informativo: cuando el docente ya sabe que un error es frecuente en su grupo, partir de `0.25` gasta preguntas en redescubrirlo.
 - En ese caso multifactorial, cada pregunta debe definir cómo responde cada perfil. Lo mínimo es una probabilidad de acierto por perfil; mejor aún, una distribución por opción `P(R = r | perfil, q)` para aprovechar qué distractor ha elegido el alumno, no solo si acertó o falló.
 - Si partes de factores simples, asigna cada valor respondiendo: «si el alumno tuviera este error, ¿con qué probabilidad acertaría esta pregunta?». Bajo si la pregunta ataca el concepto que ese error distorsiona; alto si el error no interfiere.
 - Acota cada valor: no por debajo del suelo de azar `1/m` (m opciones), salvo la excepción del punto siguiente; la hipótesis o perfil de dominio en torno a `0.9`–`0.95`, nunca `1`.
@@ -163,7 +177,12 @@ Esto debe hacerse después de cada interacción relevante.
 - Si tienes evidencia separada por componente, es preferible multiplicar las verosimilitudes de cada componente en lugar de reducir todo a una sola `s`.
 - Define cómo se calcula `s` de forma explícita y autocorregible: suma ponderada de subcriterios, fracción de pasos correctos, cercanía a la solución numérica, etc. Los pesos deben sumar `1`.
 - No trates como binaria una respuesta que admite grados: pierdes información diagnóstica.
-- Para seleccionar la siguiente pregunta, calcula la ganancia de información con los resultados que realmente modele el ítem. Si trabajas con binario o crédito parcial, la aproximación con acierto y fallo plenos sigue siendo aceptable; si modelas distractores o perfiles completos, promedia sobre todas las respuestas relevantes del ítem.
+- **Calcula la ganancia de información con la misma verosimilitud con la que vas a actualizar.** Esta es la regla; lo demás se deduce de ella.
+- Regla operativa, por orden de preferencia:
+  1. **Si conoces los componentes de la respuesta, no la resumas en `s`.** Actualiza multiplicando las verosimilitudes de cada componente (como ya se dice arriba) y calcula la ganancia promediando sobre las combinaciones de resultados de los componentes. Es el caso mejor: selección y actualización comparten modelo.
+  2. **Si solo dispones de la `s` agregada**, actualiza con la verosimilitud geométrica y calcula la ganancia promediando sobre los **dos extremos** (`s = 0` y `s = 1`) con `P(acierto | H_i, q)`. Eso es exactamente la ganancia del modelo binario que la geométrica extiende, y es la elección coherente.
+  3. **No promedies la ganancia sobre la distribución real de `s` mientras actualizas con la geométrica.** Parece más fino y es peor: ver el porqué.
+- *Por qué:* la verosimilitud geométrica manda toda puntuación intermedia hacia las hipótesis intermedias (por diseño: se maximiza en `p_i = s`). Un ítem de dificultad media produce puntuaciones intermedias con **cualquier** alumno, así que concentra el posterior en la hipótesis del medio sea cual sea el estado real. Si calculas la ganancia sobre la distribución verdadera de `s` pero actualizas con la geométrica, el selector detecta esa concentración, la interpreta como información y prefiere justamente esos ítems: la confianza sube y el acierto baja. Medido sobre un recurso real de crédito parcial (7 subcriterios ponderados, 3 hipótesis, banco de 39 ítems por tipo, 4 preguntas por sesión, 3 semillas): la regla actual acierta el **98.5 %**; promediar sobre la distribución exacta de `s` manteniendo la geométrica baja al **95.9 %**, y hacerlo sobre cuatro escenarios discretos (`0`, parcial bajo, parcial alto, `1`) baja al **93.7 %**. El uso de ítems de dificultad media pasa del `9 %` al `27 %`. En cambio, pasar al modelo por componentes del punto 1 **sube** al `99.3 %` y corrige de paso una infra-confianza crónica de la geométrica (asigna `0.75` de probabilidad a la hipótesis verdadera cuando acierta el `98 %` de las veces; por componentes, `0.99`). Comprobado también con componentes fuertemente dependientes entre sí: el modelo por componentes sigue ganando (`97.3 %` frente a `94.4 %`) y no llega a sobrecontar evidencia.
 
 ## Suelo de azar en ítems compuestos
 
@@ -459,7 +478,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 
 **Si el perfil es `C` o `A+C`:**
 
-- Prior de error `0.2`–`0.3`, no uniforme.
+- Prior de error `0.2`–`0.3`, no uniforme; `0.40` si el docente describe el error como frecuente, `0.10`–`0.15` si lo describe como raro (nunca `≥ 0.5` ni `< 0.10`).
 - Ningún factor declarado presente o ausente sin su muestra mínima de evidencia; el reporte distingue «ausente confirmado» de «sin evidencia suficiente».
 - Parada evaluada por factor; los no decididos se reportan como indeterminados, no se fuerzan.
 - En `A+C`: selección por bloques pedagógicos con pesos según la finalidad; la parada por ganancia mínima se evalúa sobre la IG cruda, no sobre la utilidad normalizada.

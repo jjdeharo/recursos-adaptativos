@@ -502,6 +502,33 @@
 </ul>
 <p>Both criteria converge in the limiting case of a highly concentrated distribution: when the belief is almost point-like, maximizing information gain and maximizing the IIF at \(\hat\theta\) select practically the same item. The difference matters above all in the first questions, when uncertainty is high.</p>
 <p>The use of mutual information and KL divergence (§6.3) to select items is well established in Bayesian psychometric research, but its application in <strong>real educational tools</strong> is uncommon: what is usual in the classroom is the IIF or simpler rules (next item of the estimated level, selection by difficulty). The combination this system uses —a distribution of hypotheses, Bayesian updating and selection by Shannon entropy reduction, integrated into a tool for teachers— is, in that sense, infrequent in the educational field.</p>
+
+<h3 id="s6-6">6.6. Information gain with partial credit</h3>
+<p>The derivation in §6.2 averages the posterior entropy over <strong>two</strong> outcomes, success and failure. When the item is scored with partial credit (§4.8), the natural question is whether that average should be extended to every score \(s\) the item can produce:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \sum_{s \in \mathcal{S}_q} P(s \mid q)\; H\!\left(\mathbf{p}' \mid s, q\right)\]</div>
+<p>The answer is that <strong>it depends on which likelihood is used to update</strong>, and that the obvious choice is the wrong one. The correct rule is one of coherence: <em>the gain must be computed with the same likelihood later used to update</em>. The expression above is a legitimate information gain —a mutual information— only if \(\mathbf{p}'\) is the Bayesian posterior under the model that actually generates \(s\). If \(\mathbf{p}'\) is computed with the geometric likelihood, which is a <em>summary</em> and not the generating model, the expression stops being a mutual information and starts measuring something else: how much a misspecified belief will concentrate.</p>
+
+<p><strong>Why that distinction matters in practice.</strong> The geometric likelihood is maximised at \(p_i = s\) (§4.8): it drives every intermediate score toward the intermediate hypotheses. A medium-difficulty item produces intermediate scores for <em>any</em> student —the one who has mastered it slips on some subcriterion, the one who has not gets one right by chance— so it concentrates the geometric posterior on the middle hypothesis regardless of the true state. An \(IG\) average taken over the true distribution of \(s\), but with geometric posteriors, detects that concentration and rewards it. The selector ends up preferring precisely the items that do not discriminate.</p>
+
+<p>Measured on a real resource built with this method (\(J = 7\) weighted subcriteria, three hypotheses at \(\theta \in \{-2, 0, 2\}\), a bank of 39 items per type with \(b \in \{-1, 0, +1\}\), \(a_{\text{ef}} = 1.25\), ceiling 0.95, sessions of 4 questions, 3 seeds, 1200 respondents per hypothesis):</p>
+<table>
+<thead><tr><th>Selection</th><th>Update</th><th>Accuracy</th><th>\(P(\)true \(\theta)\)</th></tr></thead>
+<tbody>
+<tr><td>two extremes \(s\in\{0,1\}\)</td><td>geometric</td><td>98.5 %</td><td>0.75</td></tr>
+<tr><td>exact distribution of \(s\)</td><td>geometric</td><td>95.9 %</td><td>0.71</td></tr>
+<tr><td>four scenarios of \(s\)</td><td>geometric</td><td>93.7 %</td><td>0.68</td></tr>
+<tr><td>by components</td><td>by components</td><td><strong>99.3 %</strong></td><td><strong>0.99</strong></td></tr>
+</tbody>
+</table>
+<p>Refining the selection while keeping the geometric update <strong>degrades</strong> the diagnosis, and degrades it further the "finer" the average. The fingerprint of the mechanism is visible in the bank: the proportion of medium-difficulty items selected rises from 9 % to 27 %.</p>
+
+<p><strong>The fix belongs in the update, not in the selection.</strong> If the response components are known, there is no need to summarise them into an \(s\): it suffices to multiply their likelihoods, which is what §4.8 already prefers. With \(J\) subcriteria of weights \(w_j\) and guessing floors \(c_j\), conditionally independent given \(H_i\), each subcriterion is answered correctly with probability \(P_j(\theta_i) = c_j + (1-c_j)\,\sigma\!\left(a_j(\theta_i - b_q)\right)\) and the item likelihood is</p>
+<div class="math-block">\[L(H_i) = \prod_{j=1}^{J} P_j(\theta_i)^{x_j}\,\bigl(1 - P_j(\theta_i)\bigr)^{1 - x_j}, \qquad x_j \in \{0, 1\}\]</div>
+<p>and the gain is averaged over the \(2^J\) combinations of \(\mathbf{x}\) (or over the convolution of partial sums if \(J\) is large). Selection and update then share the same model, and the gain is a mutual information again. This variant does not merely score better: it corrects a <strong>chronic under-confidence</strong> of the geometric summary, which assigns \(0.75\) probability to the true hypothesis while being right 98 % of the time —that is, it discards evidence it actually had—. With the component model that probability rises to \(0.99\), in line with its accuracy.</p>
+
+<p><strong>Robustness to dependence between components.</strong> The product of likelihoods assumes conditional independence, and §4.8 warns (finding 2.4) that this assumption overcounts evidence when components are correlated. This was checked by simulating a world with strong dependence —if the student fails to identify the problem type, the formula and the parameters fall to chance level—: the component model still wins (97.3 % against 94.4 %) and its measured over-confidence is \(-0.3\) percentage points, i.e. it does not overcount. The risk of finding 2.4 remains real for the \(J\)-exponent shortcut, which multiplies the evidence of <em>one</em> item by \(J\); it is not for the product of likelihoods of components actually observed separately.</p>
+
+<p><strong>Operational summary.</strong> If the components are observed separately, update them separately and average the gain over their combinations. If only the aggregate \(s\) is available, use the geometric likelihood to update and average the gain over the two extremes \(s \in \{0, 1\}\): that is exactly the formula of §6.2, and it is the choice coherent with that likelihood. What must not be done is to mix the two levels.</p>
 </section>
 <section id="s7">
 <h2>7. Stopping criterion</h2>

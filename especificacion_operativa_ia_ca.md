@@ -138,6 +138,20 @@ Això s'ha de fer després de cada interacció rellevant.
 - Si són **alternatives excloents** (per exemple, estratègia A / estratègia B / domini correcte), no facis servir IRT logística. Genera per a cada pregunta un vector de `n` versemblances `P(encert | H_i, q)`, una per hipòtesi.
 - Si els errors o necessitats **poden coexistir**, no els forcis dins d'una sola distribució nominal. Modela una dimensió per factor (`error llarg`, `error del zero`, etc.) o, de manera equivalent, una distribució sobre **perfils complets** (`2^k` combinacions possibles de `k` factors).
 - **Prior dels factors d'error: no uniforme.** Assigna a cada factor una probabilitat a priori baixa d'estar present (per defecte `P(error) ≈ 0.2`–`0.3`), mai l'uniforme `0.5`. El recurs aplica aquest valor de manera automàtica; el docent pot ajustar la prevalença del seu grup si ho vol, però no hi està obligat. *Per què:* els errors conceptuals solen ser minoritaris; l'uniforme no és neutre (afirma que cada alumne té cada error amb probabilitat `0.5`) i produeix falsos positius en les primeres preguntes.
+- **Ajusta aquest prior amb el que el docent ja t'ha dit, sense preguntar-li xifres.** Si en descriure el recurs el docent qualifica la freqüència d'un error, tradueix-ho tu a un prior; no li demanis una prevalença numèrica ni mostris el valor triat a la interfície de l'alumne.
+
+  | Com ho descriu el docent | `P(error)` inicial |
+  |---|---|
+  | «molts», «la majoria», «els passa sempre», «molt freqüent» | `0.40` |
+  | «alguns», «de vegades», «bastants», o no diu res | `0.20`–`0.30` (defecte) |
+  | «pocs», «casos aïllats», «algun de solt», «rar» | `0.10`–`0.15` |
+
+  Regles que acoten l'heurística:
+  - **Mai `≥ 0.5`, mai `< 0.10`.** Per damunt de `0.5` el prior afirma que l'error és més probable que la seva absència, que és el biaix que aquest apartat corregeix. Per sota de `0.10` caldrien `3` errades discriminants per confirmar un error real, i en un banc petit pot no confirmar-se mai.
+  - **La mostra mínima no es relaxa mai, i amb `0.40` és l'única cosa que protegeix.** Des de `0.40`, una sola errada discriminant (`LR ≈ 4`) porta la marginal a `0.727` i creua el llindar de «present»: sense exigir la mostra mínima d'evidència, la paraula del docent bastaria per diagnosticar l'alumne. Mantén els `2` intents per factor.
+  - **El prior és també l'àncora de l'oblit.** Un factor amb `P(error) = 0.40` que es quedi sense evidència recent no torna a `0.25`, torna a `0.40`, i reapareixerà com a «indeterminat». És coherent: el docent va dir que aquest error és freqüent en el seu grup.
+
+  *Per què:* l'ajust és deliberadament suau. Mou la decisió **un ítem**, no la predetermina: confirmar un error exigeix `2` errades discriminants des del prior per defecte, `1` des de `0.40` i `3` des de `0.10`. El prior tot sol no pot declarar un error **present** en cap punt del rang permès. El cas que corregeix és el fals negatiu simètric del que va motivar el prior informatiu: quan el docent ja sap que un error és freqüent en el seu grup, partir de `0.25` gasta preguntes a redescobrir-lo.
 - En aquest cas multifactorial, cada pregunta ha de definir com respon cada perfil. El mínim és una probabilitat d'encert per perfil; encara millor és una distribució per opció `P(R = r | perfil, q)` per aprofitar quin distractor ha triat l'alumne, i no només encert/error.
 - Si parteixes de factors simples, assigna cada valor responent: «si l'alumne tingués aquest error, amb quina probabilitat encertaria aquesta pregunta?». Baix si la pregunta ataca el concepte que l'error distorsiona; alt si l'error no interfereix.
 - Acota cada valor: no per sota del terra d'atzar `1/m` (m opcions), llevat de l'excepció del punt següent; la hipòtesi o perfil de domini al voltant de `0.9`–`0.95`, mai `1`.
@@ -162,7 +176,12 @@ Això s'ha de fer després de cada interacció rellevant.
 - Si tens evidència separada per component, és preferible multiplicar les versemblances de cada component en comptes de reduir-ho tot a una sola `s`.
 - Defineix com es calcula `s` de manera explícita i autocorregible: suma ponderada de subcriteris, fracció de passos correctes, proximitat a la solució numèrica, etc. Els pesos han de sumar `1`.
 - No tractis com a binària una resposta que admet graus: perds informació diagnòstica.
-- Per seleccionar la pregunta següent, calcula el guany d'informació sobre els resultats que l'ítem modela realment. Per a ítems binaris o amb crèdit parcial, l'aproximació amb encert i error plens continua essent acceptable; si modeles distractors o perfils complets, fes la mitjana sobre totes les respostes rellevants.
+- **Calcula el guany d'informació amb la mateixa versemblança amb què actualitzaràs.** Aquesta és la regla; la resta se'n dedueix.
+- Regla operativa, per ordre de preferència:
+  1. **Si coneixes els components de la resposta, no la resumeixis en `s`.** Actualitza multiplicant les versemblances de cada component (com ja es diu més amunt) i calcula el guany fent la mitjana sobre les combinacions de resultats dels components. És el cas millor: selecció i actualització comparteixen model.
+  2. **Si només disposes de la `s` agregada**, actualitza amb la versemblança geomètrica i calcula el guany fent la mitjana sobre els **dos extrems** (`s = 0` i `s = 1`) amb `P(encert | H_i, q)`. Això és exactament el guany del model binari que la geomètrica estén, i és l'elecció coherent.
+  3. **No facis la mitjana del guany sobre la distribució real de `s` mentre actualitzes amb la geomètrica.** Sembla més fi i és pitjor: vegeu-ne el perquè.
+- *Per què:* la versemblança geomètrica envia tota puntuació intermèdia cap a les hipòtesis intermèdies (per disseny: es maximitza en `p_i = s`). Un ítem de dificultat mitjana produeix puntuacions intermèdies amb **qualsevol** alumne, de manera que concentra el posterior en la hipòtesi del mig sigui quin sigui l'estat real. Si calcules el guany sobre la distribució vertadera de `s` però actualitzes amb la geomètrica, el selector detecta aquesta concentració, la interpreta com a informació i prefereix justament aquests ítems: la confiança puja i l'encert baixa. Mesurat sobre un recurs real de crèdit parcial (7 subcriteris ponderats, 3 hipòtesis, banc de 39 ítems per tipus, 4 preguntes per sessió, 3 llavors): la regla actual encerta el **98.5 %**; fer la mitjana sobre la distribució exacta de `s` mantenint la geomètrica baixa al **95.9 %**, i fer-ho sobre quatre escenaris discrets (`0`, parcial baix, parcial alt, `1`) baixa al **93.7 %**. L'ús d'ítems de dificultat mitjana passa del `9 %` al `27 %`. En canvi, passar al model per components del punt 1 **puja** al `99.3 %` i corregeix de passada una infraconfiança crònica de la geomètrica (assigna `0.75` de probabilitat a la hipòtesi vertadera quan encerta el `98 %` de les vegades; per components, `0.99`). Comprovat també amb components fortament dependents entre si: el model per components continua guanyant (`97.3 %` enfront de `94.4 %`) i no arriba a sobrecomptar evidència.
 
 ## Sòl d'atzar en ítems compostos
 
@@ -458,7 +477,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 
 **Si el perfil és `C` o `A+C`:**
 
-- Prior d'error `0.2`–`0.3`, no uniforme.
+- Prior d'error `0.2`–`0.3`, no uniforme; `0.40` si el docent descriu l'error com a freqüent, `0.10`–`0.15` si el descriu com a rar (mai `≥ 0.5` ni `< 0.10`).
 - Cap factor declarat present o absent sense la seva mostra mínima d'evidència; el report distingeix «absent confirmat» de «sense evidència suficient».
 - Aturada avaluada per factor; els no decidits es reporten com a indeterminats, no es forcen.
 - En `A+C`: selecció per blocs pedagògics amb pesos segons la finalitat; l'aturada per guany mínim s'avalua sobre la IG crua, no sobre la utilitat normalitzada.

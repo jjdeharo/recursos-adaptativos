@@ -504,6 +504,33 @@
 </ul>
 <p>Ambos criterios convergen en el caso límite de una distribución muy concentrada: cuando la creencia es casi puntual, maximizar la ganancia de información y maximizar la FII en \(\hat\theta\) seleccionan prácticamente el mismo ítem. La diferencia importa sobre todo en las primeras preguntas, cuando la incertidumbre es alta.</p>
 <p>El uso de la información mutua y la divergencia KL (§6.3) para seleccionar ítems está bien establecido en la investigación psicométrica bayesiana, pero su aplicación en <strong>herramientas educativas reales</strong> es poco habitual: lo común en el aula es la FII o reglas más simples (siguiente ítem del nivel estimado, selección por dificultad). La combinación que usa este sistema —distribución de hipótesis, actualización bayesiana y selección por reducción de entropía de Shannon, integrada en una herramienta para docentes— es, en ese sentido, infrecuente en el ámbito educativo.</p>
+
+<h3 id="s6-6">6.6. Ganancia de información con crédito parcial</h3>
+<p>El desarrollo de §6.2 promedia la entropía posterior sobre <strong>dos</strong> resultados, acierto y fallo. Cuando el ítem se puntúa con crédito parcial (§4.8), la pregunta natural es si ese promedio debería extenderse a todas las puntuaciones \(s\) que el ítem puede producir:</p>
+<div class="math-block">\[IG(q) = H(\mathbf{p}) - \sum_{s \in \mathcal{S}_q} P(s \mid q)\; H\!\left(\mathbf{p}' \mid s, q\right)\]</div>
+<p>La respuesta es que <strong>depende de con qué verosimilitud se actualice</strong>, y que la elección obvia es la equivocada. La regla correcta es de coherencia: <em>la ganancia debe calcularse con la misma verosimilitud que después se usa para actualizar</em>. La expresión de arriba solo es una ganancia de información legítima —una información mutua— si \(\mathbf{p}'\) es el posterior bayesiano bajo el modelo que realmente genera \(s\). Si \(\mathbf{p}'\) se calcula con la verosimilitud geométrica, que es un <em>resumen</em> y no el modelo generador, la expresión deja de ser una información mutua y pasa a medir otra cosa: cuánto se concentrará una creencia mal especificada.</p>
+
+<p><strong>Por qué esa distinción importa en la práctica.</strong> La verosimilitud geométrica se maximiza en \(p_i = s\) (§4.8): manda toda puntuación intermedia hacia las hipótesis intermedias. Un ítem de dificultad media produce puntuaciones intermedias con <em>cualquier</em> alumno —el que domina falla algún subcriterio, el que no domina acierta alguno por azar—, así que concentra el posterior geométrico en la hipótesis del medio con independencia del estado real. Un promedio de \(IG\) tomado sobre la distribución verdadera de \(s\), pero con posteriores geométricos, detecta esa concentración y la premia. El selector acaba prefiriendo justo los ítems que no discriminan.</p>
+
+<p>Medido sobre un recurso real construido con este método (\(J = 7\) subcriterios ponderados, tres hipótesis en \(\theta \in \{-2, 0, 2\}\), banco de 39 ítems por tipo con \(b \in \{-1, 0, +1\}\), \(a_{\text{ef}} = 1.25\), techo 0.95, sesiones de 4 preguntas, 3 semillas, 1200 respondentes por hipótesis):</p>
+<table>
+<thead><tr><th>Selección</th><th>Actualización</th><th>Exactitud</th><th>\(P(\theta\) real\()\)</th></tr></thead>
+<tbody>
+<tr><td>dos extremos \(s\in\{0,1\}\)</td><td>geométrica</td><td>98.5 %</td><td>0.75</td></tr>
+<tr><td>distribución exacta de \(s\)</td><td>geométrica</td><td>95.9 %</td><td>0.71</td></tr>
+<tr><td>cuatro escenarios de \(s\)</td><td>geométrica</td><td>93.7 %</td><td>0.68</td></tr>
+<tr><td>por componentes</td><td>por componentes</td><td><strong>99.3 %</strong></td><td><strong>0.99</strong></td></tr>
+</tbody>
+</table>
+<p>Refinar la selección manteniendo la actualización geométrica <strong>empeora</strong> el diagnóstico, y lo empeora más cuanto más «fino» es el promedio. La huella del mecanismo es visible en el banco: la proporción de ítems de dificultad media seleccionados sube del 9 % al 27 %.</p>
+
+<p><strong>La corrección está en la actualización, no en la selección.</strong> Si se conocen los componentes de la respuesta, no hay que resumirlos en una \(s\): basta multiplicar sus verosimilitudes, que es lo que §4.8 ya prefiere. Con \(J\) subcriterios de pesos \(w_j\) y suelos de azar \(c_j\), condicionalmente independientes dado \(H_i\), cada subcriterio se acierta con probabilidad \(P_j(\theta_i) = c_j + (1-c_j)\,\sigma\!\left(a_j(\theta_i - b_q)\right)\) y la verosimilitud del ítem es</p>
+<div class="math-block">\[L(H_i) = \prod_{j=1}^{J} P_j(\theta_i)^{x_j}\,\bigl(1 - P_j(\theta_i)\bigr)^{1 - x_j}, \qquad x_j \in \{0, 1\}\]</div>
+<p>y la ganancia se promedia sobre las \(2^J\) combinaciones de \(\mathbf{x}\) (o sobre la convolución de las sumas parciales si \(J\) es grande). Selección y actualización comparten entonces el mismo modelo, y la ganancia vuelve a ser una información mutua. Esta variante no solo acierta más: corrige una <strong>infra-confianza crónica</strong> del resumen geométrico, que asigna \(0.75\) de probabilidad a la hipótesis verdadera mientras acierta el 98 % de las veces —es decir, descarta evidencia que sí tenía—. Con el modelo por componentes, esa probabilidad sube a \(0.99\), en línea con su exactitud.</p>
+
+<p><strong>Robustez frente a la dependencia entre componentes.</strong> El producto de verosimilitudes supone independencia condicional, y §4.8 advierte (hallazgo 2.4) de que esa suposición sobrecuenta la evidencia cuando los componentes están correlacionados. Se comprobó simulando un mundo con dependencia fuerte —si el alumno no identifica el tipo de problema, la fórmula y los parámetros caen a nivel de azar—: el modelo por componentes sigue ganando (97.3 % frente a 94.4 %) y su sobreconfianza medida es de \(-0.3\) puntos porcentuales, es decir, no llega a sobrecontar. El riesgo del hallazgo 2.4 sigue siendo real para el atajo del exponente \(J\), que multiplica la evidencia de <em>un</em> ítem por \(J\); no lo es para el producto de verosimilitudes de componentes efectivamente observados por separado.</p>
+
+<p><strong>Resumen operativo.</strong> Si los componentes se observan por separado, actualízalos por separado y promedia la ganancia sobre sus combinaciones. Si solo se dispone de la \(s\) agregada, usa la verosimilitud geométrica para actualizar y promedia la ganancia sobre los dos extremos \(s \in \{0, 1\}\): eso es exactamente la fórmula de §6.2, y es la elección coherente con esa verosimilitud. Lo que no debe hacerse es cruzar los dos niveles.</p>
 </section>
 <section id="s7">
 <h2>7. Criterio de parada</h2>
