@@ -338,7 +338,7 @@
 <a class="back-link" href="index.html">← Home</a>
 <h1>Quick Guide for Teachers</h1>
 <p>How to ask an AI for an adaptive resource for your class, without technical jargon</p>
-<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.1</p>
+<p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Version 1.2</p>
 </div>
 <div class="container">
 <div class="toc-card">
@@ -349,7 +349,8 @@
 <li><a href="#s3">What you can use it for (with examples)</a></li>
 <li><a href="#s4">How to describe the errors</a></li>
 <li><a href="#s5">Other things you can ask for</a></li>
-<li><a href="#s6">After receiving the resource</a></li>
+<li><a href="#s6">Tips for creating a good resource</a></li>
+<li><a href="#s7">After receiving the resource</a></li>
 </ol>
 </div>
 
@@ -464,9 +465,22 @@
 </section>
 
 <section id="s6">
-<h2>6. After receiving the resource</h2>
+<h2>6. Tips for creating a good resource</h2>
 <ul>
-<li><strong>Try it yourself first</strong>, answering correctly and incorrectly on purpose, and check whether the final result makes sense.</li>
+<li><strong>You can use any AI</strong>: web chatbots, CLI versions, online services, desktop applications, etc. It is advisable to use the most capable model available to you.</li>
+<li><strong>Give the AI any educational documentation</strong> you want it to use. In addition to <a download="" href="especificacion_operativa_ia_en.md">especificacion_operativa_ia_en.md</a>, you can include documents with your own questions, examples, or theory.</li>
+<li>Creating an adaptive application is a <strong>dialogue with the AI</strong>: the more detail you provide at the beginning and throughout the process, the better it will understand what you need.</li>
+<li>Once you have a preliminary version, ask it to check point by point whether it has followed the <strong>operational specification</strong> and to correct any failures to comply.</li>
+<li><strong>Check that there are enough questions</strong>. The first version may contain only a few, just enough to work but not enough for a useful application. Ask the AI to create more if you think they are needed. You can do this in several batches if you reach the message limit. If the question bank will be very large, it is best to ask the AI to put the questions in a JSON file, which makes them easier to manage (only when using an AI that can work with several files, such as CLI versions or services like Google AI Studio).</li>
+<li>If you notice unnatural behaviour, such as always starting with the same questions, tell the AI to fix it.</li>
+<li>Do not provide students' personal data, and check that you may reuse any materials you supply. Also keep a copy of each working version before requesting major changes.</li>
+</ul>
+</section>
+
+<section id="s7">
+<h2>7. After receiving the resource</h2>
+<ul>
+<li>Always test the program to make sure it really does what you want, and tell the AI about any problem or shortcoming you identify.</li>
 <li><strong>Review the content, not the technique</strong>: the AI will hand you a short checklist along with the resource (are the errors the ones your students actually make?, do the questions fit the grade?, are the answers and explanations correct?, is any important case missing?, is the language right for the age?). That is what you can validate better than anyone; the method takes care of the mathematical side.</li>
 <li><strong>Ask for changes in plain language</strong>: "make it shorter", "the questions are too difficult for my class", "add more division exercises", "explain the errors with examples". You do not need technical terms.</li>
 <li><strong>Be cautious with diagnoses based on very few questions</strong>: the resource itself should warn you when a result is provisional. Treat it as guidance, not as a verdict.</li>
@@ -476,7 +490,7 @@
 <p>This guide is part of the <a href="documentacion_en.html">Protocol for Bayesian adaptive educational systems</a>. If you want to understand how it works inside, the full explanation is there.</p>
 </div>
 <hr/>
-<p style="font-size:0.85rem;color:var(--muted);"><strong>How to cite (APA 7):</strong> de Haro, J. J. (2026). <em>Quick guide for teachers — Protocol for Bayesian adaptive educational systems</em> (version 1.1). https://jjdeharo.github.io/recursos-adaptativos/</p>
+<p style="font-size:0.85rem;color:var(--muted);"><strong>How to cite (APA 7):</strong> de Haro, J. J. (2026). <em>Quick guide for teachers — Protocol for Bayesian adaptive educational systems</em> (version 1.2). https://jjdeharo.github.io/recursos-adaptativos/</p>
 </section>
 
 </div>
