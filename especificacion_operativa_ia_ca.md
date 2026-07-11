@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.4**
+**Versió 2.5**
 
 ## Propòsit
 
@@ -69,6 +69,8 @@ Les seccions no llistades apliquen sempre. Exemples de barreja indeguda que aque
 
 - El recurs no ha de ser lineal si la finalitat exigeix adaptació.
 - Cada resposta de l'alumne ha de modificar l'estat estimat del sistema.
+- Interpreta cada resposta com a evidència parcial sobre una o diverses hipòtesis, no com a prova directa de coneixement.
+- Cap resposta aïllada no ha d'eliminar una hipòtesi ni imposar un nivell màxim irreversible. Totes les hipòtesis han de conservar una probabilitat diferent de zero i l'alumne ha de poder canviar el diagnòstic amb prou evidència posterior. En particular, fallar una pregunta fàcil no ha d'impedir assolir el nivell més alt si després demostra domini de manera consistent.
 - L'adaptació pot afectar:
   - la pregunta següent;
   - la dificultat;
@@ -354,7 +356,7 @@ Per donar una etapa per superada, convé exigir almenys:
 - entropia local suficientment baixa;
 - i un mínim explícit de rendiment observat en aquesta etapa, mesurat sobre evidència **no** seleccionada per màxima informació.
 
-Compte amb el percentatge brut d'encerts com a criteri: si dins de l'etapa tries els ítems per màxima guany d'informació, la taxa d'encert de tots els alumnes tendeix per disseny cap a `(1+c)/2` (≈ 50 % sense atzar, ≈ 62 % amb quatre opcions), de manera que un llindar fix com «60 % d'encerts» pot bloquejar alumnes que sí que dominen l'etapa i el seu efecte depèn del format de les preguntes. Per mesurar el rendiment de manera comparable, fes servir una d'aquestes dues vies:
+Compte amb el percentatge brut d'encerts com a criteri: si dins de l'etapa tries els ítems per màxim guany d'informació, la taxa d'encert de tots els alumnes tendeix per disseny cap a `(1+c)/2` (≈ 50 % sense atzar, ≈ 62 % amb quatre opcions), de manera que un llindar fix com «60 % d'encerts» pot bloquejar alumnes que sí que dominen l'etapa i el seu efecte depèn del format de les preguntes. Per mesurar el rendiment de manera comparable, fes servir una d'aquestes dues vies:
 
 - **Ítems de sortida (recomanat):** exigeix encertar 1-2 ítems de dificultat representativa de l'objectiu de l'etapa, seleccionats **sense** criteri informatiu (no per màxima IG). En fixar la dificultat, l'encert sí que informa sobre el domini. El format importa: evita vertader/fals per als ítems de sortida (un sol ítem V/F deixa passar per atzar la majoria dels qui no dominen, `P(encert | no domini) ≈ 0.6`); amb 4-5 opcions exigeix encertar-los tots dos; amb oberta tingues present que exigir 2 de 2 bloqueja ≈ 1 de cada 4 alumnes que sí que dominen. El filtre de sortida complementa la confiança local `p_min`, que ja criba: la seva funció és caçar una calibració dolenta, no decidir en solitari.
 - **Consistència amb el model:** exigeix que la taxa observada no quedi gaire per sota de l'esperada sota la hipòtesi de domini local (és l'ajust de persona `l_z` dels fonaments aplicat com a criteri d'etapa). Amb els pocs ítems d'una etapa l'aproximació normal de `l_z` és feble: compara encerts observats davant d'esperats amb un marge de ~1 desviació típica (o un test binomial exacte) i tracta-ho com a senyal orientatiu, no com a bloqueig dur.
@@ -488,6 +490,7 @@ Comprova el recurs generat contra aquesta llista. Els blocs condicionals, només
 **Sempre:**
 
 - Cada resposta actualitza el posterior (versemblança × prior, normalitzat); no hi ha regles ad hoc de pujar/baixar dificultat en el seu lloc.
+- Cap resposta aïllada no elimina una hipòtesi ni fixa un nivell màxim irreversible. Comprova que, després de fallar la primera pregunta fàcil i encertar després diverses preguntes de dificultat mitjana i alta, el nivell superior continua sent assolible.
 - `a` derivada per ítem (`a = 1.25 / (1 - c_q)`) i sostre de domini `P(encert) <= 0.95` aplicats en la versemblança.
 - Escala `theta` fixa segons `n` (si el perfil usa `theta`), amb les dificultats dins de la meitat central.
 - El resultat no és només una nota: la recomanació i el pas següent pesen visualment més que l'etiqueta, i els errors es comuniquen com a hipòtesis a comprovar.

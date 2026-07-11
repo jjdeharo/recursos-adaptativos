@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.4**
+**Versión 2.5**
 
 ## Propósito
 
@@ -70,6 +70,7 @@ Las secciones no listadas aplican siempre. Ejemplos de mezcla indebida que esta 
 - El recurso no debe ser lineal si la finalidad exige adaptación.
 - Cada respuesta del alumno debe modificar el estado estimado del sistema.
 - Interpreta cada respuesta como evidencia parcial sobre una o varias hipótesis, no como prueba directa de conocimiento.
+- Ninguna respuesta aislada debe eliminar una hipótesis ni imponer un nivel máximo irreversible. Todas las hipótesis deben conservar probabilidad distinta de cero y el alumno debe poder cambiar el diagnóstico con evidencia posterior suficiente. En particular, fallar una pregunta fácil no debe impedir alcanzar el nivel más alto si después demuestra dominio de forma consistente.
 - La adaptación puede afectar a:
   - la siguiente pregunta;
   - la dificultad;
@@ -489,6 +490,7 @@ Comprueba el recurso generado contra esta lista. Los bloques condicionales, solo
 **Siempre:**
 
 - Cada respuesta actualiza el posterior (verosimilitud × prior, normalizado); no hay reglas ad hoc de subir/bajar dificultad en su lugar.
+- Ninguna respuesta aislada elimina una hipótesis ni fija un nivel máximo irreversible. Comprueba que, tras fallar la primera pregunta fácil y acertar después varias preguntas de dificultad media y alta, el nivel superior sigue siendo alcanzable.
 - `a` derivada por ítem (`a = 1.25 / (1 - c_q)`) y techo de dominio `P(acierto) <= 0.95` aplicados en la verosimilitud.
 - Escala `theta` fija según `n` (si el perfil usa `theta`), con las dificultades dentro de la mitad central.
 - El resultado no es solo una nota: la recomendación y el siguiente paso pesan visualmente más que la etiqueta, y los errores se comunican como hipótesis a comprobar.

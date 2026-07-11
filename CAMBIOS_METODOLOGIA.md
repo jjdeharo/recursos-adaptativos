@@ -2,6 +2,14 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-11 — Especificación v2.5: ninguna respuesta aislada puede encasillar al alumno
+
+Detectado en un recurso generado: tras fallar la primera pregunta fácil, el alumno ya no podía alcanzar el nivel más alto aunque acertase todas las posteriores. Ese comportamiento convertía una evidencia aislada en un techo irreversible, en lugar de mantener una distribución bayesiana revisable.
+
+Se añade una regla general que prohíbe eliminar hipótesis o fijar un nivel máximo irreversible por una sola respuesta. Todas las hipótesis deben conservar probabilidad distinta de cero y la evidencia posterior suficiente debe poder cambiar el diagnóstico. La lista de verificación incorpora el caso de regresión concreto: fallar la primera pregunta fácil y acertar después varias de dificultad media y alta debe mantener alcanzable el nivel superior.
+
+Editado en la especificación (secciones «Reglas de diseño» y «Verificación antes de entregar»), ES/CA/EN. La especificación sube a **v2.5** y se actualiza la versión mostrada en `index.html`. Fundamentos y protocolo no cambian: la actualización bayesiana y el techo de dominio ya evitaban probabilidades extremas; el cambio hace explícita la consecuencia operativa y añade su comprobación.
+
 ## 2026-07-10 — Especificación v2.4: enlace de origen metodológico en los recursos generados
 
 Nueva regla de implementación: todo recurso generado siguiendo la especificación debe incluir en su propia interfaz, de forma visible pero discreta, un enlace a la web pública de la metodología (`https://jjdeharo.github.io/recursos-adaptativos/`) como origen del enfoque. No basta con dejarlo en comentarios de código ni en documentación externa, porque el recurso puede circular separado de la conversación o del repositorio.

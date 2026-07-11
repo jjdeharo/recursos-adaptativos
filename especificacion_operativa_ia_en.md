@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.4**
+**Version 2.5**
 
 ## Purpose
 
@@ -69,6 +69,8 @@ Sections not listed always apply. Examples of improper mixing this table prevent
 
 - The resource must not be linear if the purpose requires adaptation.
 - Each learner response must modify the system's estimated state.
+- Treat each response as partial evidence about one or more hypotheses, not as direct proof of knowledge.
+- No single response may eliminate a hypothesis or impose an irreversible maximum level. Every hypothesis must retain a non-zero probability, and sufficient later evidence must be able to change the diagnosis. In particular, failing an easy question must not prevent the learner from reaching the highest level if they subsequently demonstrate consistent mastery.
 - Adaptation may affect:
   - the next question;
   - difficulty;
@@ -488,6 +490,7 @@ Check the generated resource against this list. Conditional blocks apply only if
 **Always:**
 
 - Every response updates the posterior (likelihood × prior, normalised); there are no ad hoc raise/lower-difficulty rules in its place.
+- No single response eliminates a hypothesis or fixes an irreversible maximum level. Check that, after failing the first easy question and then answering several medium- and high-difficulty questions correctly, the highest level remains attainable.
 - `a` derived per item (`a = 1.25 / (1 - c_q)`) and the mastery ceiling `P(correct) <= 0.95` applied in the likelihood.
 - Fixed `theta` scale according to `n` (if the profile uses `theta`), with difficulties inside the central half.
 - The result is not just a score: the recommendation and next step carry more visual weight than the label, and errors are communicated as hypotheses to check.
