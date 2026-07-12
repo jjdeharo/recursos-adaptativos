@@ -1,6 +1,6 @@
 # Especificación operativa para IA
 
-**Versión 2.5**
+**Versión 2.6**
 
 ## Propósito
 
@@ -218,6 +218,8 @@ Cada pregunta o interacción autocorregible debe tener, cuando proceda:
 - ayuda o pista opcional;
 - retroalimentación mínima tras la respuesta;
 - explicación específica, especialmente si la finalidad principal es aprendizaje, práctica o refuerzo.
+
+**Cuándo mostrar la corrección depende del modo.** En modo `Práctica` o de aprendizaje, muestra acierto/fallo y explicación tras cada respuesta: el objetivo es aprender y la estimación es viva. En modo `Diagnóstico`, si todos los ítems miden el mismo constructo (una sola distribución nominal, o de nivel cuando el ítem transparenta cuál es la respuesta de dominio), **no reveles acierto/fallo ni explicación por ítem**: da una confirmación neutra y **agrupa las soluciones al final**, con el diagnóstico ya cerrado. *Por qué:* revelar la respuesta correcta enseña la hipótesis diagnosticada (el modelo correcto, la estrategia buena) en mitad de la sesión y arrastra las respuestas posteriores hacia ella. Es una contaminación distinta de la del ítem reutilizado (§ «Selección adaptativa»): aquí no se repite el ítem, sino que el feedback de uno contamina a los demás, porque todos preguntan por lo mismo. La retroalimentación no se suprime, se **pospone**: cierra siempre con las soluciones comentadas.
 
 Si el recurso es procedural o tutorial, las interacciones pueden no ser preguntas clásicas, pero deben seguir siendo autocorregibles o evaluables de forma explícita.
 

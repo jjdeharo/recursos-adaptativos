@@ -1,6 +1,6 @@
 # Operational Specification for AI
 
-**Version 2.5**
+**Version 2.6**
 
 ## Purpose
 
@@ -218,6 +218,8 @@ Each question or self-correctable interaction must have, where applicable:
 - optional help or hint;
 - minimum feedback after the response;
 - specific explanation, especially if the main purpose is learning, practice, or reinforcement.
+
+**When to show the correction depends on the mode.** In `Practice` or learning mode, show right/wrong and the explanation after each answer: the goal is to learn and the estimate is a living one. In `Diagnosis` mode, if all items measure the same construct (a single nominal distribution, or a level one when the item makes the mastery answer transparent), **do not reveal right/wrong or the explanation per item**: give a neutral acknowledgment and **group the solutions at the end**, once the diagnosis is closed. *Why:* revealing the correct answer teaches the diagnosed hypothesis (the correct model, the good strategy) mid-session and drags later answers toward it. This is a different contamination from that of the reused item (§ "Adaptive selection"): here the item is not repeated; rather, the feedback from one item contaminates the others, because they all ask about the same thing. Feedback is not suppressed, it is **postponed**: always close with the commented solutions.
 
 If the resource is procedural or tutorial in nature, interactions may not be classical questions, but they must still be self-correctable or explicitly assessable.
 

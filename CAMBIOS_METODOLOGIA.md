@@ -2,6 +2,12 @@
 
 Registro breve de cambios técnicos relevantes en la metodología pública.
 
+## 2026-07-12 — Especificación v2.6: retroalimentación pospuesta en diagnósticos de constructo único
+
+Detectado al reconvertir `bayes-temperatura` a un diagnóstico nominal excluyente de marcos rivales sobre la evolución (lamarckismo, finalismo, variación y selección): mostrar acierto/fallo y la explicación tras cada ítem revelaba la hipótesis correcta a media sesión y sesgaba las respuestas siguientes hacia ella. La especificación ya trataba la contaminación del feedback, pero solo la del **ítem reutilizado** (ver su corrección y repetirlo, § «Selección adaptativa»). No cubría el caso más básico: en un diagnóstico donde todos los ítems miden el **mismo constructo**, el feedback de un ítem contamina a los **demás** aunque no se repita ninguno, porque todos preguntan por lo mismo. Además, «retroalimentación mínima tras la respuesta» y «mostrar con claridad la retroalimentación» empujaban en sentido contrario sin aclarar que depende del modo.
+
+Se añade una regla en «Preguntas y actividades»: en modo `Práctica` o de aprendizaje, feedback inmediato (acierto/fallo y explicación); en modo `Diagnóstico` con constructo único, confirmación neutra por ítem y **soluciones agrupadas al final**, con el diagnóstico ya cerrado. La retroalimentación no se suprime, se pospone. Editado en la especificación, sección «Preguntas y actividades», ES/CA/EN. La especificación sube a **v2.6** (cabecera en las tres lenguas y versión mostrada en `index.html`). Fundamentos y protocolo no cambian: es una regla operativa sobre cuándo mostrar el feedback, no una derivación nueva. Aplicado en `bayes-temperatura`: confirmación neutra («respuesta registrada») durante la sesión y sección «Soluciones comentadas» en el cierre.
+
 ## 2026-07-11 — Especificación v2.5: ninguna respuesta aislada puede encasillar al alumno
 
 Detectado en un recurso generado: tras fallar la primera pregunta fácil, el alumno ya no podía alcanzar el nivel más alto aunque acertase todas las posteriores. Ese comportamiento convertía una evidencia aislada en un techo irreversible, en lugar de mantener una distribución bayesiana revisable.

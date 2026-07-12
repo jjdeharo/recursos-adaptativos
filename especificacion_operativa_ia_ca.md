@@ -1,6 +1,6 @@
 # Especificació operativa per a IA
 
-**Versió 2.5**
+**Versió 2.6**
 
 ## Propòsit
 
@@ -218,6 +218,8 @@ Cada pregunta o interacció autocorregible ha de tenir, quan escaigui:
 - ajuda o pista opcional;
 - retroalimentació mínima després de la resposta;
 - explicació específica, especialment si la finalitat principal és aprenentatge, pràctica o reforç.
+
+**Quan mostrar la correcció depèn del mode.** En mode `Pràctica` o d'aprenentatge, mostra encert/error i explicació després de cada resposta: l'objectiu és aprendre i l'estimació és viva. En mode `Diagnòstic`, si tots els ítems mesuren el mateix constructe (una sola distribució nominal, o de nivell quan l'ítem transparenta quina és la resposta de domini), **no revelis encert/error ni explicació per ítem**: dona una confirmació neutra i **agrupa les solucions al final**, amb el diagnòstic ja tancat. *Per què:* revelar la resposta correcta ensenya la hipòtesi diagnosticada (el model correcte, l'estratègia bona) enmig de la sessió i arrossega les respostes posteriors cap a ella. És una contaminació diferent de la de l'ítem reutilitzat (§ «Selecció adaptativa»): aquí no es repeteix l'ítem, sinó que el feedback d'un contamina els altres, perquè tots pregunten pel mateix. La retroalimentació no se suprimeix, es **posposa**: tanca sempre amb les solucions comentades.
 
 Si el recurs és procedural o tutorial, les interaccions poden no ser preguntes clàssiques, però han de continuar sent autocorregibles o avaluables de manera explícita.
 
