@@ -265,6 +265,7 @@
 <p>Si no existe información previa sobre el alumno, el sistema parte de una <strong>distribución uniforme</strong>:</p>
 <div class="math-block">\[P(H_i) = \frac{1}{n} \quad \forall i\]</div>
 <p>Esta elección refleja ignorancia máxima: todas las hipótesis son igualmente plausibles antes de observar ninguna respuesta. Si existiera información previa fiable (resultados de cursos anteriores, diagnósticos previos), podría usarse como distribución inicial justificada.</p>
+<p>Conviene precisar el alcance de esa neutralidad: la uniforme solo es neutral sobre hipótesis de <strong>nivel</strong>. Sobre <strong>factores de error</strong> binarios equivale a afirmar que cada error está presente en la mitad de los alumnos —una afirmación fuerte sobre su prevalencia, no una ausencia de información—, de modo que en ese caso se parte de una probabilidad <em>a priori</em> informativa (§10; §5.1 del protocolo).</p>
 <h3>2.3. Valor numérico de cada hipótesis</h3>
 <p>Para poder usar la función logística que genera las verosimilitudes (véase §4), cada hipótesis \(H_i\) necesita un valor numérico \(\theta_i\) que represente su posición en la escala de dominio. La convención recomendada es centrar los valores en cero con intervalos iguales:</p>
 <table>
@@ -322,7 +323,7 @@
 <p>Alternativas como las redes de reglas o los sistemas expertos clásicos no tienen estas propiedades y pueden quedar bloqueadas en diagnósticos incorrectos cuando el alumno responde de forma inesperada.</p>
 <h3>3.5. Actualización con olvido exponencial (estado no estacionario)</h3>
 <p>La actualización secuencial de §3.3 da el mismo peso a todas las respuestas, la primera y la última. Eso es correcto si el estado del alumno no cambia durante la sesión, pero en recursos de práctica prolongada el alumno aprende mientras practica (véase §11.3): la probabilidad <em>a posteriori</em> arrastra la evidencia antigua y puede converger hacia un estado que ya no existe.</p>
-<p><strong>Dos sentidos de «probabilidad <em>a priori</em>» que conviene no confundir.</strong> En la actualización secuencial (§3.3), la distribución <em>a posteriori</em> obtenida tras una respuesta pasa a ser la probabilidad <em>a priori</em> <strong>inmediata</strong> de la respuesta siguiente: es una distribución que cambia en cada paso. El olvido exponencial <em>no</em> se ancla a esa, sino a la probabilidad <em>a priori</em> <strong>inicial o de referencia</strong> \(\pi\): la distribución fija que se define al construir el modelo (§3.1) y que ya no se modifica durante la sesión. La distinción no es cosmética: anclar el olvido a la <em>a priori</em> inmediata sería atenuar cada distribución hacia sí misma, es decir, no hacer nada.</p>
+<p><strong>Dos sentidos de «probabilidad <em>a priori</em>» que conviene no confundir.</strong> En la actualización secuencial (§3.3), la distribución <em>a posteriori</em> obtenida tras una respuesta pasa a ser la probabilidad <em>a priori</em> <strong>inmediata</strong> de la respuesta siguiente: es una distribución que cambia en cada paso. El olvido exponencial <em>no</em> se ancla a esa, sino a la probabilidad <em>a priori</em> <strong>inicial o de referencia</strong> \(\pi\): la distribución fija que se define al construir el modelo (§2.2) y que ya no se modifica durante la sesión. La distinción no es cosmética: anclar el olvido a la <em>a priori</em> inmediata sería atenuar cada distribución hacia sí misma, es decir, no hacer nada.</p>
 <p>La corrección mínima es, pues, el <strong>olvido exponencial anclado a la probabilidad <em>a priori</em> inicial</strong>: antes de incorporar cada nueva respuesta, la distribución acumulada se atenúa ligeramente hacia esa distribución de referencia \(\pi_i\) con una potencia \(\lambda \in (0, 1]\); después se aplica Bayes con la nueva evidencia y se renormaliza:</p>
 <div class="math-block">\[P^{(t+1)}(H_i) \propto \left[P^{(t)}(H_i)\right]^{\lambda} \cdot \pi_i^{\,1-\lambda} \cdot P(R_{t+1} \mid H_i)\]</div>
 <p>Cada paso de la sesión recorre, por tanto, esta secuencia:</p>
@@ -363,10 +364,10 @@
 </table>
 <p>La forma logística no es solo una conveniencia de cálculo. Su raíz está en la familia de modelos de Rasch, donde tomar el logaritmo de la razón de probabilidades \(P/(1-P)\) produce una escala aditiva (<em>logit</em>) en la que la probabilidad de acierto depende únicamente de la diferencia \(\theta_i - b_q\). Esa estructura es la que da sentido a situar el nivel del alumno y la dificultad del ítem en una misma escala y compararlos. En el caso estricto de Rasch (discriminación común \(a\) y \(c = 0\)), esta propiedad se conoce como <strong>objetividad específica</strong>: la comparación entre dos alumnos no depende de qué ítems se usen, ni la comparación entre dos ítems de qué alumnos respondan. El modelo de tres parámetros generaliza la curva (permite \(a\) variable y \(c > 0\)) y relaja esa objetividad estricta, pero conserva la misma justificación de fondo para emplear la función logística.</p>
 <h3>4.3. Comportamiento de la curva</h3>
-<p>Cuando \(\theta_i \gg b_q\) (el alumno está muy por encima de la dificultad), el exponente \(e^{-a(\theta_i - b_q)} \to 0\) y:</p>
+<p>Cuando \(\theta_i \gg b_q\) (el alumno está muy por encima de la dificultad), el término exponencial \(e^{-a(\theta_i - b_q)} \to 0\) y:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
 <p>En la implementación, este límite superior no se deja llegar a 1: se acota con el <strong>techo de dominio</strong> \(P(A) \leq 0{,}95\) (§8.3), que modela el descuido (<em>slip</em>) y evita que un solo fallo en un ítem fácil produzca saltos casi deterministas de la probabilidad <em>a posteriori</em>.</p>
-<p>Cuando \(\theta_i \ll b_q\) (el alumno está muy por debajo de la dificultad), el exponente \(\to +\infty\) y:</p>
+<p>Cuando \(\theta_i \ll b_q\) (el alumno está muy por debajo de la dificultad), el término exponencial \(\to +\infty\) y:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 0 = c_q\]</div>
 <p>Cuando \(\theta_i = b_q\), el argumento del exponente es cero y:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{2} = \frac{1 + c_q}{2}\]</div>
@@ -725,7 +726,7 @@
 <div class="math-block">\[H^{(1)} = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
 <p>La entropía ha bajado de 1.585 a 0.764 bits. El sistema sospecha con bastante fuerza que el alumno es de nivel básico.</p>
 <h3>9.5. Segunda pregunta y acierto en Q2</h3>
-<p>Con \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), el sistema vuelve a calcular las ganancias para Q2 y Q3 (Q1 ya se ha usado). En este estado asimétrico, Q2 resulta más informativa porque ayuda a revisar si el fallo anterior pudo ser accidental.</p>
+<p>Con \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), el sistema vuelve a calcular las ganancias para Q2 y Q3 (Q1 ya se ha usado). La duda real está ahora entre \(H_1\) y \(H_2\), porque \(H_3\) ha quedado casi descartado: la pregunta más útil es la que mejor separe esas dos hipótesis. Es Q2 (\(b = 0\)), con \(IG = 0{,}065\) bits, frente a los \(0{,}020\) de Q3, cuya dificultad discrimina sobre todo frente al nivel avanzado, que ya no compite.</p>
 <p>El alumno <strong>acierta Q2</strong> (media). Actualizamos con \(P(A \mid H_i, Q2) = (0.286, 0.625, 0.964)\):</p>
 <div class="math-block">\[P(A \mid Q2, \mathbf{p}^{(1)}) = 0.809 \cdot 0.286 + 0.180 \cdot 0.625 + 0.011 \cdot 0.964 = 0.231 + 0.113 + 0.011 = 0.354\]</div>
 <div class="math-block">\[P(H_1 \mid A, Q2) = \frac{0.286 \cdot 0.809}{0.354} = 0.652, \quad P(H_2 \mid A, Q2) = \frac{0.625 \cdot 0.180}{0.354} = 0.318, \quad P(H_3 \mid A, Q2) = 0.030\]</div>
@@ -842,7 +843,7 @@
 <h3>11.3. Estabilidad de las hipótesis</h3>
 <p>El modelo asume que el estado del alumno no cambia durante la sesión. En sesiones cortas de evaluación diagnóstica esto es razonable. En sesiones largas de aprendizaje adaptativo, el alumno puede mejorar durante la propia interacción, lo que haría que la probabilidad <em>a posteriori</em> converja hacia una hipótesis que ya no refleja el estado actual. Este límite se mitiga con la actualización con olvido exponencial, o con un modelo de transición explícito, descritos en §3.5: ambos evitan que la evidencia antigua bloquee el seguimiento de un estado que cambia.</p>
 <h3>11.4. Respuestas al azar</h3>
-<p>Si el alumno responde al azar sistemáticamente, el parámetro \(c_q\) solo protege parcialmente: reduce el sesgo upward en las verosimilitudes de acierto, pero no elimina el ruido. Con suficientes respuestas aleatorias, la probabilidad <em>a posteriori</em> puede converger hacia hipótesis incorrectas.</p>
+<p>Si el alumno responde al azar sistemáticamente, el parámetro \(c_q\) solo protege parcialmente: al incorporar el suelo de azar a las verosimilitudes, evita que un acierto por casualidad se lea como evidencia fuerte de dominio, pero no elimina el ruido. Con suficientes respuestas aleatorias, la probabilidad <em>a posteriori</em> puede converger hacia hipótesis incorrectas.</p>
 <h3>11.5. Número mínimo de preguntas</h3>
 <p>Con pocas preguntas, la probabilidad <em>a posteriori</em> puede quedar sesgada por coincidencias (una racha de aciertos o fallos no representativa). Imponer un <strong>número mínimo de preguntas</strong> antes de activar el criterio de parada reduce este riesgo, a costa de alargar la sesión.</p>
 <h3>11.6. El modelo no sustituye al criterio docente</h3>

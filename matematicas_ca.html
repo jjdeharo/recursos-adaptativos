@@ -263,6 +263,7 @@
 <p>Si no hi ha informació prèvia sobre l'alumne, el sistema parteix d'una <strong>distribució uniforme</strong>:</p>
 <div class="math-block">\[P(H_i) = \frac{1}{n} \quad \forall i\]</div>
 <p>Aquesta elecció reflecteix una ignorància màxima: totes les hipòtesis són igualment plausibles abans d'observar cap resposta. Si existís informació prèvia fiable (resultats de cursos anteriors, diagnòstics previs), es podria fer servir com a distribució inicial justificada.</p>
+<p>Convé precisar l'abast d'aquesta neutralitat: la uniforme només és neutra sobre hipòtesis de <strong>nivell</strong>. Sobre <strong>factors d'error</strong> binaris equival a afirmar que cada error és present en la meitat dels alumnes —una afirmació forta sobre la seva prevalença, no una absència d'informació—, de manera que en aquest cas es parteix d'una probabilitat prèvia informativa (§10; §5.1 del protocol).</p>
 <h3>2.3. Valor numèric de cada hipòtesi</h3>
 <p>Per poder utilitzar la funció logística que genera les versemblances (vegeu §4), cada hipòtesi \(H_i\) necessita un valor numèric \(\theta_i\) que representi la seva posició a l'escala de domini. La convenció recomanada és centrar els valors en zero amb intervals iguals:</p>
 <table>
@@ -320,7 +321,7 @@
 <p>Alternatives com les xarxes de regles o els sistemes experts clàssics no tenen aquestes propietats i poden quedar bloquejades en diagnòstics incorrectes quan l'alumne respon de manera inesperada.</p>
 <h3>3.5. Actualització amb oblit exponencial (estat no estacionari)</h3>
 <p>L'actualització seqüencial de §3.3 dona el mateix pes a totes les respostes, la primera i l'última. Això és correcte si l'estat de l'alumne no canvia durant la sessió, però en recursos de pràctica prolongada l'alumne aprèn mentre practica (vegeu §11.3): la probabilitat posterior arrossega l'evidència antiga i pot convergir cap a un estat que ja no existeix.</p>
-<p><strong>Dos sentits de «probabilitat prèvia» que convé no confondre.</strong> En l'actualització seqüencial (§3.3), la distribució posterior obtinguda després d'una resposta passa a ser la probabilitat prèvia <strong>immediata</strong> de la resposta següent: és una distribució que canvia a cada pas. L'oblit exponencial <em>no</em> s'ancora a aquesta, sinó a la probabilitat prèvia <strong>inicial o de referència</strong> \(\pi\): la distribució fixa que es defineix en construir el model (§3.1) i que ja no es modifica durant la sessió. La distinció no és cosmètica: ancorar l'oblit a la prèvia immediata seria atenuar cada distribució cap a ella mateixa, és a dir, no fer res.</p>
+<p><strong>Dos sentits de «probabilitat prèvia» que convé no confondre.</strong> En l'actualització seqüencial (§3.3), la distribució posterior obtinguda després d'una resposta passa a ser la probabilitat prèvia <strong>immediata</strong> de la resposta següent: és una distribució que canvia a cada pas. L'oblit exponencial <em>no</em> s'ancora a aquesta, sinó a la probabilitat prèvia <strong>inicial o de referència</strong> \(\pi\): la distribució fixa que es defineix en construir el model (§2.2) i que ja no es modifica durant la sessió. La distinció no és cosmètica: ancorar l'oblit a la prèvia immediata seria atenuar cada distribució cap a ella mateixa, és a dir, no fer res.</p>
 <p>La correcció mínima és, doncs, l'<strong>oblit exponencial ancorat a la probabilitat prèvia inicial</strong>: abans d'incorporar cada nova resposta, la distribució acumulada s'atenua lleugerament cap a aquesta distribució de referència \(\pi_i\) amb una potència \(\lambda \in (0, 1]\); després s'aplica Bayes amb la nova evidència i es renormalitza:</p>
 <div class="math-block">\[P^{(t+1)}(H_i) \propto \left[P^{(t)}(H_i)\right]^{\lambda} \cdot \pi_i^{\,1-\lambda} \cdot P(R_{t+1} \mid H_i)\]</div>
 <p>Cada pas de la sessió recorre, per tant, aquesta seqüència:</p>
@@ -361,10 +362,10 @@
 </table>
 <p>La forma logística no és només una conveniència de càlcul. La seva arrel és a la família de models de Rasch, on prendre el logaritme de la raó de probabilitats \(P/(1-P)\) produeix una escala additiva (<em>logit</em>) en què la probabilitat d'encert depèn únicament de la diferència \(\theta_i - b_q\). Aquesta estructura és la que dona sentit a situar el nivell de l'alumne i la dificultat de l'ítem en una mateixa escala i comparar-los. En el cas estricte de Rasch (discriminació comuna \(a\) i \(c = 0\)), aquesta propietat es coneix com a <strong>objectivitat específica</strong>: la comparació entre dos alumnes no depèn de quins ítems es facin servir, ni la comparació entre dos ítems de quins alumnes els responguin. El model de tres paràmetres generalitza la corba (permet \(a\) variable i \(c > 0\)) i relaxa aquesta objectivitat estricta, però conserva la mateixa justificació de fons per emprar la funció logística.</p>
 <h3>4.3. Comportament de la corba</h3>
-<p>Quan \(\theta_i \gg b_q\) (l'alumne està molt per sobre de la dificultat), l'exponent \(e^{-a(\theta_i - b_q)} \to 0\) i:</p>
+<p>Quan \(\theta_i \gg b_q\) (l'alumne està molt per sobre de la dificultat), el terme exponencial \(e^{-a(\theta_i - b_q)} \to 0\) i:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
 <p>En la implementació, aquest límit superior no es deixa arribar a 1: s'acota amb el <strong>sostre de domini</strong> \(P(A) \leq 0{,}95\) (§8.3), que modela el descuit (<em>slip</em>) i evita que una sola fallada en un ítem fàcil produeixi salts gairebé deterministes de la probabilitat posterior.</p>
-<p>Quan \(\theta_i \ll b_q\) (l'alumne està molt per sota de la dificultat), l'exponent \(\to +\infty\) i:</p>
+<p>Quan \(\theta_i \ll b_q\) (l'alumne està molt per sota de la dificultat), el terme exponencial \(\to +\infty\) i:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 0 = c_q\]</div>
 <p>Quan \(\theta_i = b_q\), l'argument de l'exponent és zero i:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{2} = \frac{1 + c_q}{2}\]</div>
@@ -723,7 +724,7 @@
 <div class="math-block">\[H^{(1)} = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
 <p>L'entropia ha baixat de 1.585 a 0.764 bits. El sistema sospita amb força que l'alumne és de nivell bàsic.</p>
 <h3>9.5. Segona pregunta i encert en Q2</h3>
-<p>Amb \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), el sistema torna a calcular els guanys per a Q2 i Q3 (Q1 ja s'ha fet servir). En aquest estat asimètric, Q2 resulta més informativa perquè ajuda a revisar si la fallada anterior va poder ser accidental.</p>
+<p>Amb \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), el sistema torna a calcular els guanys per a Q2 i Q3 (Q1 ja s'ha fet servir). El dubte real ara és entre \(H_1\) i \(H_2\), perquè \(H_3\) ha quedat gairebé descartat: la pregunta més útil és la que millor separi aquestes dues hipòtesis. És Q2 (\(b = 0\)), amb \(IG = 0{,}065\) bits, davant dels \(0{,}020\) de Q3, la dificultat de la qual discrimina sobretot davant del nivell avançat, que ja no competeix.</p>
 <p>L'alumne <strong>encerta Q2</strong> (de dificultat mitjana). Actualitzem amb \(P(A \mid H_i, Q2) = (0.286, 0.625, 0.964)\):</p>
 <div class="math-block">\[P(A \mid Q2, \mathbf{p}^{(1)}) = 0.809 \cdot 0.286 + 0.180 \cdot 0.625 + 0.011 \cdot 0.964 = 0.231 + 0.113 + 0.011 = 0.354\]</div>
 <div class="math-block">\[P(H_1 \mid A, Q2) = \frac{0.286 \cdot 0.809}{0.354} = 0.652, \quad P(H_2 \mid A, Q2) = \frac{0.625 \cdot 0.180}{0.354} = 0.318, \quad P(H_3 \mid A, Q2) = 0.030\]</div>
@@ -840,7 +841,7 @@
 <h3>11.3. Estabilitat de les hipòtesis</h3>
 <p>El model assumeix que l'estat de l'alumne no canvia durant la sessió. En sessions curtes d'avaluació diagnòstica això és raonable. En sessions llargues d'aprenentatge adaptatiu, l'alumne pot millorar durant la mateixa interacció, cosa que faria que la probabilitat posterior convergís cap a una hipòtesi que ja no reflecteix l'estat actual. Aquest límit es mitiga amb l'actualització amb oblit exponencial, o amb un model de transició explícit, descrits a §3.5: tots dos eviten que l'evidència antiga bloquegi el seguiment d'un estat que canvia.</p>
 <h3>11.4. Respostes a l'atzar</h3>
-<p>Si l'alumne respon a l'atzar sistemàticament, el paràmetre \(c_q\) només protegeix parcialment: redueix el biaix upward a les versemblances d'encert, però no elimina el soroll. Amb prou respostes aleatòries, la probabilitat posterior pot convergir cap a hipòtesis incorrectes.</p>
+<p>Si l'alumne respon a l'atzar sistemàticament, el paràmetre \(c_q\) només protegeix parcialment: en incorporar el sòl d'atzar a les versemblances, evita que un encert per casualitat es llegeixi com a evidència forta de domini, però no elimina el soroll. Amb prou respostes aleatòries, la probabilitat posterior pot convergir cap a hipòtesis incorrectes.</p>
 <h3>11.5. Nombre mínim de preguntes</h3>
 <p>Amb poques preguntes, la probabilitat posterior pot quedar esbiaixada per coincidències (una ratxa d'encerts o errors no representatius). Imposar un <strong>nombre mínim de preguntes</strong> abans d'activar el criteri de parada, redueix aquest risc, a costa d'allargar la sessió.</p>
 <h3>11.6. El model no substitueix el criteri docent</h3>

@@ -263,6 +263,7 @@
 <p>If there is no prior information about the student, the system starts from a <strong>uniform distribution</strong>:</p>
 <div class="math-block">\[P(H_i) = \frac{1}{n} \quad \forall i\]</div>
 <p>This choice reflects maximum ignorance: all hypotheses are equally plausible before any response is observed. If reliable prior information existed (results from previous courses, previous diagnoses), it could be used as a justified initial distribution.</p>
+<p>The scope of that neutrality is worth stating: the uniform is neutral only over <strong>level</strong> hypotheses. Over binary <strong>error factors</strong> it amounts to asserting that each error is present in half the students —a strong claim about its prevalence, not an absence of information— so in that case an informative prior is used instead (§10; §5.1 of the protocol).</p>
 <h3>2.3. Numerical value of each hypothesis</h3>
 <p>In order to use the logistic function that generates the likelihoods (see §4), each hypothesis \(H_i\) needs a numerical value \(\theta_i\) that represents its position on the domain scale. The recommended convention is to center the values at zero with equal intervals:</p>
 <table>
@@ -320,7 +321,7 @@
 <p>Alternatives such as rule networks or classical expert systems do not have these properties and can be blocked in incorrect diagnoses when the student responds unexpectedly.</p>
 <h3>3.5. Updating with exponential forgetting (non-stationary state)</h3>
 <p>The sequential updating of §3.3 gives the same weight to every response, the first and the last. That is correct if the student's state does not change during the session, but in prolonged practice resources the student learns while practising (see §11.3): the posterior drags along the old evidence and can converge towards a state that no longer exists.</p>
-<p><strong>Two senses of "prior" that should not be conflated.</strong> In sequential updating (§3.3), the posterior obtained after one response becomes the <strong>immediate</strong> prior of the next: a distribution that changes at every step. Exponential forgetting is <em>not</em> anchored to that one, but to the <strong>initial or reference prior</strong> \(\pi\): the fixed distribution defined when the model is built (§3.1), which is not modified during the session. The distinction is not cosmetic: anchoring forgetting to the immediate prior would mean attenuating each distribution toward itself, that is, doing nothing at all.</p>
+<p><strong>Two senses of "prior" that should not be conflated.</strong> In sequential updating (§3.3), the posterior obtained after one response becomes the <strong>immediate</strong> prior of the next: a distribution that changes at every step. Exponential forgetting is <em>not</em> anchored to that one, but to the <strong>initial or reference prior</strong> \(\pi\): the fixed distribution defined when the model is built (§2.2), which is not modified during the session. The distinction is not cosmetic: anchoring forgetting to the immediate prior would mean attenuating each distribution toward itself, that is, doing nothing at all.</p>
 <p>The minimal correction is therefore <strong>exponential forgetting anchored to the initial prior</strong>: before incorporating each new response, the accumulated distribution is attenuated slightly toward that reference distribution \(\pi_i\) with a power \(\lambda \in (0, 1]\); Bayes is then applied with the new evidence and the result renormalised:</p>
 <div class="math-block">\[P^{(t+1)}(H_i) \propto \left[P^{(t)}(H_i)\right]^{\lambda} \cdot \pi_i^{\,1-\lambda} \cdot P(R_{t+1} \mid H_i)\]</div>
 <p>Each step of the session therefore follows this sequence:</p>
@@ -361,10 +362,10 @@
 </table>
 <p>The logistic form is not merely a computational convenience. Its root lies in the family of Rasch models, where taking the logarithm of the odds \(P/(1-P)\) yields an additive scale (<em>logit</em>) on which the probability of success depends only on the difference \(\theta_i - b_q\). That structure is what makes it meaningful to place the student's level and the item's difficulty on the same scale and compare them. In the strict Rasch case (common discrimination \(a\) and \(c = 0\)), this property is known as <strong>specific objectivity</strong>: the comparison between two students does not depend on which items are used, nor the comparison between two items on which students answer them. The three-parameter model generalizes the curve (allowing variable \(a\) and \(c > 0\)) and relaxes that strict objectivity, but keeps the same underlying justification for using the logistic function.</p>
 <h3>4.3. Curve behavior</h3>
-<p>When \(\theta_i \gg b_q\) (the student is well above the difficulty), the exponent \(e^{-a(\theta_i - b_q)} \to 0\) and:</p>
+<p>When \(\theta_i \gg b_q\) (the student is well above the difficulty), the exponential term \(e^{-a(\theta_i - b_q)} \to 0\) and:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 1 = 1\]</div>
 <p>In the implementation, this upper limit is not allowed to reach 1: it is capped by the <strong>mastery ceiling</strong> \(P(A) \leq 0.95\) (§8.3), which models slips and prevents a single failure on an easy item from producing near-deterministic posterior jumps.</p>
-<p>When \(\theta_i \ll b_q\) (the student is well below the difficulty), the exponent \(\to +\infty\) and:</p>
+<p>When \(\theta_i \ll b_q\) (the student is well below the difficulty), the exponential term \(\to +\infty\) and:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) \to c_q + (1 - c_q) \cdot 0 = c_q\]</div>
 <p>When \(\theta_i = b_q\), the exponent argument is zero and:</p>
 <div class="math-block">\[P(A \mid \theta_i, q) = c_q + (1 - c_q) \cdot \frac{1}{2} = \frac{1 + c_q}{2}\]</div>
@@ -723,7 +724,7 @@
 <div class="math-block">\[H^{(1)} = -(0.809 \log_2 0.809 + 0.180 \log_2 0.180 + 0.011 \log_2 0.011) = 0.764 \text{ bits}\]</div>
 <p>Entropy has dropped from 1.585 to 0.764 bits. The system suspects quite strongly that the student is of basic level.</p>
 <h3>9.5. Second question and correct in Q2</h3>
-<p>With \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), the system recalculates the information gains for Q2 and Q3 (Q1 has already been used). In this asymmetric state, Q2 is more informative because it helps to check whether the previous failure could have been accidental.</p>
+<p>With \(\mathbf{p}^{(1)} = (0.809, 0.180, 0.011)\), the system recalculates the information gains for Q2 and Q3 (Q1 has already been used). The real doubt now lies between \(H_1\) and \(H_2\), since \(H_3\) has been all but ruled out: the most useful question is the one that best separates those two hypotheses. That is Q2 (\(b = 0\)), with \(IG = 0.065\) bits, against \(0.020\) for Q3, whose difficulty discriminates mainly against the advanced level, which no longer competes.</p>
 <p>The student <strong>answers Q2 correctly</strong> (intermediate). We update with \(P(A \mid H_i, Q2) = (0.286, 0.625, 0.964)\):</p>
 <div class="math-block">\[P(A \mid Q2, \mathbf{p}^{(1)}) = 0.809 \cdot 0.286 + 0.180 \cdot 0.625 + 0.011 \cdot 0.964 = 0.231 + 0.113 + 0.011 = 0.354\]</div>
 <div class="math-block">\[P(H_1 \mid A, Q2) = \frac{0.286 \cdot 0.809}{0.354} = 0.652, \quad P(H_2 \mid A, Q2) = \frac{0.625 \cdot 0.180}{0.354} = 0.318, \quad P(H_3 \mid A, Q2) = 0.030\]</div>
@@ -840,7 +841,7 @@
 <h3>11.3. Stability of the hypotheses</h3>
 <p>The model assumes that the student's state does not change during the session. In short diagnostic evaluation sessions this is reasonable. In long adaptive learning sessions, the student can improve during the interaction itself, which would cause the posterior to converge towards a hypothesis that no longer reflects the current state. This limitation is mitigated by updating with exponential forgetting, or by an explicit transition model, described in §3.5: both prevent old evidence from blocking the tracking of a changing state.</p>
 <h3>11.4. random answers</h3>
-<p>If the student responds systematically at random, the \(c_q\) parameter only partially protects: it reduces the upward bias in the probability of success, but does not eliminate the noise. With enough random responses, the posterior can converge toward incorrect hypotheses.</p>
+<p>If the student responds systematically at random, the \(c_q\) parameter only partially protects: by building the chance floor into the likelihoods, it prevents a lucky hit from being read as strong evidence of mastery, but it does not eliminate the noise. With enough random responses, the posterior can converge toward incorrect hypotheses.</p>
 <h3>11.5. Minimum number of questions</h3>
 <p>With few questions, the posterior can be biased by coincidences (a non-representative streak of successes or failures). impose a <strong>minimum number of questions</strong> before activating the stop criterion reduces this risk, at the cost of lengthening the session.</p>
 <h3>11.6. The model does not replace teaching criteria</h3>
