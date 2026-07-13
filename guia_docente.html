@@ -416,7 +416,7 @@
 <p>Lee el documento adjunto e implementa el recurso siguiendo las reglas operativas aplicables al tipo de recurso solicitado. Mis alumnos de 2.º de ESO fallan al identificar el sujeto de una oración y quiero averiguar por qué falla cada uno. Solo una de estas explicaciones puede ser cierta en cada alumno: o cree que el sujeto es siempre lo primero que aparece en la oración, o lo identifica por el significado (de quién o de qué se habla) sin comprobar la concordancia con el verbo, o en realidad lo hace bien. Al terminar quiero saber cuál es la explicación más probable para ese alumno y qué debería explicarle yo en cada caso.</p>
 </blockquote>
 
-<h3>Detectar qué le falta</h3>
+<h3>Detectar varios fallos a la vez</h3>
 <p>Cuando los fallos posibles <strong>pueden darse a la vez</strong> (un alumno puede tener uno, varios o ninguno), la prueba revisa cada fallo por separado y te dice cuáles tiene.</p>
 <p>Por ejemplo, con las operaciones con decimales en 6.º de primaria:</p>
 <blockquote>
@@ -467,11 +467,11 @@
 <section id="s6">
 <h2>6. Consejos para crear un buen recurso</h2>
 <ul>
-<li><strong>Se puede usar cualquier IA</strong>: chatbots web, versiones CLI, servicios en Internet, aplicaciones de escritorio, etc. Conviene utilizar el modelo más capaz al que se tenga acceso.</li>
+<li><strong>Se puede usar cualquier IA</strong>: chatbots web, versiones de línea de comandos (CLI), servicios en Internet, aplicaciones de escritorio, etc. Conviene utilizar el modelo más capaz al que se tenga acceso.</li>
 <li><strong>Proporciona a la IA la documentación educativa</strong> que quieras utilizar. Además de <a download="" href="especificacion_operativa_ia.md">especificacion_operativa_ia.md</a>, puedes incorporar documentos con tus propias preguntas, ejemplos o teoría.</li>
 <li>Crear una aplicación adaptativa es un <strong>diálogo con la IA</strong>: cuantos más detalles le des al principio y durante el proceso, mejor entenderá lo que necesitas.</li>
 <li>Cuando tengas una versión preliminar, pídele que revise punto por punto si ha seguido la <strong>especificación operativa</strong> y que corrija cualquier incumplimiento.</li>
-<li><strong>Comprobar que hay suficientes preguntas</strong>. La primera vez es posible que solo haga unas pocas, lo justo para que funcione, pero insuficiente para una aplicación útil. Pedir a la IA que haga más si creemos que son necesarias. Se pueden hacer en varias tandas si alcanzamos el límite de mensajes. Si pensamos que el banco va a ser muy extenso, lo mejor es pedirle a la IA que haga las preguntas en un archivo JSON, de este modo es más manejable (solo si usamos una IA que nos permita trabajar con varios archivos, como las versiones CLI o servicios como Google AI Studio).</li>
+<li><strong>Comprueba que hay suficientes preguntas</strong>. La primera vez es posible que la IA haga solo unas pocas, las justas para que funcione, pero insuficientes para una aplicación útil. Pídele más si te parecen necesarias; puedes hacerlo en varias tandas si alcanzas el límite de mensajes. Si prevés un banco muy extenso, pídele que ponga las preguntas en un archivo JSON aparte: así resulta más manejable (solo si usas una IA que permita trabajar con varios archivos, como las de línea de comandos o servicios como Google AI Studio).</li>
 <li>Si ves comportamientos poco naturales, como que siempre empiece con las mismas preguntas, díselo a la IA para que lo solucione.</li>
 <li>No facilites datos personales del alumnado y comprueba que puedes reutilizar los materiales que aportes. Guarda también una copia de cada versión que funcione antes de pedir cambios importantes.</li>
 </ul>
@@ -480,7 +480,7 @@
 <section id="s7">
 <h2>7. Después de recibir el recurso</h2>
 <ul>
-<li>Hay que probar siempre el programa para ver que realmente hace lo que deseamos y decirle a la IA cualquier problema o carencia que identifiquemos.</li>
+<li>Prueba siempre el programa para ver si hace lo que necesitas, y dile a la IA cualquier problema o carencia que detectes.</li>
 <li><strong>Revisa el contenido, no la técnica</strong>: la IA te entregará una breve lista de comprobación con el recurso (¿los errores son los de tu alumnado?, ¿las preguntas se ajustan al curso?, ¿las respuestas y explicaciones son correctas?, ¿falta algún caso importante?, ¿el lenguaje es adecuado a la edad?). Eso es lo que tú puedes validar mejor que nadie; de la parte matemática se encarga el método.</li>
 <li><strong>Pide cambios en lenguaje normal</strong>: «hazlo más corto», «las preguntas son muy difíciles para mi curso», «añade más ejercicios de división», «explica los errores con ejemplos». No necesitas tecnicismos.</li>
 <li><strong>Desconfía de los diagnósticos con pocas preguntas</strong>: el propio recurso te avisará cuando un resultado sea provisional; tómalo como una orientación, no como una sentencia.</li>
