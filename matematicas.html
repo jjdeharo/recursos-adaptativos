@@ -57,7 +57,7 @@
       font-size: 0.8rem;
       color: rgba(255,255,255,0.85);
       text-decoration: none;
-      margin-bottom: 0.6rem;
+      margin-right: auto;
     }
     .back-link:hover { color: white; text-decoration: underline; }
     .container {
@@ -163,6 +163,7 @@
       display: flex;
       gap: 0.3rem;
       justify-content: flex-end;
+      align-items: center;
       margin-bottom: 0.75rem;
     }
     .lang-btn {
@@ -210,8 +211,7 @@
 </style>
 </head>
 <body>
-<div class="header"><div class="lang-switcher"><button class="lang-btn active" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
-<a class="back-link" href="documentacion.html">← Protocolo</a>
+<div class="header"><div class="lang-switcher"><a class="back-link" href="documentacion.html">← Protocolo</a><button class="lang-btn active" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Alternar tema oscuro/claro" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
 <h1>Fundamentos matemáticos de los sistemas educativos adaptativos bayesianos</h1>
 <p>Desarrollo formal del protocolo: Bayes, IRT, entropía y ganancia de información</p>
 <p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versión 2.1</p>

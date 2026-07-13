@@ -58,7 +58,7 @@
       font-size: 0.8rem;
       color: rgba(255,255,255,0.85);
       text-decoration: none;
-      margin-bottom: 0.6rem;
+      margin-right: auto;
     }
     .back-link:hover { color: white; text-decoration: underline; }
 
@@ -219,6 +219,7 @@
       display: flex;
       gap: 0.3rem;
       justify-content: flex-end;
+      align-items: center;
       margin-bottom: 0.75rem;
     }
     .lang-btn {
@@ -283,8 +284,7 @@
 </style>
 </head>
 <body>
-<div class="header"><div class="lang-switcher"><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn active" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Alternar tema fosc/clar" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
-<a class="back-link" href="index.html">← Inici</a>
+<div class="header"><div class="lang-switcher"><a class="back-link" href="index.html">← Inici</a><button class="lang-btn" onclick="switchDocLang('es')" type="button">ES</button><button class="lang-btn" onclick="switchDocLang('en')" type="button">EN</button><button class="lang-btn active" onclick="switchDocLang('ca')" type="button">CA</button><button aria-label="Alternar tema fosc/clar" class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" type="button">🌙</button></div>
 <h1>Protocol per a sistemes educatius adaptatius bayesians</h1>
 <p>Guia tècnica per implementar avaluació adaptativa amb inferència bayesiana i entropia de Shannon</p>
 <p style="font-size:0.8rem;opacity:0.7;margin-top:0.3rem;">Versió 2.6</p>
